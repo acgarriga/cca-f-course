@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dominio 2 · Diseño de herramientas e integración con MCP (18 %) · CCAR-F</title>
+<script>
+  // Antes de pintar, para que no parpadee el tema. Misma clave que el examen 1.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("examccarf-theme") || "light"); } catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div id="progress"></div>
+<button class="backdrop" id="backdrop" aria-label="Cerrar menú"></button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <div class="logo">A</div>
+      <div>
+        <h1>Guía CCAR-F</h1>
+        <p>Claude Certified Architect – Foundations</p>
+      </div>
+    </a>
+    <div class="nav-label">Apuntes</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="index.html"><span class="code">★</span><span class="txt">Inicio</span></a>
+      <a class="lesson-btn nav-item" href="00-index.html"><span class="code">≡</span><span class="txt">Índice de recursos</span></a>
+      <a class="lesson-btn nav-item" href="01-agentic-architecture.html"><span class="code">D1</span><span class="txt">Arquitectura agéntica y orquestación</span></a>
+      <a class="lesson-btn nav-item active" href="02-mcp-tools.html"><span class="code">D2</span><span class="txt">Diseño de herramientas e integración con MCP</span></a>
+      <div class="toc">
+        <a href="#como-usar-este-documento">Cómo usar este documento</a>
+        <a href="#repaso-que-es-mcp-y-como-encaja-con-el-tool-use">Repaso: qué es MCP y cómo encaja con el tool use</a>
+        <a href="#2-1-disenar-interfaces-de-herramientas-con-descripciones-y-limites-claros"><span class="num">2.1</span>Diseñar interfaces de herramientas con descripciones y límites claros</a>
+        <a href="#2-2-respuestas-de-error-estructuradas-en-herramientas-mcp"><span class="num">2.2</span>Respuestas de error estructuradas en herramientas MCP</a>
+        <a href="#2-3-distribuir-las-herramientas-entre-agentes-y-configurar-toolchoice"><span class="num">2.3</span>Distribuir las herramientas entre agentes y configurar tool_choice</a>
+        <a href="#2-4-integrar-servidores-mcp-en-claude-code-y-en-flujos-de-agentes"><span class="num">2.4</span>Integrar servidores MCP en Claude Code y en flujos de agentes</a>
+        <a href="#2-5-elegir-y-usar-bien-las-herramientas-integradas"><span class="num">2.5</span>Elegir y usar bien las herramientas integradas</a>
+        <a href="#que-ha-quedado-obsoleto-la-especificacion-mcp-2026-07-28">Qué ha quedado obsoleto: la especificación MCP 2026-07-28</a>
+        <a href="#chuleta-de-decisiones">Chuleta de decisiones</a>
+        <a href="#preguntas-de-autoevaluacion">Preguntas de autoevaluación</a>
+      </div>
+      <a class="lesson-btn nav-item" href="03-claude.html"><span class="code">D3</span><span class="txt">Configuración y flujos de trabajo de Claude Code</span></a>
+      <a class="lesson-btn nav-item" href="04-prompt-structured-output.html"><span class="code">D4</span><span class="txt">Ingeniería de prompts y salida estructurada</span></a>
+      <a class="lesson-btn nav-item" href="05-context.html"><span class="code">D5</span><span class="txt">Gestión del contexto y fiabilidad</span></a>
+    </nav>
+    <div class="nav-label">Práctica</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="simulacros.html"><span class="code">⏱</span><span class="txt">Simulacros de examen</span></a>
+      <a class="lesson-btn nav-item" href="practica.html"><span class="code">✎</span><span class="txt">Practicar por dominio o task</span></a>
+    </nav>
+    <div class="side-foot">
+      <p>Generado desde los .md el 14 de noviembre de 2026</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" title="Menú">☰</button>
+      <span class="title">Dominio 2 · Diseño de herramientas e integración con MCP (18 %)</span>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema claro/oscuro">🌙</button>
+      <button class="icon-btn" onclick="window.print()" title="Imprimir / PDF">⎙</button>
+    </div>
+
+    <main class="content prose">
+<h1 id="dominio-2-diseno-de-herramientas-e-integracion-con-mcp-18">Dominio 2 · Diseño de herramientas e integración con MCP (18 %)</h1>
+<blockquote>
+<p>Síntesis didáctica de los conceptos del Dominio 2 de la guía oficial del examen <strong>Claude Certified Architect – Foundations</strong> (v1.0).
+Fuentes principales: los apuntes de la carpeta <code>Anthropic/</code> (enlazados como <code>[[...]]</code>), sobre todo <em>Introducción a MCP</em>, <em>Model Context Protocol</em> (temas avanzados), la parte de uso de herramientas y MCP de <em>Creación con la API de Claude</em>, la sección de MCP de <em>Claude Code 101</em> e <em>Introducción a subagentes</em>. Se completa con el artículo <em>Writing effective tools for agents</em>, la especificación de MCP y la documentación de Claude Code. El índice de recursos por <em>task statement</em> está en <a href="00-index.html">Índice de recursos</a>.</p>
+</blockquote>
+<h2 id="como-usar-este-documento">Cómo usar este documento</h2>
+<p>Cada sección corresponde a un <em>task statement</em> (2.1 a 2.5) y sigue el mismo esquema que <a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a>, <a href="03-claude.html">Configuración y flujos de trabajo de Claude Code</a>, <a href="04-prompt-structured-output.html">Ingeniería de prompts y salida estructurada</a> y <a href="05-context.html">Gestión del contexto y fiabilidad</a>:</p>
+<ol>
+<li><strong>La idea en una frase</strong>.</li>
+<li><strong>Explicación</strong>, con ejemplos.</li>
+<li><strong>Qué busca el examen</strong>: los razonamientos que la guía premia y las trampas habituales.</li>
+<li><strong>Fuentes</strong>.</li>
+</ol>
+<p>Antes de las secciones hay un repaso de <strong>qué es MCP</strong> y, al final, un apartado sobre <strong>lo que ha quedado obsoleto en la especificación 2026-07-28</strong>, seguido de la chuleta de decisiones y las preguntas de autoevaluación.</p>
+<p>Este dominio aparece como principal en cuatro escenarios: <strong>«Customer Support Resolution Agent»</strong> (herramientas MCP <code>get_customer</code>, <code>lookup_order</code>, <code>process_refund</code>, <code>escalate_to_human</code>), <strong>«Multi-Agent Research System»</strong> (reparto de herramientas entre agentes), <strong>«Developer Productivity with Claude»</strong> (herramientas integradas y servidores MCP) y, de forma secundaria, los de Claude Code. Las preguntas 1, 2 y 9 de la guía tocan este dominio.</p>
+<hr>
+<h2 id="repaso-que-es-mcp-y-como-encaja-con-el-tool-use">Repaso: qué es MCP y cómo encaja con el <em>tool use</em></h2>
+<p><strong>Tool use</strong> es el mecanismo de la API por el que Claude pide ejecutar una función: tú defines la herramienta (nombre, descripción, <code>input_schema</code>), Claude devuelve un bloque <code>tool_use</code>, tu código la ejecuta y le devuelves un <code>tool_result</code>. Es el bucle agéntico que vimos en el Dominio 1.</p>
+<p><strong>MCP (Model Context Protocol)</strong> es un protocolo estándar para <strong>empaquetar herramientas, recursos y prompts en servidores reutilizables</strong>. El curso lo explica con GitHub: sin MCP tendrías que escribir y mantener tú los esquemas y funciones de cientos de operaciones; con MCP, un servidor de GitHub ya las expone y tu aplicación solo se conecta a él. Y aclara un error común: <strong>MCP no sustituye al <em>tool use</em></strong>. MCP decide <em>quién implementa</em> las herramientas; el <em>tool use</em> es <em>cómo las llama</em> Claude.</p>
+<p><strong>Las piezas:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Pieza</th>
+<th>Qué es</th>
+<th>Ejemplo del curso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Servidor MCP</strong></td>
+<td>Expone capacidades de un servicio externo</td>
+<td>Servidor de documentos con <code>read_doc_contents</code> y <code>edit_document</code></td>
+</tr>
+<tr>
+<td><strong>Cliente MCP</strong></td>
+<td>El puente entre tu aplicación y el servidor</td>
+<td><code>list_tools()</code> y <code>call_tool()</code> sobre una sesión del SDK</td>
+</tr>
+<tr>
+<td><strong>Transporte</strong></td>
+<td>El canal por el que viajan los mensajes JSON-RPC</td>
+<td><code>stdio</code> (proceso local) o Streamable HTTP (remoto)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Las tres primitivas de servidor</strong>, y quién las controla:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Primitiva</th>
+<th>Controlada por</th>
+<th>Para qué</th>
+<th>En Claude Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tools</strong></td>
+<td>El <strong>modelo</strong> (Claude decide cuándo llamarlas)</td>
+<td>Acciones y consultas</td>
+<td>Herramientas <code>mcp__servidor__herramienta</code></td>
+</tr>
+<tr>
+<td><strong>Resources</strong></td>
+<td>La <strong>aplicación</strong> (tu código decide qué inyectar)</td>
+<td>Exponer datos de solo lectura, como un <code>GET</code></td>
+<td>Menciones <code>@servidor:recurso</code></td>
+</tr>
+<tr>
+<td><strong>Prompts</strong></td>
+<td>El <strong>usuario</strong> (los elige explícitamente)</td>
+<td>Plantillas de instrucciones probadas</td>
+<td>Comandos <code>/mcp__servidor__prompt</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>El flujo completo</strong> (del curso): el usuario pregunta → tu aplicación pide al cliente MCP la lista de herramientas (<code>ListToolsRequest</code>) → envía la pregunta y las herramientas a Claude → Claude pide una herramienta → el cliente la ejecuta en el servidor (<code>CallToolRequest</code>) → el resultado vuelve a Claude → Claude responde.</p>
+<p><strong>Definir herramientas con el SDK de Python.</strong> El curso usa <code>FastMCP</code> y decoradores: el nombre y la descripción van en <code>@mcp.tool(...)</code> y cada parámetro se describe con <code>Field(description=...)</code>. El SDK genera el JSON Schema a partir de los <em>type hints</em>. Para probar sin una aplicación completa está el <strong>MCP Inspector</strong> (<code>mcp dev mcp_server.py</code>).</p>
+<pre><code class="hljs language-python"><span class="hljs-meta">@mcp.tool(<span class="hljs-params">
+    name=<span class="hljs-string">&quot;read_doc_contents&quot;</span>,
+    description=<span class="hljs-string">&quot;Read the contents of a document and return it as a string.&quot;</span>
+</span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_document</span>(<span class="hljs-params">doc_id: <span class="hljs-built_in">str</span> = Field(<span class="hljs-params">description=<span class="hljs-string">&quot;Id of the document to read&quot;</span></span>)</span>):
+    <span class="hljs-keyword">if</span> doc_id <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> docs:
+        <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">f&quot;Doc with id <span class="hljs-subst">{doc_id}</span> not found&quot;</span>)
+    <span class="hljs-keyword">return</span> docs[doc_id]
+</code></pre>
+<hr>
+<h2 id="2-1-disenar-interfaces-de-herramientas-con-descripciones-y-limites-claros">2.1 Diseñar interfaces de herramientas con descripciones y límites claros</h2>
+<a class="practice-chip" href="practica.html?task=2.1">✎ Practicar 2.1 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase">La idea en una frase</h3>
+<p>La <strong>descripción</strong> de una herramienta es lo que Claude usa para decidir si la llama; si dos herramientas se parecen o la descripción es mínima, Claude elegirá mal, y la solución es describir mejor, renombrar o dividir, no añadir capas alrededor.</p>
+<h3 id="explicacion">Explicación</h3>
+<p><strong>La descripción manda.</strong> Claude no ve tu código: solo ve <code>name</code>, <code>description</code> y <code>input_schema</code>. El curso de la API recomienda <strong>3–4 frases</strong> por herramienta que expliquen qué hace, cuándo usarla y qué devuelve, y una descripción detallada por cada parámetro. La documentación lo llama «con diferencia el factor más importante» del rendimiento de una herramienta. Una buena descripción incluye:</p>
+<ul>
+<li><strong>qué hace</strong> y <strong>qué devuelve</strong>;</li>
+<li><strong>formato de entrada</strong> («número de pedido de 5 dígitos, con o sin <code>#</code>»);</li>
+<li><strong>ejemplos de consultas</strong> que deben ir a ella;</li>
+<li><strong>casos límite</strong>;</li>
+<li><strong>cuándo NO usarla</strong> y cuál usar en su lugar.</li>
+</ul>
+<p><strong>El caso de la pregunta 2.</strong> <code>get_customer</code> («Retrieves customer information») y <code>lookup_order</code> («Retrieves order details»), con identificadores parecidos. Ante «revisa mi pedido #12345», Claude llama a <code>get_customer</code>. La <strong>primera</strong> medida correcta es ampliar las descripciones:</p>
+<pre><code class="hljs language-text">lookup_order: Devuelve el estado, los artículos, el importe y el envío de UN pedido.
+Úsala cuando el usuario mencione un pedido concreto o un número de pedido
+(5 dígitos, p. ej. &quot;#12345&quot; o &quot;pedido 12345&quot;). No la uses para buscar
+datos del cliente (nombre, correo, dirección): para eso está get_customer.
+Si el usuario no da número de pedido, primero identifica al cliente con get_customer.
+</code></pre>
+<p>Las alternativas de esa pregunta enseñan tanto como la respuesta: los ejemplos few-shot en el <em>system prompt</em> añaden tokens sin arreglar la causa; una capa de enrutamiento por palabras clave es excesiva; fusionar ambas herramientas en <code>lookup_entity</code> es una decisión válida, pero no un «primer paso».</p>
+<p><strong>Solapamiento: renombrar o dividir.</strong></p>
+<ul>
+<li><strong>Renombrar</strong> cuando dos herramientas tienen nombres y descripciones casi idénticas: <code>analyze_content</code> frente a <code>analyze_document</code> es una invitación al error; renombrar la primera a <code>extract_web_results</code>, con una descripción específica de web, elimina el solapamiento.</li>
+<li><strong>Dividir</strong> una herramienta genérica en varias de propósito único, cada una con su contrato de entrada y salida: <code>analyze_document</code> → <code>extract_data_points</code>, <code>summarize_content</code> y <code>verify_claim_against_source</code>.</li>
+</ul>
+<p>El artículo <em>Writing effective tools for agents</em> añade principios complementarios:</p>
+<ul>
+<li><strong>No envuelvas cada endpoint de la API</strong>: pocas herramientas bien pensadas para los flujos de alto impacto, consolidando pasos relacionados cuando tiene sentido.</li>
+<li><strong>Espacios de nombres</strong> (prefijos comunes como <code>github_list_prs</code>, <code>slack_send_message</code>) para delimitar herramientas de servicios distintos.</li>
+<li><strong>Parámetros sin ambigüedad</strong>: <code>user_id</code> mejor que <code>user</code>.</li>
+<li><strong>Respuestas con señal</strong>: nombres legibles en vez de UUID crípticos, paginación y truncado con valores por defecto razonables.</li>
+</ul>
+<p>Fíjate en la tensión aparente: el examen premia <strong>dividir</strong> una herramienta genérica cuando mezcla propósitos distintos (el modelo no sabe qué hará), y el artículo premia <strong>consolidar</strong> cuando varias herramientas son pasos de un mismo flujo. El criterio común es que <strong>cada herramienta tenga un propósito claro y distinguible</strong>.</p>
+<p><strong>El <em>system prompt</em> también influye.</strong> Una instrucción como «cuando el usuario hable de <em>análisis</em>, usa siempre la herramienta más completa» crea asociaciones por palabra clave que pueden <strong>anular</strong> descripciones bien escritas. Si una herramienta se elige mal pese a tener buena descripción, revisa el <em>system prompt</em>. Y evita el lenguaje agresivo («DEBES usar X»): los modelos recientes lo siguen tanto que la usan de más (ver <a href="04-prompt-structured-output.html">Ingeniería de prompts y salida estructurada</a>, 4.1).</p>
+<h3 id="que-busca-el-examen">Qué busca el examen</h3>
+<ul>
+<li>Mala selección de herramienta → <strong>primero, mejorar las descripciones</strong> (formato, ejemplos, límites, cuándo usar la alternativa).</li>
+<li>Herramientas solapadas → <strong>renombrar</strong> y reescribir la descripción; herramienta genérica → <strong>dividir</strong> en herramientas con contratos definidos.</li>
+<li>Revisar el <em>system prompt</em> por instrucciones sensibles a palabras clave.</li>
+<li>Trampas: few-shot o capas de enrutamiento como primera medida; fusionar herramientas cuando el problema es la descripción.</li>
+</ul>
+<h3 id="fuentes">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/tool-schemas" target="_blank" rel="noopener">Tool schemas</a> (<code>name</code>, <code>description</code>, <code>input_schema</code>; 3–4 frases)</li>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/using-multiple-tools" target="_blank" rel="noopener">Using multiple tools</a></li>
+<li>Claude Platform 101 › Teaching your agent › <a href="https://academy.claude.com/courses/claude-platform-101/the-agent-loop-explained" target="_blank" rel="noopener">The agent loop explained</a> (el array <code>tools</code>)</li>
+<li>Building with the Claude API › Model Context Protocol › <a href="https://academy.claude.com/courses/building-with-the-claude-api/defining-tools-with-mcp" target="_blank" rel="noopener">Defining tools with MCP</a> (descripciones con <code>@mcp.tool</code> y <code>Field</code>)</li>
+<li>Artículo: <a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a></li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#best-practices-for-tool-definitions" target="_blank" rel="noopener">Define tools › Best practices for tool definitions</a></li>
+</ul>
+<hr>
+<h2 id="2-2-respuestas-de-error-estructuradas-en-herramientas-mcp">2.2 Respuestas de error estructuradas en herramientas MCP</h2>
+<a class="practice-chip" href="practica.html?task=2.2">✎ Practicar 2.2 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-1">La idea en una frase</h3>
+<p>Cuando una herramienta falla, devuelve un resultado con <strong><code>isError: true</code></strong> y <strong>metadatos</strong> que digan qué tipo de error es y si tiene sentido reintentar, para que el agente decida bien qué hacer a continuación.</p>
+<h3 id="explicacion-1">Explicación</h3>
+<p><strong>Dos tipos de error en MCP.</strong> La especificación distingue:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Ejemplos</th>
+<th>Cómo se devuelve</th>
+<th>¿Lo ve el modelo?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Error de protocolo</strong></td>
+<td>Herramienta desconocida, petición mal formada</td>
+<td>Error JSON-RPC (<code>&quot;error&quot;: {&quot;code&quot;: -32602, ...}</code>)</td>
+<td>Puede, pero rara vez le sirve</td>
+</tr>
+<tr>
+<td><strong>Error de ejecución de la herramienta</strong></td>
+<td>Fallo de una API, entrada no válida, regla de negocio</td>
+<td>Resultado normal con <strong><code>isError: true</code></strong></td>
+<td><strong>Sí</strong>: le permite corregirse y reintentar</td>
+</tr>
+</tbody>
+</table></div>
+<p>El curso de MCP lo practica de forma sencilla: si el documento no existe, la herramienta lanza un <code>ValueError</code> con un mensaje descriptivo, y el SDK lo convierte en un resultado con <code>isError</code>. En la API directa, el equivalente es el <code>tool_result</code> con <code>&quot;is_error&quot;: true</code> que vimos en el curso de la API.</p>
+<p><strong>Por qué un error genérico es un problema.</strong> «Operation failed» no le dice al agente si debe reintentar, cambiar los parámetros, pedir datos al usuario o rendirse. La guía clasifica los errores en cuatro categorías, y cada una pide una reacción distinta:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Categoría</th>
+<th>Ejemplo</th>
+<th>¿Reintentar?</th>
+<th>Qué hace el agente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Transitorio</strong></td>
+<td><em>Timeout</em>, servicio no disponible</td>
+<td>Sí</td>
+<td>Reintentar (quizá con espera)</td>
+</tr>
+<tr>
+<td><strong>Validación</strong></td>
+<td>Fecha en formato incorrecto</td>
+<td>Sí, <strong>corrigiendo la entrada</strong></td>
+<td>Ajustar los parámetros</td>
+</tr>
+<tr>
+<td><strong>Negocio</strong></td>
+<td>Reembolso fuera del plazo de 30 días</td>
+<td><strong>No</strong></td>
+<td>Explicárselo al cliente o escalar</td>
+</tr>
+<tr>
+<td><strong>Permisos</strong></td>
+<td>Sin acceso a la cuenta</td>
+<td>No (sin cambiar algo)</td>
+<td>Escalar o pedir autorización</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Metadatos estructurados.</strong> La guía propone devolver, dentro del resultado con <code>isError</code>, algo así:</p>
+<pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;isError&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;{\&quot;errorCategory\&quot;: \&quot;business\&quot;, \&quot;isRetryable\&quot;: false, \&quot;message\&quot;: \&quot;El pedido 88213 se entregó hace 45 días; la política permite devoluciones en 30 días.\&quot;, \&quot;customerMessage\&quot;: \&quot;Lo siento, el plazo de devolución de este pedido terminó el 2 de noviembre.\&quot;}&quot;</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>Con <code>isRetryable: false</code> el agente no malgasta intentos; con una explicación apta para el cliente, puede comunicarlo bien. (<code>errorCategory</code> e <code>isRetryable</code> son una <strong>convención de diseño</strong> que propone la guía, no campos de la especificación de MCP; lo estándar es <code>isError</code> y el contenido del resultado.)</p>
+<p><strong>Recuperación local y propagación.</strong> En un sistema multiagente, un subagente resuelve él mismo los errores transitorios (reintentar) y solo <strong>propaga</strong> al coordinador lo que no puede resolver, con lo que intentó y los resultados parciales. Y debe distinguir un <strong>fallo de acceso</strong> (no se pudo consultar) de un <strong>resultado vacío válido</strong> (se consultó y no hay nada). Esto se desarrolla en <a href="05-context.html">Gestión del contexto y fiabilidad</a>, 5.3.</p>
+<h3 id="que-busca-el-examen-1">Qué busca el examen</h3>
+<ul>
+<li><code>isError</code> para comunicar fallos de la herramienta al agente.</li>
+<li>Distinguir errores <strong>transitorios, de validación, de negocio y de permisos</strong>.</li>
+<li>Metadatos <strong><code>errorCategory</code></strong>, <strong><code>isRetryable</code></strong> y una descripción legible; <code>retriable: false</code> + explicación para el cliente en violaciones de reglas de negocio.</li>
+<li>Respuestas genéricas («Operation failed») = el agente no puede decidir.</li>
+<li>Recuperación local de lo transitorio; propagar solo lo irresoluble; fallo de acceso ≠ resultado vacío.</li>
+</ul>
+<h3 id="fuentes-1">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Model Context Protocol › <a href="https://academy.claude.com/courses/building-with-the-claude-api/defining-tools-with-mcp" target="_blank" rel="noopener">Defining tools with MCP</a> (manejo de errores, <code>ValueError</code> con mensaje descriptivo)</li>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/implementing-multiple-turns" target="_blank" rel="noopener">Implementing multiple turns</a> (<code>is_error</code> en la API)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a> (Reporting obstacles)</li>
+<li>Especificación: <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/tools" target="_blank" rel="noopener">MCP 2026-07-28 › Tools › Error Handling</a></li>
+</ul>
+<hr>
+<h2 id="2-3-distribuir-las-herramientas-entre-agentes-y-configurar-toolchoice">2.3 Distribuir las herramientas entre agentes y configurar <code>tool_choice</code></h2>
+<a class="practice-chip" href="practica.html?task=2.3">✎ Practicar 2.3 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-2">La idea en una frase</h3>
+<p>Da a cada agente <strong>solo las herramientas de su rol</strong> (4–5 mejor que 18), con alguna herramienta transversal <strong>acotada</strong> para necesidades frecuentes, y usa <code>tool_choice</code> cuando necesites garantizar que se llama a una herramienta.</p>
+<h3 id="explicacion-2">Explicación</h3>
+<p><strong>Más herramientas, peor selección.</strong> Cada herramienta añade una opción a la decisión. Un agente con 18 herramientas elige peor que uno con 4–5, y un agente con herramientas <strong>fuera de su especialidad</strong> tiende a usarlas mal (el agente de síntesis que se pone a buscar en la web en vez de sintetizar). <em>Claude Code 101</em> añade el coste de contexto: las definiciones de herramientas MCP ocupan contexto aunque no se usen.</p>
+<p><strong>Acceso acotado por rol.</strong> El curso de subagentes lo concreta:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Tipo de subagente</th>
+<th>Herramientas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Investigación (solo lectura)</td>
+<td><code>Glob</code>, <code>Grep</code>, <code>Read</code></td>
+</tr>
+<tr>
+<td>Revisor de código</td>
+<td><code>Bash</code> (para <code>git diff</code>), sin <code>Edit</code> ni <code>Write</code></td>
+</tr>
+<tr>
+<td>Agente que modifica código</td>
+<td><code>Edit</code> y <code>Write</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Así evitas efectos secundarios y cada rol queda claro. En el Agent SDK se configura con <code>tools</code>/<code>allowedTools</code> de cada <code>AgentDefinition</code> (ver <a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a>, 1.3).</p>
+<p><strong>Restringir en vez de generalizar.</strong> Una herramienta genérica como <code>fetch_url</code> permite al agente descargar cualquier cosa. Sustituirla por <code>load_document</code>, que <strong>valida</strong> que la URL es de un documento permitido, reduce el riesgo y el mal uso.</p>
+<p><strong>Herramientas transversales acotadas.</strong> La pregunta 9 de la guía: el agente de síntesis devuelve el control al coordinador cada vez que necesita verificar un dato, lo que añade 2–3 vueltas y un 40 % de latencia. El 85 % son comprobaciones simples (fechas, nombres, cifras). La solución es darle una herramienta <strong><code>verify_fact</code></strong> limitada para ese 85 % y mantener el paso por el coordinador para el 15 % complejo. Es el <strong>principio de mínimo privilegio</strong>: ni todas las herramientas de búsqueda (sobreaprovisionar), ni nada.</p>
+<p><strong><code>tool_choice</code>.</strong> Ya lo vimos en detalle en <a href="04-prompt-structured-output.html">Ingeniería de prompts y salida estructurada</a>, 4.3:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Valor</th>
+<th>Uso en este dominio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code></td>
+<td>Por defecto; Claude puede responder con texto</td>
+</tr>
+<tr>
+<td><code>any</code></td>
+<td>Garantizar que se llama a <strong>alguna</strong> herramienta y no se responde con texto</td>
+</tr>
+<tr>
+<td><code>{&quot;type&quot;: &quot;tool&quot;, &quot;name&quot;: &quot;extract_metadata&quot;}</code></td>
+<td>Forzar que <strong>una herramienta concreta</strong> se ejecute primero; los pasos siguientes (enriquecimiento) se procesan en turnos posteriores</td>
+</tr>
+</tbody>
+</table></div>
+<p>Recuerda el matiz de actualidad anotado en el 04: <code>any</code> y forzado no son compatibles con el pensamiento extendido manual y dan error en los modelos más recientes; para el examen vale lo que dice la guía.</p>
+<p><strong>Ojo con la pregunta 1.</strong> Si el problema es el <strong>orden</strong> de las herramientas (verificar al cliente antes de reembolsar), ni <code>tool_choice</code> ni quitar herramientas lo resuelve de forma fiable: hace falta un <strong>prerrequisito programático</strong> que bloquee <code>lookup_order</code> y <code>process_refund</code> hasta que <code>get_customer</code> devuelva un ID verificado (ver <a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a>, 1.4).</p>
+<h3 id="que-busca-el-examen-2">Qué busca el examen</h3>
+<ul>
+<li>Demasiadas herramientas o herramientas fuera de rol → <strong>restringir</strong> el conjunto de cada agente.</li>
+<li>Herramienta genérica → alternativa <strong>restringida</strong> que valide sus entradas.</li>
+<li>Necesidad frecuente de otro rol → herramienta transversal <strong>acotada</strong> (<code>verify_fact</code>); lo complejo sigue pasando por el coordinador.</li>
+<li><code>tool_choice: &quot;any&quot;</code> para garantizar una llamada; forzado para asegurar el primer paso.</li>
+<li>Trampas: dar todas las herramientas a un agente para ahorrar vueltas; usar <code>tool_choice</code> para imponer un orden de negocio.</li>
+</ul>
+<h3 id="fuentes-2">Fuentes</h3>
+<ul>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a> (Limiting tool access)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/creating-a-subagent" target="_blank" rel="noopener">Creating a subagent</a> (Customizing tools)</li>
+<li>Claude Code 101 › Customizing Claude Code › <a href="https://academy.claude.com/courses/claude-code-101/mcp" target="_blank" rel="noopener">MCP</a> (Context costs)</li>
+<li><a href="04-prompt-structured-output.html">Ingeniería de prompts y salida estructurada</a> (4.3, <code>tool_choice</code>)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#forcing-tool-use" target="_blank" rel="noopener">Define tools › Forcing tool use</a> · <a href="https://code.claude.com/docs/en/sub-agents#control-subagent-capabilities" target="_blank" rel="noopener">Claude Code › Control subagent capabilities</a></li>
+</ul>
+<hr>
+<h2 id="2-4-integrar-servidores-mcp-en-claude-code-y-en-flujos-de-agentes">2.4 Integrar servidores MCP en Claude Code y en flujos de agentes</h2>
+<a class="practice-chip" href="practica.html?task=2.4">✎ Practicar 2.4 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-3">La idea en una frase</h3>
+<p>Los servidores <strong>compartidos</strong> del equipo van en <code>.mcp.json</code> del proyecto (con los secretos como variables de entorno), los <strong>personales</strong> en <code>~/.claude.json</code>; describe bien sus herramientas para que Claude las prefiera, usa servidores de la comunidad para integraciones estándar y expón catálogos como <strong>recursos</strong>.</p>
+<h3 id="explicacion-3">Explicación</h3>
+<p><strong>Ámbitos de configuración.</strong> <em>Claude Code 101</em> los presenta así:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ámbito</th>
+<th>Dónde se guarda</th>
+<th>Compartido</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Local</strong> (por defecto)</td>
+<td><code>~/.claude.json</code>, bajo la ruta del proyecto</td>
+<td>No</td>
+<td>Algo personal solo en este proyecto</td>
+</tr>
+<tr>
+<td><strong>Usuario</strong></td>
+<td><code>~/.claude.json</code></td>
+<td>No</td>
+<td>Herramientas personales o experimentales en todos tus proyectos</td>
+</tr>
+<tr>
+<td><strong>Proyecto</strong></td>
+<td><code>.mcp.json</code> en la raíz del repo</td>
+<td><strong>Sí</strong>, por git</td>
+<td>Herramientas que necesita todo el equipo</td>
+</tr>
+</tbody>
+</table></div>
+<p>Se añaden con <code>claude mcp add</code> (opción <code>--scope local|project|user</code>) y se gestionan con <code>/mcp</code> (ver estado, herramientas, reconectar, desactivar). Por seguridad, Claude Code pide aprobación la primera vez que usa los servidores de un <code>.mcp.json</code>, porque viene del repositorio.</p>
+<p><strong>Secretos sin commitearlos: expansión de variables.</strong> El <code>.mcp.json</code> se versiona, así que los tokens no pueden ir en él. Se referencian como variables de entorno, que cada desarrollador define en su máquina:</p>
+<pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;mcpServers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;github&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://api.githubcopilot.com/mcp/&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;headers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;Authorization&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Bearer ${GITHUB_TOKEN}&quot;</span> <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;jira&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;npx&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;args&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;-y&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;jira-mcp-server&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;env&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">&quot;JIRA_URL&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;${JIRA_URL:-https://empresa.atlassian.net}&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;JIRA_TOKEN&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;${JIRA_TOKEN}&quot;</span> <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>La sintaxis es <code>${VAR}</code> o <code>${VAR:-valor_por_defecto}</code>, y funciona en <code>command</code>, <code>args</code>, <code>env</code>, <code>url</code> y <code>headers</code>.</p>
+<p><strong>Todas las herramientas a la vez.</strong> Las herramientas de <strong>todos</strong> los servidores configurados se descubren al conectar (<code>tools/list</code>) y quedan disponibles simultáneamente para el agente. Eso tiene un coste: el curso avisa de que las definiciones ocupan contexto aunque no se usen, y de que, si superan el 10 % de la ventana, Claude Code pasa a un <strong>modo de búsqueda de herramientas</strong> que las carga bajo demanda (menos fiable que tenerlas a la vista). Desactiva los servidores que no uses y considera una CLI (<code>gh</code>, <code>aws</code>) o una skill cuando basten.</p>
+<p><strong>Que Claude prefiera la herramienta MCP.</strong> Si un servidor MCP ofrece una búsqueda semántica del código pero Claude sigue usando <code>Grep</code>, la causa suele ser una descripción pobre. Explica en la descripción <strong>qué capacidades tiene y qué devuelve</strong> que la herramienta integrada no ofrece («busca por significado en todo el monorepo e incluye el propietario de cada archivo»).</p>
+<p><strong>Comunidad frente a desarrollo propio.</strong> Para integraciones estándar (Jira, GitHub, Slack) usa los servidores existentes, a menudo oficiales del propio proveedor, como recuerda el curso. Reserva los servidores propios para flujos específicos del equipo.</p>
+<p><strong>Recursos como catálogos.</strong> Un recurso es un dato de solo lectura identificado por una URI, «como un manejador <code>GET</code>». El curso distingue:</p>
+<ul>
+<li><strong>Recursos directos</strong>, con URI fija: <code>docs://documents</code> devuelve la lista de documentos.</li>
+<li><strong>Recursos con plantilla</strong>, con parámetros: <code>docs://documents/{doc_id}</code> devuelve uno concreto.</li>
+</ul>
+<pre><code class="hljs language-python"><span class="hljs-meta">@mcp.resource(<span class="hljs-params"><span class="hljs-string">&quot;docs://documents&quot;</span>, mime_type=<span class="hljs-string">&quot;application/json&quot;</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">list_docs</span>() -&gt; <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]:
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">list</span>(docs.keys())
+</code></pre>
+<p>Para el examen, la idea clave es que exponer un <strong>catálogo</strong> (resúmenes de incidencias, jerarquía de documentación, esquema de la base de datos) como recurso le da al agente <strong>visibilidad de qué datos existen sin tener que hacer llamadas exploratorias</strong>. En el curso, la aplicación inyecta el contenido del recurso en el prompt cuando el usuario escribe <code>@documento</code>, sin que Claude gaste una llamada a herramienta.</p>
+<p><strong>Prompts de servidor.</strong> El tercer tipo de primitiva: plantillas probadas que el usuario invoca como comandos (<code>/format doc_id</code>). Encapsulan la experiencia del autor del servidor para que el usuario no tenga que escribir el prompt.</p>
+<h3 id="que-busca-el-examen-3">Qué busca el examen</h3>
+<ul>
+<li>Servidor compartido → <strong><code>.mcp.json</code> del proyecto</strong>; personal o experimental → <strong><code>~/.claude.json</code></strong> (usuario).</li>
+<li>Credenciales → <strong><code>${VARIABLE}</code></strong> en <code>.mcp.json</code>, nunca el secreto en el repo.</li>
+<li>Las herramientas de todos los servidores se descubren al conectar y están disponibles a la vez.</li>
+<li>Claude prefiere <code>Grep</code> a la herramienta MCP → <strong>mejorar la descripción</strong> de la herramienta MCP.</li>
+<li>Integración estándar → servidor <strong>de la comunidad</strong>; flujo propio → servidor a medida.</li>
+<li>Catálogo de contenido → <strong>recurso MCP</strong>, para evitar llamadas exploratorias.</li>
+</ul>
+<h3 id="fuentes-3">Fuentes</h3>
+<ul>
+<li>Claude Code 101 › Customizing Claude Code › <a href="https://academy.claude.com/courses/claude-code-101/mcp" target="_blank" rel="noopener">MCP</a> (añadir, <code>/mcp</code>, ámbitos, coste de contexto, <em>tool search</em>)</li>
+<li>Introduction to Model Context Protocol › Introduction › <a href="https://academy.claude.com/courses/introduction-to-model-context-protocol/introducing-mcp" target="_blank" rel="noopener">Introducing MCP</a></li>
+<li>Introduction to Model Context Protocol › Introduction › <a href="https://academy.claude.com/courses/introduction-to-model-context-protocol/mcp-clients" target="_blank" rel="noopener">MCP clients</a></li>
+<li>Introduction to Model Context Protocol › Connecting with MCP clients › <a href="https://academy.claude.com/courses/introduction-to-model-context-protocol/defining-resources" target="_blank" rel="noopener">Defining resources</a></li>
+<li>Introduction to Model Context Protocol › Connecting with MCP clients › <a href="https://academy.claude.com/courses/introduction-to-model-context-protocol/accessing-resources" target="_blank" rel="noopener">Accessing resources</a></li>
+<li>Introduction to Model Context Protocol › Connecting with MCP clients › <a href="https://academy.claude.com/courses/introduction-to-model-context-protocol/defining-prompts" target="_blank" rel="noopener">Defining prompts</a></li>
+<li>Building with the Claude API › <a href="https://academy.claude.com/courses/building-with-the-claude-api/introducing-mcp" target="_blank" rel="noopener">Model Context Protocol</a> (la misma materia en el curso de la API)</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener">Claude Code › MCP</a> (ámbitos, expansión de variables, recursos, límites de salida)</li>
+</ul>
+<hr>
+<h2 id="2-5-elegir-y-usar-bien-las-herramientas-integradas">2.5 Elegir y usar bien las herramientas integradas</h2>
+<a class="practice-chip" href="practica.html?task=2.5">✎ Practicar 2.5 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-4">La idea en una frase</h3>
+<p><strong>Grep</strong> busca <strong>dentro</strong> de los archivos, <strong>Glob</strong> busca <strong>nombres</strong> de archivo, <strong>Read/Write</strong> trabajan con el archivo entero y <strong>Edit</strong> cambia un fragmento que debe ser <strong>único</strong>; para entender un código, empieza con Grep y sigue con Read, no leas todo.</p>
+<h3 id="explicacion-4">Explicación</h3>
+<p><em>Tus apuntes no tienen una lección específica; esta sección sale de la guía, de la documentación de Claude Code y de la lección de la herramienta de edición de texto del curso de la API.</em></p>
+<p><strong>Qué herramienta para qué:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Necesito...</th>
+<th>Herramienta</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Encontrar <strong>contenido</strong> (una función, un mensaje de error, un <code>import</code>)</td>
+<td><strong>Grep</strong></td>
+<td>Todas las llamadas a <code>processRefund(</code></td>
+</tr>
+<tr>
+<td>Encontrar <strong>archivos</strong> por nombre o extensión</td>
+<td><strong>Glob</strong></td>
+<td><code>**/*.test.tsx</code></td>
+</tr>
+<tr>
+<td>Ver un archivo entero</td>
+<td><strong>Read</strong></td>
+<td>Leer <code>refund.service.ts</code></td>
+</tr>
+<tr>
+<td>Crear un archivo o reescribirlo entero</td>
+<td><strong>Write</strong></td>
+<td>Generar <code>refund.service.test.ts</code></td>
+</tr>
+<tr>
+<td>Cambiar un fragmento concreto</td>
+<td><strong>Edit</strong></td>
+<td>Sustituir una condición</td>
+</tr>
+<tr>
+<td>Ejecutar comandos (tests, git, build)</td>
+<td><strong>Bash</strong></td>
+<td><code>npm test</code>, <code>git diff</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Edit necesita un ancla única.</strong> Edit sustituye un texto exacto (<code>old_string</code>) por otro. Si ese texto aparece <strong>varias veces</strong> en el archivo, Edit falla porque no sabe cuál cambiar. Primero, amplía el texto con más contexto alrededor para hacerlo único. Si no es posible (por ejemplo, bloques repetidos idénticos), la guía propone el <strong>fallback</strong>: <strong>Read</strong> del archivo completo y <strong>Write</strong> con el contenido modificado. Es el mismo principio que la herramienta de edición de texto de la API, cuyo <code>str_replace</code> exige una coincidencia única. (En Claude Code actual, Edit también tiene la opción <code>replace_all</code> para cambiar todas las apariciones a propósito.)</p>
+<p><strong>Entender un código de forma incremental.</strong> El error es leer todos los archivos al principio: llena el contexto (ver <a href="05-context.html">Gestión del contexto y fiabilidad</a>, 5.4) y diluye la atención. El método:</p>
+<ol>
+<li><strong>Grep</strong> para encontrar los puntos de entrada (dónde se define o se llama algo).</li>
+<li><strong>Read</strong> de esos archivos para seguir los <code>import</code> y trazar el flujo.</li>
+<li>Repetir solo por las ramas relevantes.</li>
+</ol>
+<p>Es la recuperación «justo a tiempo» del artículo <em>Effective context engineering</em>: guardar referencias ligeras (rutas, consultas) y cargar el contenido cuando hace falta.</p>
+<p><strong>Funciones envueltas en módulos.</strong> Si un módulo reexporta funciones con otros nombres (<code>export { processRefund as refund }</code>), buscar solo el nombre original no encuentra todos los usos. Primero identifica <strong>todos los nombres exportados</strong> del módulo envoltorio y después busca <strong>cada uno</strong> en el código.</p>
+<h3 id="que-busca-el-examen-4">Qué busca el examen</h3>
+<ul>
+<li>Buscar contenido → <strong>Grep</strong>; buscar archivos por patrón → <strong>Glob</strong>.</li>
+<li>Edit falla por texto no único → <strong>Read + Write</strong> como alternativa fiable.</li>
+<li>Entender un código: <strong>Grep</strong> para los puntos de entrada, <strong>Read</strong> para seguir el flujo; no leer todo de golpe.</li>
+<li>Funciones reexportadas: listar los nombres exportados y buscar cada uno.</li>
+<li>Trampas: Glob para buscar contenido, Grep para buscar nombres de archivo, leer el repositorio entero «para tener contexto».</li>
+</ul>
+<h3 id="fuentes-4">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/the-text-edit-tool" target="_blank" rel="noopener">The text edit tool</a></li>
+<li>Claude Code 101› Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/the-explore-plan-code-commit-workflow" target="_blank" rel="noopener">The explore → plan → code → commit workflow</a></li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a> (Limiting tool access)</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/how-claude-code-works" target="_blank" rel="noopener">How Claude Code works</a> · <a href="https://code.claude.com/docs/en/common-workflows#understand-new-codebases" target="_blank" rel="noopener">Common workflows › Understand new codebases</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/text-editor-tool" target="_blank" rel="noopener">Text editor tool</a></li>
+</ul>
+<hr>
+<h2 id="que-ha-quedado-obsoleto-la-especificacion-mcp-2026-07-28">Qué ha quedado obsoleto: la especificación MCP 2026-07-28</h2>
+<p>Los cursos (y la guía del examen v1.0) describen MCP <strong>tal como funcionaba antes</strong> de la revisión del 28 de julio de 2026. Tus apuntes del curso avanzado ya llevan avisos en cada lección afectada. Este es el resumen, contrastado con el <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog" target="_blank" rel="noopener">changelog</a> y el <a href="https://modelcontextprotocol.io/specification/2026-07-28/deprecated" target="_blank" rel="noopener">registro de funciones obsoletas</a>.</p>
+<p><strong>Cómo leer «obsoleto».</strong> La especificación adopta ahora una política de ciclo de vida con tres estados: <em>Active</em>, <em>Deprecated</em> y <em>Removed</em>. Lo <strong>obsoleto</strong> (<em>deprecated</em>) sigue en la especificación y <strong>funciona</strong> durante una ventana mínima de 12 meses, pero las implementaciones nuevas no deberían adoptarlo. Lo <strong>eliminado</strong> ya no existe en esta versión del protocolo. El SDK de Python v1 que usan los cursos sigue funcionando con el comportamiento antiguo.</p>
+<h3 id="obsoleto-sigue-funcionando-no-adoptar">Obsoleto (sigue funcionando, no adoptar)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Lección de tus apuntes</th>
+<th>Alternativa recomendada</th>
+<th>Eliminación más temprana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sampling</strong></td>
+<td><span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.1.1. Sampling (no incluido en la web)">10.1.1. Sampling</span></td>
+<td>Integrar directamente con la API del proveedor del modelo</td>
+<td>Revisión publicada a partir del 28-07-2027</td>
+</tr>
+<tr>
+<td><strong>Roots</strong></td>
+<td><span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.1.5. Roots (no incluido en la web)">10.1.5. Roots</span></td>
+<td>Pasar rutas por parámetros de herramienta, URIs de recursos o configuración del servidor</td>
+<td>Ídem</td>
+</tr>
+<tr>
+<td><strong>Logging</strong> (<code>context.info()</code>, <code>notifications/message</code> como función)</td>
+<td><span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.1.3. Registro y notificaciones de progreso (no incluido en la web)">10.1.3. Registro y notificaciones de progreso</span></td>
+<td><code>stderr</code> en stdio; OpenTelemetry para observabilidad</td>
+<td>Ídem</td>
+</tr>
+<tr>
+<td><strong>Transporte HTTP+SSE</strong> (el antiguo, no Streamable HTTP)</td>
+<td>— (Claude Code: <code>--transport sse</code>)</td>
+<td>Streamable HTTP</td>
+<td>Ya obsoleto desde 2025-03-26</td>
+</tr>
+<tr>
+<td><strong>Dynamic Client Registration</strong> (OAuth)</td>
+<td>—</td>
+<td><em>Client ID Metadata Documents</em></td>
+<td>Revisión a partir del 28-07-2027</td>
+</tr>
+<tr>
+<td><code>includeContext: &quot;thisServer&quot;</code> / <code>&quot;allServers&quot;</code> en sampling</td>
+<td>—</td>
+<td>Omitirlo o usar <code>&quot;none&quot;</code></td>
+<td>Junto con Sampling</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="eliminado-del-protocolo">Eliminado del protocolo</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Qué desaparece</th>
+<th>Lección de tus apuntes</th>
+<th>Qué hay ahora</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Handshake</strong> <code>initialize</code> → <code>initialized</code></td>
+<td><span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.2.2.3. Secuencia de conexión MCP (no incluido en la web)">10.2.2.3. Secuencia de conexión MCP</span>, <span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.2.4.2. Cómo funciona StreamableHTTP (no incluido en la web)">10.2.4.2. Cómo funciona StreamableHTTP</span></td>
+<td>MCP es <strong>sin estado</strong>: cada petición lleva en <code>_meta</code> la versión del protocolo y las capacidades del cliente; nuevo método <code>server/discover</code> para consultar versiones y capacidades</td>
+</tr>
+<tr>
+<td><strong>Sesiones</strong> y la cabecera <code>Mcp-Session-Id</code></td>
+<td><span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.2.4. StreamableHTTP en profundidad (no incluido en la web)">10.2.4. StreamableHTTP en profundidad</span>, <span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.2.5. El estado y el transporte StreamableHTTP (no incluido en la web)">10.2.5. El estado y el transporte StreamableHTTP</span></td>
+<td>El estado entre llamadas se gestiona con <strong>identificadores explícitos</strong> que crea el servidor y se pasan como argumentos normales (p. ej., <code>basket_id</code>)</td>
+</tr>
+<tr>
+<td><strong>Endpoint GET</strong> de Streamable HTTP (la conexión SSE persistente) y <code>resources/subscribe</code> / <code>unsubscribe</code></td>
+<td><span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.2.4.2. Cómo funciona StreamableHTTP (no incluido en la web)">10.2.4.2. Cómo funciona StreamableHTTP</span></td>
+<td><code>subscriptions/listen</code>: un único flujo POST de larga duración para notificaciones de cambios a las que el cliente se suscribe</td>
+</tr>
+<tr>
+<td><strong>Peticiones del servidor al cliente</strong> (<code>sampling/createMessage</code>, <code>roots/list</code>, <code>elicitation/create</code> como peticiones iniciadas por el servidor)</td>
+<td><span class="note-ref" title="Apunte de Obsidian: 10. Model Context Protocol › 10.2.3.3. Tipos de mensajes MCP afectados (no incluido en la web)">10.2.3.3. Tipos de mensajes MCP afectados</span></td>
+<td>Patrón <strong>MRTR</strong> (<em>Multi Round-Trip Requests</em>): el servidor responde con <code>resultType: &quot;input_required&quot;</code> y el cliente <strong>reintenta</strong> la petición original con las respuestas</td>
+</tr>
+<tr>
+<td><code>ping</code>, <code>logging/setLevel</code>, <code>notifications/roots/list_changed</code></td>
+<td>—</td>
+<td>El nivel de log se indica por petición en <code>_meta</code></td>
+</tr>
+<tr>
+<td>Reanudación de flujos SSE (<code>Last-Event-ID</code>)</td>
+<td>—</td>
+<td>Si se corta el flujo, el cliente reenvía la petición</td>
+</tr>
+</tbody>
+</table></div>
+<p>Consecuencia práctica: las banderas <code>stateless_http</code> y <code>json_response</code> del SDK v1, que el curso presenta como un compromiso para escalar horizontalmente, describen un problema (coordinar sesiones entre instancias) que el protocolo nuevo elimina de raíz al no tener estado.</p>
+<h3 id="lo-que-sigue-vigente-y-es-lo-que-importa-para-el-examen">Lo que sigue vigente (y es lo que importa para el examen)</h3>
+<ul>
+<li><strong>Tools</strong>, <strong>resources</strong> y <strong>prompts</strong> como primitivas de servidor.</li>
+<li>El flag <strong><code>isError</code></strong> y la distinción entre errores de protocolo y errores de ejecución de la herramienta.</li>
+<li><code>inputSchema</code>, <code>outputSchema</code> y <code>structuredContent</code> (ahora admiten cualquier palabra clave de JSON Schema 2020-12).</li>
+<li><strong>Notificaciones de progreso</strong> (viajan en el flujo de respuesta de la petición a la que pertenecen).</li>
+<li><strong>Elicitation</strong> (pedir datos al usuario), ahora mediante el patrón MRTR.</li>
+<li>Transportes <strong>stdio</strong> y <strong>Streamable HTTP</strong>.</li>
+</ul>
+<p>Otros cambios menores: los resultados llevan un campo obligatorio <code>resultType</code>; los listados (<code>tools/list</code>, <code>resources/list</code>...) llevan <code>ttlMs</code> y <code>cacheScope</code> para poder cachearlos; los servidores deberían devolver las herramientas en <strong>orden determinista</strong> (mejora la caché de prompts); y el código de error de «recurso no encontrado» pasa de <code>-32002</code> a <code>-32602</code>.</p>
+<p><strong>Para el examen.</strong> Las preguntas del Dominio 2 se centran en diseño de herramientas, errores, reparto de herramientas, configuración de Claude Code y recursos, y nada de eso ha cambiado. Si apareciera algo sobre sampling, roots o sesiones, responde según la guía v1.0, pero sabiendo que en un diseño nuevo no deberías adoptarlos. El índice (<a href="00-index.html">Índice de recursos</a>) enlaza todavía la especificación 2025-06-18; las secciones de herramientas y recursos siguen siendo válidas en lo que pregunta el examen.</p>
+<hr>
+<h2 id="chuleta-de-decisiones">Chuleta de decisiones</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Si el enunciado dice...</th>
+<th>Piensa en...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude elige la herramienta equivocada entre dos parecidas</td>
+<td>Ampliar descripciones: formato, ejemplos, límites, cuándo usar la otra</td>
+</tr>
+<tr>
+<td><code>analyze_content</code> y <code>analyze_document</code> casi idénticas</td>
+<td>Renombrar y reescribir la descripción (<code>extract_web_results</code>)</td>
+</tr>
+<tr>
+<td>Herramienta genérica que hace de todo</td>
+<td>Dividir en herramientas de propósito único con contratos claros</td>
+</tr>
+<tr>
+<td>Buena descripción, pero sigue eligiendo mal</td>
+<td>Revisar el <em>system prompt</em> (palabras clave que anulan la descripción)</td>
+</tr>
+<tr>
+<td>«Operation failed» y el agente no sabe qué hacer</td>
+<td>Error estructurado con <code>isError</code>, <code>errorCategory</code>, <code>isRetryable</code></td>
+</tr>
+<tr>
+<td>Violación de una regla de negocio</td>
+<td><code>isRetryable: false</code> + explicación apta para el cliente</td>
+</tr>
+<tr>
+<td>Reintentos inútiles</td>
+<td>Distinguir errores reintentables de no reintentables</td>
+</tr>
+<tr>
+<td>Subagente con un <em>timeout</em> puntual</td>
+<td>Recuperación local; propagar solo lo irresoluble</td>
+</tr>
+<tr>
+<td>«0 resultados» ambiguo</td>
+<td>Fallo de acceso ≠ resultado vacío válido</td>
+</tr>
+<tr>
+<td>Agente con 18 herramientas que elige mal</td>
+<td>Reducir a las 4–5 de su rol</td>
+</tr>
+<tr>
+<td>Agente de síntesis que busca en la web</td>
+<td>Quitarle herramientas fuera de su especialidad</td>
+</tr>
+<tr>
+<td><code>fetch_url</code> demasiado abierta</td>
+<td>Sustituir por <code>load_document</code> con validación</td>
+</tr>
+<tr>
+<td>Muchas vueltas al coordinador para comprobaciones simples</td>
+<td>Herramienta transversal acotada (<code>verify_fact</code>)</td>
+</tr>
+<tr>
+<td>Claude responde texto en vez de llamar a una herramienta</td>
+<td><code>tool_choice: &quot;any&quot;</code></td>
+</tr>
+<tr>
+<td>Un paso concreto debe ir primero</td>
+<td><code>tool_choice</code> forzado; el resto en turnos siguientes</td>
+</tr>
+<tr>
+<td>Un paso debe ir <strong>siempre</strong> antes que otro por negocio</td>
+<td>Prerrequisito programático (hook o código), no prompt ni <code>tool_choice</code></td>
+</tr>
+<tr>
+<td>Servidor MCP para todo el equipo</td>
+<td><code>.mcp.json</code> en el proyecto</td>
+</tr>
+<tr>
+<td>Servidor personal o experimental</td>
+<td><code>~/.claude.json</code> (ámbito usuario)</td>
+</tr>
+<tr>
+<td>Token en la configuración compartida</td>
+<td><code>${GITHUB_TOKEN}</code> en <code>.mcp.json</code></td>
+</tr>
+<tr>
+<td>Claude usa <code>Grep</code> en vez de la herramienta MCP</td>
+<td>Mejorar la descripción de la herramienta MCP</td>
+</tr>
+<tr>
+<td>Integración con Jira</td>
+<td>Servidor MCP de la comunidad, no uno propio</td>
+</tr>
+<tr>
+<td>El agente hace muchas llamadas para saber qué datos hay</td>
+<td>Exponer un catálogo como recurso MCP</td>
+</tr>
+<tr>
+<td>Buscar dónde se llama una función</td>
+<td>Grep</td>
+</tr>
+<tr>
+<td>Buscar todos los tests</td>
+<td>Glob (<code>**/*.test.tsx</code>)</td>
+</tr>
+<tr>
+<td>Edit falla por texto repetido</td>
+<td>Ampliar el ancla o Read + Write</td>
+</tr>
+<tr>
+<td>Entender un código desconocido</td>
+<td>Grep para entradas → Read para seguir el flujo</td>
+</tr>
+<tr>
+<td>Función reexportada con otro nombre</td>
+<td>Listar los nombres exportados y buscar cada uno</td>
+</tr>
+<tr>
+<td>Sampling, roots, logging en un diseño nuevo</td>
+<td>Obsoletos en MCP 2026-07-28: API directa, parámetros, <code>stderr</code>/OpenTelemetry</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="preguntas-de-autoevaluacion">Preguntas de autoevaluación</h2>
+<ol>
+<li>Tu agente tiene <code>search_docs</code> («Busca en la documentación») y <code>search_kb</code> («Busca en la base de conocimiento») y alterna entre ellas sin criterio. ¿Qué haces primero?</li>
+<li>Tu herramienta <code>process_refund</code> devuelve <code>{&quot;error&quot;: &quot;failed&quot;}</code> tanto si el servicio de pagos no responde como si el pedido está fuera de plazo. ¿Qué cambias?</li>
+<li>En tu sistema de investigación, el agente de síntesis tiene las mismas 15 herramientas que el coordinador y a veces lanza búsquedas web en lugar de sintetizar. ¿Cómo lo arreglas sin perder la capacidad de comprobar datos sencillos?</li>
+<li>Tu equipo quiere compartir un servidor MCP de GitHub que necesita un token personal. ¿Dónde y cómo lo configuras?</li>
+<li>Tienes un servidor MCP que expone el esquema de la base de datos, pero el agente hace diez llamadas a <code>describe_table</code> al empezar cada tarea. ¿Qué mejora propones?</li>
+<li>Claude intenta cambiar <code>return null;</code> en un archivo donde aparece seis veces y la herramienta Edit falla. ¿Qué hace?</li>
+<li>Estás diseñando un servidor MCP nuevo que necesita resumir textos con un LLM y acceder a carpetas del usuario. El curso te enseñó sampling y roots. ¿Los usas?</li>
+</ol>
+<details>
+<summary>Soluciones</summary>
+<ol>
+<li>Ampliar las descripciones de ambas para que digan qué contiene cada fuente, qué formato de consulta aceptan, ejemplos y cuándo usar la otra. Si de verdad se solapan, renombrar o fusionar después.</li>
+<li>Devolver errores estructurados con <code>isError: true</code>: el fallo del servicio como <code>transient</code> con <code>isRetryable: true</code>; el plazo vencido como error de negocio con <code>isRetryable: false</code> y un mensaje apto para el cliente.</li>
+<li>Quitarle las herramientas fuera de su rol y darle una herramienta acotada <code>verify_fact</code> para las comprobaciones simples; las verificaciones complejas siguen pasando por el coordinador.</li>
+<li>En <code>.mcp.json</code> del proyecto (versionado), con el token como <code>${GITHUB_TOKEN}</code> en <code>headers</code> o <code>env</code>; cada desarrollador define la variable en su entorno.</li>
+<li>Exponer el esquema (o un catálogo de tablas) como recurso MCP, para que el agente vea qué hay sin llamadas exploratorias.</li>
+<li>Ampliar el <code>old_string</code> con las líneas de alrededor para que sea único. Si no se puede, Read del archivo completo y Write con el cambio aplicado.</li>
+<li>No en un diseño nuevo: la especificación 2026-07-28 los declara obsoletos. Para el LLM, integra directamente con la API del proveedor; para las carpetas, pásalas como parámetros de herramienta, URIs de recursos o configuración del servidor.</li>
+</ol>
+</details>
+
+<nav class="pager"><a class="prev" href="01-agentic-architecture.html"><small>← Anterior</small>Arquitectura agéntica y orquestación</a><a class="next" href="03-claude.html"><small>Siguiente →</small>Configuración y flujos de trabajo de Claude Code</a></nav>
+    </main>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

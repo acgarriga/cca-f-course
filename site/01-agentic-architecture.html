@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dominio 1 · Arquitectura agéntica y orquestación (27 %) · CCAR-F</title>
+<script>
+  // Antes de pintar, para que no parpadee el tema. Misma clave que el examen 1.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("examccarf-theme") || "light"); } catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div id="progress"></div>
+<button class="backdrop" id="backdrop" aria-label="Cerrar menú"></button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <div class="logo">A</div>
+      <div>
+        <h1>Guía CCAR-F</h1>
+        <p>Claude Certified Architect – Foundations</p>
+      </div>
+    </a>
+    <div class="nav-label">Apuntes</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="index.html"><span class="code">★</span><span class="txt">Inicio</span></a>
+      <a class="lesson-btn nav-item" href="00-index.html"><span class="code">≡</span><span class="txt">Índice de recursos</span></a>
+      <a class="lesson-btn nav-item active" href="01-agentic-architecture.html"><span class="code">D1</span><span class="txt">Arquitectura agéntica y orquestación</span></a>
+      <div class="toc">
+        <a href="#como-usar-este-documento">Cómo usar este documento</a>
+        <a href="#1-1-disenar-e-implementar-bucles-agenticos"><span class="num">1.1</span>Diseñar e implementar bucles agénticos</a>
+        <a href="#1-2-orquestar-sistemas-multiagente-con-el-patron-orchestrator-worker"><span class="num">1.2</span>Orquestar sistemas multiagente con el patrón orchestrator-worker</a>
+        <a href="#1-3-invocar-subagentes-pasarles-contexto-y-lanzarlos"><span class="num">1.3</span>Invocar subagentes, pasarles contexto y lanzarlos</a>
+        <a href="#1-4-flujos-multipaso-con-enforcement-y-handoff"><span class="num">1.4</span>Flujos multipaso con enforcement y handoff</a>
+        <a href="#1-5-hooks-del-agent-sdk-para-interceptar-llamadas-y-normalizar-datos"><span class="num">1.5</span>Hooks del Agent SDK para interceptar llamadas y normalizar datos</a>
+        <a href="#1-6-estrategias-de-descomposicion-de-tareas"><span class="num">1.6</span>Estrategias de descomposición de tareas</a>
+        <a href="#1-7-estado-de-sesion-reanudacion-y-forking"><span class="num">1.7</span>Estado de sesión, reanudación y forking</a>
+        <a href="#chuleta-de-decisiones">Chuleta de decisiones</a>
+        <a href="#preguntas-de-autoevaluacion">Preguntas de autoevaluación</a>
+      </div>
+      <a class="lesson-btn nav-item" href="02-mcp-tools.html"><span class="code">D2</span><span class="txt">Diseño de herramientas e integración con MCP</span></a>
+      <a class="lesson-btn nav-item" href="03-claude.html"><span class="code">D3</span><span class="txt">Configuración y flujos de trabajo de Claude Code</span></a>
+      <a class="lesson-btn nav-item" href="04-prompt-structured-output.html"><span class="code">D4</span><span class="txt">Ingeniería de prompts y salida estructurada</span></a>
+      <a class="lesson-btn nav-item" href="05-context.html"><span class="code">D5</span><span class="txt">Gestión del contexto y fiabilidad</span></a>
+    </nav>
+    <div class="nav-label">Práctica</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="simulacros.html"><span class="code">⏱</span><span class="txt">Simulacros de examen</span></a>
+      <a class="lesson-btn nav-item" href="practica.html"><span class="code">✎</span><span class="txt">Practicar por dominio o task</span></a>
+    </nav>
+    <div class="side-foot">
+      <p>Generado desde los .md el 14 de noviembre de 2026</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" title="Menú">☰</button>
+      <span class="title">Dominio 1 · Arquitectura agéntica y orquestación (27 %)</span>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema claro/oscuro">🌙</button>
+      <button class="icon-btn" onclick="window.print()" title="Imprimir / PDF">⎙</button>
+    </div>
+
+    <main class="content prose">
+<h1 id="dominio-1-arquitectura-agentica-y-orquestacion-27">Dominio 1 · Arquitectura agéntica y orquestación (27 %)</h1>
+<blockquote>
+<p>Síntesis didáctica de los conceptos del Dominio 1 de la guía oficial del examen <strong>Claude Certified Architect – Foundations</strong> (v1.0). Es el dominio con más peso del examen.
+Fuentes principales: los cursos de Anthropic Academy de la carpeta <code>Anthropic/</code> (enlazados como <code>[[...]]</code>). Cuando el curso no cubre un punto, se completa con la documentación oficial de Claude Code / Agent SDK y con el artículo de ingeniería <em>How we built our multi-agent research system</em>. El índice de recursos por <em>task statement</em> está en <a href="00-index.html">Índice de recursos</a>.</p>
+</blockquote>
+<h2 id="como-usar-este-documento">Cómo usar este documento</h2>
+<p>Cada sección corresponde a un <em>task statement</em> (1.1 a 1.7) y sigue el mismo esquema:</p>
+<ol>
+<li><strong>La idea en una frase</strong>: lo que tienes que recordar aunque olvides todo lo demás.</li>
+<li><strong>Explicación</strong>: el concepto desarrollado, con ejemplos.</li>
+<li><strong>Qué busca el examen</strong>: los razonamientos que la guía premia y las respuestas trampa habituales.</li>
+<li><strong>Fuentes</strong>: dónde ampliar.</li>
+</ol>
+<p>Al final hay una chuleta de decisiones y preguntas de autoevaluación.</p>
+<p><strong>Nota de nomenclatura.</strong> La guía llama <code>Task</code> a la herramienta con la que un agente lanza subagentes. En Claude Code actual se llama <code>Agent</code> (desde la v2.1.63); <code>Task</code> sigue apareciendo en el mensaje <code>system:init</code> del SDK. En el examen, <code>Task</code> = <code>Agent</code>.</p>
+<h3 id="el-mapa-del-dominio">El mapa del dominio</h3>
+<p>Antes de entrar en detalle, conviene ver cómo encajan las piezas:</p>
+<pre class="mermaid">graph TD
+    A[&quot;1.1 Bucle agéntico&lt;br&gt;(la unidad básica)&quot;] --&gt; B[&quot;1.6 Descomposición&lt;br&gt;(¿workflow o agente?)&quot;]
+    B --&gt; C[&quot;1.2 Multiagente&lt;br&gt;coordinador–subagentes&quot;]
+    C --&gt; D[&quot;1.3 Invocar subagentes&lt;br&gt;y pasarles contexto&quot;]
+    A --&gt; E[&quot;1.4 Flujos con enforcement&lt;br&gt;y handoff&quot;]
+    E --&gt; F[&quot;1.5 Hooks&lt;br&gt;(garantías deterministas)&quot;]
+    A --&gt; G[&quot;1.7 Sesiones:&lt;br&gt;reanudar y bifurcar&quot;]
+</pre>
+<p>Todo parte de una misma idea: <strong>un agente es Claude dentro de un bucle que usa herramientas</strong>. El resto del dominio trata de cómo descomponer el trabajo (uno o varios agentes, flujo fijo o dinámico), cómo garantizar que se cumplen las reglas de negocio (hooks frente a prompts) y cómo conservar el estado entre ejecuciones (sesiones).</p>
+<hr>
+<h2 id="1-1-disenar-e-implementar-bucles-agenticos">1.1 Diseñar e implementar bucles agénticos</h2>
+<a class="practice-chip" href="practica.html?task=1.1">✎ Practicar 1.1 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase">La idea en una frase</h3>
+<p>Un agente es Claude en un bucle: <strong>envías mensajes con herramientas → miras <code>stop_reason</code> → si es <code>tool_use</code>, ejecutas las herramientas y devuelves los resultados → repites hasta <code>end_turn</code></strong>. Tú controlas el bucle y las herramientas; Claude controla el razonamiento.</p>
+<h3 id="explicacion">Explicación</h3>
+<p><strong>Qué es un agente.</strong> El curso <em>Claude Platform 101</em> lo define como «una versión autónoma de Claude que gestiona ambos lados del ciclo de mensajería sin intervención humana». Recibe una tarea, elige una herramienta y la ejecuta en bucle hasta que <strong>Claude</strong> decide que ha terminado.</p>
+<p><strong>El ciclo de vida, paso a paso:</strong></p>
+<ol>
+<li>Envías a la API los mensajes junto con la lista de herramientas (<code>tools</code>): nombre, descripción y JSON Schema de la entrada.</li>
+<li>Claude responde. El campo <code>stop_reason</code> te dice por qué se ha detenido:
+<ul>
+<li><code>tool_use</code>: quiere que ejecutes una o varias herramientas. La respuesta contiene bloques <code>tool_use</code> con <code>id</code>, <code>name</code> e <code>input</code>.</li>
+<li><code>end_turn</code>: ha terminado y la respuesta es definitiva.</li>
+</ul>
+</li>
+<li>Si es <code>tool_use</code>, tu código ejecuta cada herramienta solicitada.</li>
+<li>Añades al historial <strong>dos mensajes</strong>: la respuesta completa del asistente (con sus bloques <code>tool_use</code>) y un mensaje <code>user</code> con un bloque <code>tool_result</code> por cada llamada, enlazado mediante <code>tool_use_id</code>.</li>
+<li>Vuelves al paso 1 con el historial ampliado.</li>
+</ol>
+<p>El ejemplo mínimo del curso (una herramienta ficticia <code>get_weather</code>):</p>
+<pre><code class="hljs language-python"><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:
+    response = client.messages.create(
+        model=<span class="hljs-string">&quot;claude-sonnet-5&quot;</span>, max_tokens=<span class="hljs-number">1024</span>,
+        tools=tools, messages=messages,
+    )
+
+    <span class="hljs-keyword">if</span> response.stop_reason == <span class="hljs-string">&quot;end_turn&quot;</span>:      <span class="hljs-comment"># Claude ha terminado</span>
+        <span class="hljs-built_in">print</span>(<span class="hljs-built_in">next</span>(b.text <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> response.content <span class="hljs-keyword">if</span> b.<span class="hljs-built_in">type</span> == <span class="hljs-string">&quot;text&quot;</span>))
+        <span class="hljs-keyword">break</span>
+
+    <span class="hljs-keyword">if</span> response.stop_reason == <span class="hljs-string">&quot;tool_use&quot;</span>:      <span class="hljs-comment"># Claude pide herramientas</span>
+        tool_results = []
+        <span class="hljs-keyword">for</span> block <span class="hljs-keyword">in</span> response.content:
+            <span class="hljs-keyword">if</span> block.<span class="hljs-built_in">type</span> == <span class="hljs-string">&quot;tool_use&quot;</span>:
+                result = run_tool(block.name, block.<span class="hljs-built_in">input</span>)
+                tool_results.append({
+                    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;tool_result&quot;</span>,
+                    <span class="hljs-string">&quot;tool_use_id&quot;</span>: block.<span class="hljs-built_in">id</span>,     <span class="hljs-comment"># enlaza resultado con petición</span>
+                    <span class="hljs-string">&quot;content&quot;</span>: result,
+                })
+        <span class="hljs-comment"># El historial crece: respuesta del asistente + resultados</span>
+        messages.append({<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: response.content})
+        messages.append({<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: tool_results})
+</code></pre>
+<p>Al ejecutarlo hay dos vueltas: en la primera <code>stop_reason</code> es <code>tool_use</code> (pide el tiempo de Austin); en la segunda es <code>end_turn</code> (recomienda ropa ligera).</p>
+<p><strong>Por qué el historial es la memoria del agente.</strong> La API no guarda estado: cada petición debe llevar la conversación completa. Si no añades los <code>tool_result</code>, Claude no «ve» lo que ha descubierto y no puede razonar sobre el siguiente paso. Fíjate en tres detalles del curso <em>Creación con la API de Claude</em>:</p>
+<ul>
+<li>Una respuesta puede tener <strong>varios bloques</strong> (texto + uno o más <code>tool_use</code>). Hay que guardar el <code>content</code> completo, no solo el texto.</li>
+<li>Si Claude pide varias herramientas en una sola respuesta, devuelves <strong>todos</strong> los <code>tool_result</code> en <strong>un único</strong> mensaje <code>user</code>.</li>
+<li>Si una herramienta falla, devuelves el error en el <code>tool_result</code> (con <code>is_error: true</code>) para que Claude pueda adaptarse, en lugar de romper el bucle.</li>
+</ul>
+<p><strong>Decisión dirigida por el modelo frente a secuencias prefijadas.</strong> En un agente, <strong>Claude decide</strong> qué herramienta usar a continuación según el contexto. En un árbol de decisión o una secuencia fija, lo decide <strong>tu código</strong>. Ninguna es mejor en abstracto (lo veremos en 1.6), pero en un bucle agéntico la decisión es del modelo.</p>
+<p><strong>El mismo bucle en producción.</strong> Un agente real (por ejemplo, uno de cumplimiento normativo que lee un informe, consulta normativa y registra riesgos) tiene la misma estructura; solo cambian las herramientas y la infraestructura. El <strong>Agent SDK</strong> ejecuta este mismo bucle por ti: cada vuelta con herramientas es un <em>turn</em>, y el bucle acaba cuando Claude responde sin pedir herramientas. Termina con un <code>ResultMessage</code> cuyo <code>subtype</code> indica cómo acabó (<code>success</code>, <code>error_max_turns</code>, <code>error_max_budget_usd</code>...).</p>
+<h3 id="que-busca-el-examen">Qué busca el examen</h3>
+<p>La guía señala tres <strong>antipatrones</strong> para decidir cuándo parar:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Antipatrón</th>
+<th>Por qué está mal</th>
+<th>Lo correcto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parsear lenguaje natural («he terminado», «tarea completada»)</td>
+<td>El texto es ambiguo y frágil</td>
+<td>Mirar <code>stop_reason</code></td>
+</tr>
+<tr>
+<td>Un tope arbitrario de iteraciones como mecanismo <strong>principal</strong> de parada</td>
+<td>Corta tareas legítimas a medias o deja correr las malas</td>
+<td><code>stop_reason</code> como criterio; el tope (<code>max_turns</code>, <code>max_budget_usd</code>) solo como red de seguridad</td>
+</tr>
+<tr>
+<td>Usar la presencia de texto del asistente como señal de fin</td>
+<td>Claude puede escribir texto <strong>y</strong> pedir una herramienta en la misma respuesta</td>
+<td>Mirar <code>stop_reason</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Matiz importante: los límites de turnos y presupuesto <strong>sí</strong> son buena práctica en producción (la documentación del SDK recomienda un presupuesto por defecto), pero como <strong>red de seguridad</strong>, no como la forma normal de terminar.</p>
+<p>Otros <code>stop_reason</code> que conviene reconocer: <code>max_tokens</code> (se cortó por longitud; la respuesta está incompleta), <code>stop_sequence</code>, <code>pause_turn</code> y <code>refusal</code>.</p>
+<h3 id="fuentes">Fuentes</h3>
+<ul>
+<li>Claude Platform 101 › Teaching your agent › <a href="https://academy.claude.com/courses/claude-platform-101/the-agent-loop-explained" target="_blank" rel="noopener">The agent loop explained</a></li>
+<li>Building with the Claude API › Tool use with Claude  › <a href="https://academy.claude.com/courses/building-with-the-claude-api/handling-message-blocks" target="_blank" rel="noopener">Handling message blocks</a></li>
+<li>Building with the Claude API › Tool use with Claude  › <a href="https://academy.claude.com/courses/building-with-the-claude-api/sending-tool-results" target="_blank" rel="noopener">Sending tool results</a></li>
+<li>Building with the Claude API › Tool use with Claude  › <a href="https://academy.claude.com/courses/building-with-the-claude-api/implementing-multiple-turns" target="_blank" rel="noopener">Implementing multiple turns</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop" target="_blank" rel="noopener">Agent SDK  How the agent loop works</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons" target="_blank" rel="noopener">Handling stop reasons</a></li>
+</ul>
+<hr>
+<h2 id="1-2-orquestar-sistemas-multiagente-con-el-patron-orchestrator-worker">1.2 Orquestar sistemas multiagente con el patrón orchestrator-worker</h2>
+<a class="practice-chip" href="practica.html?task=1.2">✎ Practicar 1.2 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-1">La idea en una frase</h3>
+<p>Un <strong>coordinador</strong> descompone la tarea, decide qué subagentes lanzar, les delega trabajo con instrucciones claras y sintetiza sus resultados. Toda la comunicación pasa por él (<em>hub-and-spoke</em>), y cada subagente trabaja en un <strong>contexto aislado</strong>.</p>
+<h3 id="explicacion-1">Explicación</h3>
+<p><strong>Qué es un subagente.</strong> El curso <em>Introducción a subagentes</em> los describe como «asistentes especializados» que se ejecutan en su propia ventana de contexto, hacen su trabajo y devuelven <strong>solo un resumen</strong>. Las lecturas de archivos, búsquedas y llamadas a herramientas intermedias se quedan en el subagente y se descartan al terminar.</p>
+<p>Un subagente recibe exactamente dos cosas:</p>
+<ul>
+<li>Su <strong>system prompt</strong> (definido en su configuración).</li>
+<li>La <strong>descripción de la tarea</strong> que escribe el agente principal al delegar.</li>
+</ul>
+<p>No hereda el historial del coordinador. Volveremos sobre esto en 1.3.</p>
+<p><strong>Arquitectura <em>hub-and-spoke</em>.</strong> El coordinador es el centro y los subagentes son los radios. Los subagentes no hablan entre sí; todo pasa por el coordinador. Esto aporta tres cosas que la guía menciona explícitamente:</p>
+<ul>
+<li><strong>Observabilidad</strong>: un solo punto donde ver qué se delegó y qué volvió.</li>
+<li><strong>Gestión de errores coherente</strong>: el coordinador decide si reintentar, buscar alternativas o seguir con resultados parciales.</li>
+<li><strong>Flujo de información controlado</strong>: el coordinador decide qué contexto recibe cada subagente.</li>
+</ul>
+<pre class="mermaid">graph TD
+    U[Consulta del usuario] --&gt; C[Coordinador]
+    C --&gt;|subtema A| S1[Subagente búsqueda]
+    C --&gt;|subtema B| S2[Subagente búsqueda]
+    C --&gt;|documentos| S3[Subagente análisis]
+    S1 --&gt;|hallazgos| C
+    S2 --&gt;|hallazgos| C
+    S3 --&gt;|hallazgos| C
+    C --&gt;|todos los hallazgos| S4[Subagente síntesis]
+    S4 --&gt;|informe| C
+    C --&gt;|¿huecos?| C
+    C --&gt; R[Respuesta final]
+</pre>
+<p><strong>Las cuatro responsabilidades del coordinador:</strong></p>
+<ol>
+<li><strong>Descomponer</strong> la consulta en subtareas.</li>
+<li><strong>Delegar</strong>: elegir qué subagentes invocar y con qué instrucciones.</li>
+<li><strong>Agregar</strong> los resultados.</li>
+<li><strong>Decidir según la complejidad</strong>: no todas las consultas necesitan todo el pipeline. El artículo de ingeniería de Anthropic sobre su sistema de investigación da cifras orientativas: una búsqueda de un dato simple usa 1 agente con 3–10 llamadas a herramientas; una comparación directa, 2–4 subagentes; una investigación compleja, más de 10 subagentes con responsabilidades divididas. Uno de los fallos observados fue precisamente «lanzar 50 subagentes para consultas simples».</li>
+</ol>
+<p><strong>El riesgo de una descomposición demasiado estrecha.</strong> Si el coordinador divide mal el problema, los subagentes harán bien un trabajo incompleto. La guía lo ilustra con un caso: el tema es «impacto de la IA en las industrias creativas» y el coordinador lo divide en «arte digital», «diseño gráfico» y «fotografía». Cada subagente cumple, pero el informe ignora música, escritura y cine. <strong>La causa raíz es el coordinador, no los subagentes.</strong></p>
+<p><strong>Repartir el alcance para evitar duplicados.</strong> El artículo de Anthropic cuenta que, con instrucciones vagas, varios subagentes investigaban lo mismo (dos sobre la cadena de suministro de 2025) mientras quedaban huecos. La solución es dar a cada subagente un subtema o un tipo de fuente distinto, con <strong>límites claros</strong>.</p>
+<p><strong>Bucles de refinamiento iterativo.</strong> El coordinador no se limita a sintetizar una vez: evalúa la síntesis, detecta huecos, vuelve a delegar con consultas concretas y re-sintetiza hasta que la cobertura es suficiente. Es el patrón <em>evaluator-optimizer</em> del curso de la API aplicado a la orquestación: un productor genera, un evaluador valora según criterios y, si no acepta, devuelve <em>feedback</em> hasta que el resultado pasa.</p>
+<p><strong>Cuándo merece la pena (y cuándo no).</strong> Según el artículo de Anthropic, su sistema multiagente superó en un 90,2 % a un único agente en su evaluación interna de investigación, pero consume unas <strong>15 veces más tokens</strong> que un chat. Encaja con tareas valiosas y muy paralelizables (investigación amplia). Encaja peor con tareas de programación, que tienen menos partes independientes.</p>
+<h3 id="que-busca-el-examen-1">Qué busca el examen</h3>
+<ul>
+<li>Si la salida final tiene huecos de cobertura y los subagentes funcionan bien, <strong>mira la descomposición del coordinador</strong>.</li>
+<li>El coordinador debe <strong>elegir dinámicamente</strong> qué subagentes invocar según la consulta, en lugar de pasar siempre por todo el pipeline.</li>
+<li>La comunicación entre subagentes <strong>pasa por el coordinador</strong>. Las opciones que conectan subagentes entre sí directamente pierden observabilidad.</li>
+<li><strong>Mínimo privilegio</strong> (pregunta 9 de la guía): si el agente de síntesis necesita verificar datos simples el 85 % de las veces, dale una herramienta acotada (<code>verify_fact</code>) y mantén las verificaciones complejas a través del coordinador. Darle todas las herramientas de búsqueda viola la separación de responsabilidades.</li>
+</ul>
+<h3 id="fuentes-1">Fuentes</h3>
+<ul>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/what-are-subagents" target="_blank" rel="noopener">What are subagents?</a></li>
+<li>Building with the Claude API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/workflows-vs-agents" target="_blank" rel="noopener">Workflows vs agents</a></li>
+<li>Building with the Claude API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/agents-and-workflows" target="_blank" rel="noopener">Agents and workflows</a> (patrón <em>evaluator-optimizer</em>)</li>
+<li>Artículo: <a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">How we built our multi-agent research system</a> (la fuente principal para el escenario 3 del examen)</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/agent-sdk/subagents" target="_blank" rel="noopener">Agent SDK › Subagents</a></li>
+</ul>
+<hr>
+<h2 id="1-3-invocar-subagentes-pasarles-contexto-y-lanzarlos">1.3 Invocar subagentes, pasarles contexto y lanzarlos</h2>
+<a class="practice-chip" href="practica.html?task=1.3">✎ Practicar 1.3 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-2">La idea en una frase</h3>
+<p>Los subagentes se lanzan con la herramienta <code>Task</code>/<code>Agent</code>, se configuran con un <code>AgentDefinition</code> y <strong>solo saben lo que pongas en su prompt</strong>. Si necesitan hallazgos previos, tienes que pasárselos completos y estructurados.</p>
+<h3 id="explicacion-2">Explicación</h3>
+<p><strong>El mecanismo: la herramienta <code>Task</code> (hoy <code>Agent</code>).</strong> El coordinador lanza un subagente llamando a esta herramienta, igual que llama a cualquier otra. En el Agent SDK:</p>
+<pre><code class="hljs language-python">options = ClaudeAgentOptions(
+    allowed_tools=[<span class="hljs-string">&quot;Read&quot;</span>, <span class="hljs-string">&quot;Grep&quot;</span>, <span class="hljs-string">&quot;Glob&quot;</span>, <span class="hljs-string">&quot;Agent&quot;</span>],   <span class="hljs-comment"># la guía: debe incluir &quot;Task&quot;</span>
+    agents={
+        <span class="hljs-string">&quot;code-reviewer&quot;</span>: AgentDefinition(
+            description=<span class="hljs-string">&quot;Expert code review specialist. Use for quality and security reviews.&quot;</span>,
+            prompt=<span class="hljs-string">&quot;You are a code review specialist...&quot;</span>,   <span class="hljs-comment"># system prompt</span>
+            tools=[<span class="hljs-string">&quot;Read&quot;</span>, <span class="hljs-string">&quot;Grep&quot;</span>, <span class="hljs-string">&quot;Glob&quot;</span>],                 <span class="hljs-comment"># restricción de herramientas</span>
+            model=<span class="hljs-string">&quot;sonnet&quot;</span>,
+        ),
+    },
+)
+</code></pre>
+<p><strong>Para el examen:</strong> la guía v1.0 dice que <code>allowedTools</code> <strong>debe incluir <code>&quot;Task&quot;</code></strong> para que el coordinador pueda invocar subagentes. Es la respuesta esperada.
+<strong>Matiz de la versión actual:</strong> en el SDK actual, <code>allowedTools</code> solo <strong>autoaprueba</strong> herramientas; <code>Agent</code> no pide aprobación y está disponible aunque no la listes. Para quitársela al agente se usa <code>disallowedTools</code>. Los ejemplos oficiales siguen poniendo <code>&quot;Agent&quot;</code> en <code>allowedTools</code>.</p>
+<p><strong><code>AgentDefinition</code>: los tres campos clave.</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Para qué sirve</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>description</code></td>
+<td>Cuándo usar el subagente. El coordinador ve el nombre y la descripción de todos los subagentes y decide con eso.</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>El system prompt: rol, criterios y <strong>formato de salida</strong>.</td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>Qué herramientas puede usar. Si lo omites, hereda todas.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hay más (<code>model</code>, <code>skills</code>, <code>maxTurns</code>, <code>effort</code>...), pero esos tres son los que pide la guía. En Claude Code, el equivalente es un archivo Markdown en <code>.claude/agents/</code> con <em>frontmatter</em> YAML (<code>name</code>, <code>description</code>, <code>tools</code>, <code>model</code>) y el system prompt en el cuerpo.</p>
+<p>El curso añade un detalle útil: la <strong>descripción tiene dos funciones</strong>. Decide <em>cuándo</em> se lanza el subagente y también orienta <em>qué le pide</em> el coordinador, porque este la usa como guía para redactar el prompt de entrada. Si la descripción de un subagente de búsqueda dice «devuelve fuentes que puedan citarse», el coordinador incluirá esa instrucción al delegar.</p>
+<p><strong>El contexto se pasa de forma explícita.</strong> Esta es la idea más importante de la sección. Un subagente (salvo que sea un <em>fork</em>) arranca con:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Recibe</th>
+<th>No recibe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Su system prompt (<code>AgentDefinition.prompt</code>) y el prompt de la herramienta <code>Agent</code></td>
+<td>El historial del coordinador ni sus resultados de herramientas</td>
+</tr>
+<tr>
+<td>El <code>CLAUDE.md</code> del proyecto</td>
+<td>El system prompt del coordinador</td>
+</tr>
+<tr>
+<td>Las definiciones de sus herramientas</td>
+<td>Memoria compartida con otras invocaciones</td>
+</tr>
+</tbody>
+</table></div>
+<p>En palabras de la documentación: «lo único que pasas del padre al subagente es el prompt de la herramienta Agent, así que incluye directamente en ese prompt las rutas de archivo, mensajes de error o decisiones que el subagente necesite».</p>
+<p><strong>Pasar hallazgos completos y estructurados.</strong> Si el subagente de síntesis tiene que combinar los resultados de búsqueda y análisis, esos resultados deben ir <strong>en su prompt</strong>, completos. Y conviene <strong>separar el contenido de los metadatos</strong> para no perder la atribución:</p>
+<pre><code class="hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">finding</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">claim</span>&gt;</span>El 60 % de los estudios de animación usa IA generativa en preproducción.<span class="hljs-tag">&lt;/<span class="hljs-name">claim</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">source_url</span>&gt;</span>https://ejemplo.org/informe-2026<span class="hljs-tag">&lt;/<span class="hljs-name">source_url</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">document</span>&gt;</span>Informe anual de animación 2026<span class="hljs-tag">&lt;/<span class="hljs-name">document</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">page</span>&gt;</span>14<span class="hljs-tag">&lt;/<span class="hljs-name">page</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">finding</span>&gt;</span>
+</code></pre>
+<p>Así, el subagente de síntesis puede citar cada afirmación con su fuente. Las etiquetas XML son la técnica del curso de la API para estructurar contenido dentro de un prompt.</p>
+<p><strong>Diseñar la salida del subagente.</strong> El curso insiste en que la mejora más importante para un subagente es <strong>definir un formato de salida</strong> en su system prompt. Le da un punto natural de finalización (sabe que ha terminado cuando completa todas las secciones) y evita que trabaje más de la cuenta. Recomienda añadir una sección de <strong>«Obstáculos encontrados»</strong> para que el coordinador no tenga que redescubrir soluciones (flags especiales, problemas de dependencias, particularidades del entorno).</p>
+<p><strong>Subagentes en paralelo: varias llamadas en una sola respuesta.</strong> Para que varios subagentes trabajen a la vez, el coordinador debe emitir <strong>varias llamadas <code>Task</code> en la misma respuesta</strong>, no una por turno. Es el mismo mecanismo que el uso de varias herramientas en paralelo (<em>parallel tool use</em>): Claude devuelve varios bloques <code>tool_use</code> y el sistema los ejecuta a la vez. El artículo de Anthropic cuenta que el paralelismo (3–5 subagentes a la vez, y cada uno con 3 o más herramientas en paralelo) redujo el tiempo de investigación hasta un 90 % en consultas complejas.</p>
+<p><strong>Prompts del coordinador: objetivos y criterios, no pasos.</strong> Un buen prompt de delegación especifica:</p>
+<ul>
+<li>El <strong>objetivo</strong> de la investigación.</li>
+<li>El <strong>formato de salida</strong> esperado.</li>
+<li><strong>Orientación</strong> sobre herramientas y fuentes.</li>
+<li><strong>Límites</strong> claros de la tarea.</li>
+<li><strong>Criterios de calidad</strong> (qué cuenta como suficiente).</li>
+</ul>
+<p>No dicta los pasos uno a uno: el subagente necesita margen para adaptarse a lo que encuentre.</p>
+<p><strong>Sesiones <em>fork</em>.</strong> Un <em>fork</em> es un subagente (o una sesión) que <strong>copia</strong> la conversación hasta ese punto en lugar de empezar de cero. Sirve para explorar enfoques divergentes desde una base de análisis común. Se trata en detalle en 1.7.</p>
+<h3 id="que-busca-el-examen-2">Qué busca el examen</h3>
+<ul>
+<li>Si un subagente «no sabe» algo que el coordinador sí sabía, la respuesta es <strong>pasarlo explícitamente en el prompt</strong>, no esperar que lo herede.</li>
+<li>Paralelismo = <strong>varias llamadas <code>Task</code> en una misma respuesta</strong>. Lanzarlas en turnos separados las hace secuenciales.</li>
+<li>Prompts del coordinador con <strong>objetivos y criterios de calidad</strong>. Las opciones con instrucciones procedimentales paso a paso suelen ser incorrectas.</li>
+<li>Datos con <strong>metadatos separados</strong> (URL, documento, página) para preservar la atribución.</li>
+</ul>
+<h3 id="fuentes-2">Fuentes</h3>
+<ul>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/creating-a-subagent" target="_blank" rel="noopener">Creating a subagent</a></li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a></li>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/structure-with-xml-tags" target="_blank" rel="noopener">Structure with XML tags</a></li>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/using-multiple-tools" target="_blank" rel="noopener">Using multiple tools</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/agent-sdk/subagents" target="_blank" rel="noopener">Agent SDK › Subagents</a> (secciones <em>AgentDefinition configuration</em> y <em>What subagents inherit</em>) · <a href="https://code.claude.com/docs/en/agent-sdk/permissions#allow-and-deny-rules" target="_blank" rel="noopener">Permissions › Allow and deny rules</a></li>
+</ul>
+<hr>
+<h2 id="1-4-flujos-multipaso-con-enforcement-y-handoff">1.4 Flujos multipaso con <em>enforcement</em> y <em>handoff</em></h2>
+<a class="practice-chip" href="practica.html?task=1.4">✎ Practicar 1.4 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-3">La idea en una frase</h3>
+<p>Cuando un orden de pasos es <strong>obligatorio</strong> (verificar la identidad antes de reembolsar), no basta con pedirlo en el prompt: hay que <strong>imponerlo con código</strong>. Y cuando el agente escala a un humano, debe entregarle un <strong>resumen estructurado</strong>, porque el humano no ve la conversación.</p>
+<h3 id="explicacion-3">Explicación</h3>
+<p><strong>Prompt frente a <em>enforcement</em> programático.</strong> Los cursos de Claude Code lo resumen así: una instrucción en el prompt o en <code>CLAUDE.md</code> «es una petición, no una garantía». Claude la sigue casi siempre, pero «casi siempre» tiene una <strong>tasa de fallo distinta de cero</strong>. Para la mayoría de las cosas es suficiente; para operaciones con consecuencias financieras, legales o de seguridad, no.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Guía por prompt</th>
+<th><em>Enforcement</em> programático</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mecanismo</td>
+<td>System prompt, <code>CLAUDE.md</code>, <em>few-shot</em></td>
+<td>Hooks, <em>gates</em> de prerrequisitos en el código</td>
+</tr>
+<tr>
+<td>Naturaleza</td>
+<td>Probabilística</td>
+<td>Determinista</td>
+</tr>
+<tr>
+<td>Úsalo para</td>
+<td>Preferencias, estilo, orientación</td>
+<td>Reglas de negocio que <strong>deben</strong> cumplirse siempre</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Prerrequisitos que bloquean herramientas.</strong> El caso típico del examen: un agente de soporte a veces llama a <code>lookup_order</code> o <code>process_refund</code> sin haber llamado antes a <code>get_customer</code>, y acaba reembolsando a la cuenta equivocada. La solución es un <strong>gate</strong>: bloquear <code>process_refund</code> hasta que <code>get_customer</code> haya devuelto un ID de cliente verificado. Un esquema con hooks del Agent SDK (ejemplo ilustrativo):</p>
+<pre><code class="hljs language-python">verified_customers = <span class="hljs-built_in">set</span>()
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">record_verification</span>(<span class="hljs-params">input_data, tool_use_id, context</span>):
+    <span class="hljs-comment"># PostToolUse sobre get_customer: guarda el ID verificado</span>
+    customer_id = input_data[<span class="hljs-string">&quot;tool_response&quot;</span>].get(<span class="hljs-string">&quot;customer_id&quot;</span>)
+    <span class="hljs-keyword">if</span> customer_id:
+        verified_customers.add(customer_id)
+    <span class="hljs-keyword">return</span> {}
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">require_verified_customer</span>(<span class="hljs-params">input_data, tool_use_id, context</span>):
+    <span class="hljs-comment"># PreToolUse sobre process_refund: bloquea si no hay verificación</span>
+    customer_id = input_data[<span class="hljs-string">&quot;tool_input&quot;</span>].get(<span class="hljs-string">&quot;customer_id&quot;</span>)
+    <span class="hljs-keyword">if</span> customer_id <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> verified_customers:
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;hookSpecificOutput&quot;</span>: {
+            <span class="hljs-string">&quot;hookEventName&quot;</span>: <span class="hljs-string">&quot;PreToolUse&quot;</span>,
+            <span class="hljs-string">&quot;permissionDecision&quot;</span>: <span class="hljs-string">&quot;deny&quot;</span>,
+            <span class="hljs-string">&quot;permissionDecisionReason&quot;</span>: <span class="hljs-string">&quot;Verifica primero al cliente con get_customer.&quot;</span>,
+        }}
+    <span class="hljs-keyword">return</span> {}
+
+options = ClaudeAgentOptions(hooks={
+    <span class="hljs-string">&quot;PostToolUse&quot;</span>: [HookMatcher(matcher=<span class="hljs-string">&quot;mcp__support__get_customer&quot;</span>, hooks=[record_verification])],
+    <span class="hljs-string">&quot;PreToolUse&quot;</span>:  [HookMatcher(matcher=<span class="hljs-string">&quot;mcp__support__process_refund&quot;</span>, hooks=[require_verified_customer])],
+})
+</code></pre>
+<p>El motivo del <code>deny</code> llega a Claude como resultado de la herramienta, así que el agente entiende qué le falta y puede corregir el rumbo.</p>
+<blockquote>
+<p><strong>Qué es un <em>gate</em>.</strong> Un <em>gate</em> (compuerta o barrera) es una comprobación en el código que impide un paso mientras no se cumpla una condición previa. El agente no puede saltársela, aunque quiera o se equivoque.</p>
+<ul>
+<li><strong>El problema.</strong> Si el <em>system prompt</em> dice «verifica siempre al cliente con <code>get_customer</code> antes de reembolsar», Claude lo cumplirá casi siempre, pero ese «casi» deja una tasa de fallo distinta de cero. En la pregunta 1 de la guía, el agente se salta la verificación en un 12 % de los casos y reembolsa a la cuenta equivocada. Con dinero o cumplimiento normativo de por medio, «casi siempre» no basta.</li>
+<li><strong>Cómo funciona.</strong> El orden ya no se le pide al modelo: lo impone el código. (1) Cuando <code>get_customer</code> devuelve un cliente verificado, un hook <code>PostToolUse</code> lo anota en <code>verified_customers</code>. (2) Cuando Claude intenta llamar a <code>process_refund</code>, un hook <code>PreToolUse</code> comprueba la lista; si el cliente no está, devuelve <code>deny</code> y el reembolso no se ejecuta. (3) El motivo del rechazo le llega a Claude como resultado de la herramienta, así que entiende qué le falta, llama a <code>get_customer</code> y vuelve a intentarlo.</li>
+<li><strong>Una analogía.</strong> Es como el torno del metro: un cartel que dice «pague antes de pasar» es el prompt; el torno, que impide pasar sin pagar, es el <em>gate</em>.</li>
+<li><strong>Para el examen.</strong> Si el enunciado habla de algo que debe cumplirse siempre, de forma obligatoria o garantizada, la respuesta es un <em>gate</em> o un hook programático. Mejorar el prompt, añadir <em>few-shot</em> o usar un clasificador no sirve, porque siguen siendo probabilísticos. <code>tool_choice</code> tampoco: fuerza qué herramienta se llama en un turno, pero no impone un orden de negocio a lo largo de la conversación.</li>
+</ul>
+</blockquote>
+<p><strong>Peticiones con varios asuntos: descomponer, investigar en paralelo, sintetizar.</strong> Si un cliente escribe «mi pedido llegó roto, además me cobraron dos veces y quiero cambiar la dirección», el agente debe:</p>
+<ol>
+<li>Separar los asuntos en elementos distintos.</li>
+<li>Investigar cada uno <strong>en paralelo</strong>, compartiendo el contexto común (cliente, pedido).</li>
+<li>Sintetizar <strong>una resolución unificada</strong>.</li>
+</ol>
+<p>Es el patrón de <strong>paralelización</strong> del curso de la API: dividir una tarea en subtareas independientes, ejecutarlas a la vez y agregarlas. Ventajas que señala el curso: atención enfocada en cada aspecto, optimización independiente de cada parte y resultados más fiables.</p>
+<p><strong>Protocolos de <em>handoff</em> a humanos.</strong> Cuando el agente escala a mitad del proceso, el humano que recibe el caso <strong>no tiene acceso a la transcripción</strong>. El agente debe entregar un resumen estructurado y autosuficiente:</p>
+<pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;customer_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;C-48213&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;issue_summary&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Producto recibido dañado; solicita reembolso de 640 $&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;root_cause&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Daño en transporte confirmado por fotos&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;actions_taken&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Cliente verificado&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;Pedido #12345 consultado&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refund_amount&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">640.00</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;blocked_by&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Importe superior al límite autónomo de 500 $&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;recommended_action&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Aprobar reembolso completo y abrir reclamación al transportista&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>La guía pide expresamente: datos del cliente, análisis de la causa raíz y acciones recomendadas (y, en el caso de reembolsos, el importe).</p>
+<h3 id="que-busca-el-examen-3">Qué busca el examen</h3>
+<ul>
+<li><strong>Pregunta 1 de la guía</strong>: si el agente se salta un paso obligatorio el 12 % de las veces, la respuesta correcta es el <strong>prerrequisito programático</strong>. Mejorar el system prompt o añadir <em>few-shot</em> siguen siendo probabilísticos. Un clasificador de enrutado resuelve qué herramientas están disponibles, no <strong>el orden</strong> en que se usan.</li>
+<li>Distingue <strong>disponibilidad</strong> de herramientas (qué puede usar) y <strong>orden</strong> (cuándo puede usarla).</li>
+<li>En un <em>handoff</em>, la respuesta correcta siempre incluye un resumen estructurado y autosuficiente; enviar «la transcripción completa» o «un resumen libre» son distractores habituales.</li>
+</ul>
+<h3 id="fuentes-3">Fuentes</h3>
+<ul>
+<li>Claude Code in action › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/hooks" target="_blank" rel="noopener">Hooks</a></li>
+<li>Claude Code 101 › Customizing Claude Code › <a href="https://academy.claude.com/courses/claude-code-101/hooks" target="_blank" rel="noopener">Hooks</a>(«una petición, no una garantía»)</li>
+<li>Building with the Claude API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/parallelization-workflows" target="_blank" rel="noopener">Parallelization workflows</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/agent-sdk/hooks" target="_blank" rel="noopener">Agent SDK › Hooks</a></li>
+</ul>
+<hr>
+<h2 id="1-5-hooks-del-agent-sdk-para-interceptar-llamadas-y-normalizar-datos">1.5 Hooks del Agent SDK para interceptar llamadas y normalizar datos</h2>
+<a class="practice-chip" href="practica.html?task=1.5">✎ Practicar 1.5 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-4">La idea en una frase</h3>
+<p>Los hooks son <strong>código tuyo que se ejecuta siempre</strong> en puntos concretos del bucle: <code>PreToolUse</code> antes de una herramienta (puede bloquearla o reescribirla) y <code>PostToolUse</code> después (puede transformar su resultado antes de que Claude lo lea).</p>
+<h3 id="explicacion-4">Explicación</h3>
+<p><strong>Por qué hooks.</strong> El curso <em>Claude Code 101</em> lo dice sin rodeos: «Si algo necesita ocurrir siempre, sin posibilidad de fallo, no lo pongas únicamente en un prompt. Ponlo en un hook». Los hooks son <strong>deterministas</strong>: se ejecutan en tu proceso, fuera de la ventana de contexto del modelo, y no dependen de que Claude «se acuerde».</p>
+<p><strong>Los dos hooks del examen:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Hook</th>
+<th>Cuándo se ejecuta</th>
+<th>Qué puede hacer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PreToolUse</code></td>
+<td>Antes de ejecutar la herramienta</td>
+<td>Permitir, <strong>denegar</strong> (<code>permissionDecision: &quot;deny&quot;</code>), pedir confirmación (<code>&quot;ask&quot;</code>) o <strong>reescribir</strong> la entrada (<code>updatedInput</code>)</td>
+</tr>
+<tr>
+<td><code>PostToolUse</code></td>
+<td>Después de que la herramienta devuelva su resultado</td>
+<td>Añadir contexto (<code>additionalContext</code>) o <strong>reemplazar</strong> el resultado (<code>updatedToolOutput</code>) antes de que Claude lo vea</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hay otros eventos (<code>Stop</code>, <code>SubagentStart</code>/<code>SubagentStop</code>, <code>PreCompact</code>, <code>UserPromptSubmit</code>...), pero el examen se centra en estos dos.</p>
+<p><strong>Cómo se registran en el SDK.</strong> Con la opción <code>hooks</code>: un diccionario de evento → lista de <em>matchers</em>. El <code>matcher</code> filtra por <strong>nombre de herramienta</strong> (las herramientas MCP siguen el patrón <code>mcp__&lt;servidor&gt;__&lt;acción&gt;</code>). Cada <em>callback</em> recibe los datos del evento (<code>tool_name</code>, <code>tool_input</code> y, en <code>PostToolUse</code>, el resultado), el <code>tool_use_id</code> y un contexto.</p>
+<p><strong>Patrón 1: normalizar datos heterogéneos (<code>PostToolUse</code>).</strong> Varias herramientas MCP devuelven fechas en formatos distintos (<em>timestamps</em> Unix, ISO 8601) y estados como códigos numéricos. En lugar de pedirle a Claude que lo interprete, un hook unifica el formato antes de que el modelo lo procese (ejemplo ilustrativo):</p>
+<pre><code class="hljs language-python"><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime, timezone
+
+STATUS = {<span class="hljs-number">1</span>: <span class="hljs-string">&quot;pending&quot;</span>, <span class="hljs-number">2</span>: <span class="hljs-string">&quot;shipped&quot;</span>, <span class="hljs-number">3</span>: <span class="hljs-string">&quot;delivered&quot;</span>}
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">normalize_order</span>(<span class="hljs-params">input_data, tool_use_id, context</span>):
+    data = <span class="hljs-built_in">dict</span>(input_data[<span class="hljs-string">&quot;tool_response&quot;</span>])
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(data.get(<span class="hljs-string">&quot;created_at&quot;</span>), (<span class="hljs-built_in">int</span>, <span class="hljs-built_in">float</span>)):          <span class="hljs-comment"># Unix timestamp</span>
+        data[<span class="hljs-string">&quot;created_at&quot;</span>] = datetime.fromtimestamp(
+            data[<span class="hljs-string">&quot;created_at&quot;</span>], tz=timezone.utc).isoformat()
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(data.get(<span class="hljs-string">&quot;status&quot;</span>), <span class="hljs-built_in">int</span>):                      <span class="hljs-comment"># código numérico</span>
+        data[<span class="hljs-string">&quot;status&quot;</span>] = STATUS.get(data[<span class="hljs-string">&quot;status&quot;</span>], <span class="hljs-string">&quot;unknown&quot;</span>)
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;hookSpecificOutput&quot;</span>: {
+        <span class="hljs-string">&quot;hookEventName&quot;</span>: <span class="hljs-string">&quot;PostToolUse&quot;</span>,
+        <span class="hljs-string">&quot;updatedToolOutput&quot;</span>: data,          <span class="hljs-comment"># Claude solo ve la versión normalizada</span>
+    }}
+
+options = ClaudeAgentOptions(hooks={
+    <span class="hljs-string">&quot;PostToolUse&quot;</span>: [HookMatcher(matcher=<span class="hljs-string">&quot;^mcp__&quot;</span>, hooks=[normalize_order])],
+})
+</code></pre>
+<p><strong>Patrón 2: bloquear acciones que violan una política y redirigir (<code>PreToolUse</code>).</strong> Un reembolso por encima de 500 $ no debe procesarse de forma autónoma. El hook lo deniega y el motivo orienta al agente hacia el flujo alternativo:</p>
+<pre><code class="hljs language-python"><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">refund_limit</span>(<span class="hljs-params">input_data, tool_use_id, context</span>):
+    <span class="hljs-keyword">if</span> input_data[<span class="hljs-string">&quot;tool_input&quot;</span>].get(<span class="hljs-string">&quot;amount&quot;</span>, <span class="hljs-number">0</span>) &gt; <span class="hljs-number">500</span>:
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;hookSpecificOutput&quot;</span>: {
+            <span class="hljs-string">&quot;hookEventName&quot;</span>: <span class="hljs-string">&quot;PreToolUse&quot;</span>,
+            <span class="hljs-string">&quot;permissionDecision&quot;</span>: <span class="hljs-string">&quot;deny&quot;</span>,
+            <span class="hljs-string">&quot;permissionDecisionReason&quot;</span>:
+                <span class="hljs-string">&quot;Los reembolsos de más de 500 $ requieren un humano. &quot;</span>
+                <span class="hljs-string">&quot;Usa escalate_to_human con un resumen del caso.&quot;</span>,
+        }}
+    <span class="hljs-keyword">return</span> {}
+</code></pre>
+<p>En vez de bloquear, también puedes <strong>reescribir</strong> la llamada con <code>updatedInput</code>. El curso <em>Claude Code in action</em> pone el ejemplo de eliminar un secreto (<code>sk_live_...</code>) de un comando y dejar que se ejecute. Ojo: <code>updatedInput</code> sustituye <strong>toda</strong> la entrada, así que hay que devolver también los campos que no cambian.</p>
+<p><strong>Hooks en Claude Code frente a hooks en el SDK.</strong> La idea es la misma, cambia la forma:</p>
+<ul>
+<li>En <strong>Claude Code</strong>, los hooks son comandos de <em>shell</em> configurados en <code>.claude/settings.json</code>. Reciben JSON por <code>stdin</code> y responden con un código de salida (<strong>2 bloquea</strong>; 1 <strong>no</strong> bloquea, es un error no bloqueante) o con JSON (<code>permissionDecision</code>).</li>
+<li>En el <strong>Agent SDK</strong>, son funciones (<em>callbacks</em>) que devuelven el mismo formato JSON.</li>
+</ul>
+<h3 id="que-busca-el-examen-4">Qué busca el examen</h3>
+<ul>
+<li><strong>Hooks = garantía determinista; prompt = cumplimiento probabilístico.</strong> Si el enunciado dice «debe cumplirse siempre», «garantizado», «cumplimiento normativo» o hay dinero de por medio, la respuesta es un hook.</li>
+<li>Normalizar formatos de varias fuentes: <strong><code>PostToolUse</code></strong>, no instrucciones en el prompt para que Claude «interprete» cada formato.</li>
+<li>Bloquear una acción <strong>antes</strong> de que ocurra: <strong><code>PreToolUse</code></strong>. <code>PostToolUse</code> llega tarde para impedir la llamada.</li>
+<li>Bloquear sin más deja al agente atascado; la buena respuesta <strong>redirige</strong> a un flujo alternativo (escalado humano).</li>
+</ul>
+<h3 id="fuentes-4">Fuentes</h3>
+<ul>
+<li>Claude Code in action › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/hooks" target="_blank" rel="noopener">Hooks</a></li>
+<li>Claude Code 101 › Customizing Claude Code › <a href="https://academy.claude.com/courses/claude-code-101/hooks" target="_blank" rel="noopener">Hooks</a> («una petición, no una garantía»)</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/agent-sdk/hooks" target="_blank" rel="noopener">Agent SDK › Hooks</a> (secciones <em>Outputs</em> y <em>Examples</em>) · <a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">Hooks reference</a></li>
+</ul>
+<hr>
+<h2 id="1-6-estrategias-de-descomposicion-de-tareas">1.6 Estrategias de descomposición de tareas</h2>
+<a class="practice-chip" href="practica.html?task=1.6">✎ Practicar 1.6 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-5">La idea en una frase</h3>
+<p>Si conoces los pasos de antemano, usa un <strong>flujo fijo</strong> (<em>prompt chaining</em>): es más fiable y fácil de evaluar. Si los pasos dependen de lo que vayas descubriendo, usa <strong>descomposición dinámica</strong>: un agente que planifica, investiga y adapta el plan.</p>
+<h3 id="explicacion-5">Explicación</h3>
+<p><strong>Workflows frente a agentes.</strong> Es la distinción central del módulo <em>Agentes y workflows</em> del curso de la API:</p>
+<ul>
+<li>Un <strong>workflow</strong> es una serie predefinida de llamadas a Claude para resolver un problema conocido. Se usa cuando puedes visualizar los pasos con antelación.</li>
+<li>Un <strong>agente</strong> recibe un objetivo y herramientas, y descubre cómo cumplirlo.</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Workflows</th>
+<th>Agentes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ventajas</td>
+<td>Más precisión (una subtarea a la vez), fáciles de evaluar y probar, predecibles</td>
+<td>Flexibles, resuelven situaciones no previstas, pueden pedir información al usuario</td>
+</tr>
+<tr>
+<td>Inconvenientes</td>
+<td>Poco flexibles, requieren más diseño previo</td>
+<td>Menor tasa de éxito, difíciles de evaluar, menos predecibles</td>
+</tr>
+</tbody>
+</table></div>
+<p>La recomendación del curso es clara: «céntrate siempre en implementar workflows cuando sea posible y recurre a agentes solo cuando sean realmente necesarios». A los usuarios les importa que el producto funcione de forma consistente, no que el agente sea sofisticado.</p>
+<p><strong>Los cuatro patrones de workflow del curso:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Patrón</th>
+<th>Qué hace</th>
+<th>Cuándo usarlo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Encadenamiento</strong> (<em>chaining</em>)</td>
+<td>Divide la tarea en pasos secuenciales; la salida de uno alimenta al siguiente, con procesamiento por código entre medias si hace falta</td>
+<td>Tareas con dependencias lineales; cuando Claude ignora restricciones en prompts largos</td>
+</tr>
+<tr>
+<td><strong>Paralelización</strong></td>
+<td>Divide en subtareas independientes, las ejecuta a la vez y agrega los resultados</td>
+<td>Decisiones con varios criterios o perspectivas independientes</td>
+</tr>
+<tr>
+<td><strong>Enrutamiento</strong> (<em>routing</em>)</td>
+<td>Clasifica la entrada y la envía a <strong>un</strong> pipeline especializado</td>
+<td>Entradas de tipos distintos que necesitan tratamiento distinto</td>
+</tr>
+<tr>
+<td><strong>Evaluator-optimizer</strong></td>
+<td>Un productor genera, un evaluador valora y devuelve <em>feedback</em> hasta aceptar</td>
+<td>Criterios de calidad claros y mejora iterativa demostrable</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Encadenamiento para revisiones con varios aspectos.</strong> El ejemplo de la guía es una revisión de código: en lugar de analizar 14 archivos de una vez, se hace <strong>una pasada por archivo</strong> (problemas locales) y luego <strong>una pasada de integración</strong> (flujo de datos entre archivos). El motivo es la <strong>dilución de la atención</strong>: con muchos archivos a la vez, el análisis sale desigual, se escapan errores y aparecen contradicciones (marcar un patrón como erróneo en un archivo y aprobarlo en otro). Un modelo con más contexto <strong>no</strong> lo arregla: el problema es la calidad de la atención, no el espacio.</p>
+<p><strong>Descomposición dinámica para tareas abiertas.</strong> Para algo como «añade tests completos a una base de código <em>legacy</em>» no puedes conocer los pasos de antemano. El patrón es:</p>
+<ol>
+<li><strong>Mapear</strong> la estructura (módulos, dependencias, tests existentes).</li>
+<li><strong>Identificar</strong> las áreas de mayor impacto.</li>
+<li><strong>Crear un plan priorizado</strong> que se <strong>adapta</strong> a medida que descubres dependencias.</li>
+</ol>
+<p>Es el flujo «explorar → planificar → programar → confirmar» del curso <em>Claude Code 101</em>, y la estrategia «empieza amplio y luego estrecha» del artículo de Anthropic sobre investigación multiagente.</p>
+<p><strong>Cuándo NO conviene encadenar subagentes.</strong> El curso de subagentes avisa de un antipatrón: los <strong>pipelines secuenciales de subagentes</strong> (uno reproduce un bug, otro lo depura, otro lo arregla) fallan cuando cada paso depende de lo que descubrió el anterior, porque <strong>la información se pierde en cada traspaso</strong>. La regla del curso: <strong>¿importa el trabajo intermedio?</strong> Si solo necesitas el resultado, delega en un subagente; si necesitas ver el proceso y reaccionar, mantenlo en el hilo principal.</p>
+<h3 id="que-busca-el-examen-5">Qué busca el examen</h3>
+<ul>
+<li><strong>Pregunta 12 de la guía</strong>: revisión inconsistente de un PR grande → <strong>pasadas por archivo + pasada de integración</strong>. Los distractores: pedir PRs más pequeños (traslada el problema a los desarrolladores), un modelo con más contexto (no arregla la atención) o votar entre tres pasadas (suprime errores reales).</li>
+<li>Tarea predecible con varios aspectos → <em>prompt chaining</em>. Tarea abierta de investigación → descomposición dinámica.</li>
+<li>Ante la duda entre un workflow y un agente para un proceso bien definido, el examen prefiere <strong>el workflow</strong>.</li>
+</ul>
+<h3 id="fuentes-5">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/agents-and-workflows" target="_blank" rel="noopener">Agents and workflows</a></li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a>(«Pipelines secuenciales» y «La regla para decidir»)</li>
+<li>Claude Code 101 › Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/the-explore-plan-code-commit-workflow" target="_blank" rel="noopener">The explore → plan → code → commit workflow</a></li>
+<li>Artículo: <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a></li>
+</ul>
+<hr>
+<h2 id="1-7-estado-de-sesion-reanudacion-y-forking">1.7 Estado de sesión, reanudación y <em>forking</em></h2>
+<a class="practice-chip" href="practica.html?task=1.7">✎ Practicar 1.7 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-6">La idea en una frase</h3>
+<p>Una sesión guarda la <strong>conversación</strong>, no el sistema de archivos. <strong>Reanuda</strong> (<code>--resume</code>) cuando el contexto anterior sigue siendo válido; <strong>bifurca</strong> (<code>fork_session</code>) para explorar alternativas desde una base común; y <strong>empieza de cero con un resumen</strong> cuando los resultados guardados ya están obsoletos.</p>
+<h3 id="explicacion-6">Explicación</h3>
+<p><strong>Qué es una sesión.</strong> El historial completo que acumula el agente: tu prompt, cada llamada a herramienta, cada resultado y cada respuesta. Se guarda en disco automáticamente, así que puedes volver a ella con todo el contexto: archivos leídos, análisis hechos y decisiones tomadas.</p>
+<p><strong>Las tres formas de volver:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>Qué hace</th>
+<th>CLI (Claude Code)</th>
+<th>Agent SDK</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Continuar</strong></td>
+<td>Retoma la sesión <strong>más reciente</strong> del directorio</td>
+<td><code>claude --continue</code></td>
+<td><code>continue_conversation=True</code> / <code>continue: true</code></td>
+</tr>
+<tr>
+<td><strong>Reanudar</strong></td>
+<td>Retoma una sesión <strong>concreta</strong></td>
+<td><code>claude --resume &lt;nombre o id&gt;</code></td>
+<td><code>resume=session_id</code></td>
+</tr>
+<tr>
+<td><strong>Bifurcar</strong> (<em>fork</em>)</td>
+<td>Crea una sesión <strong>nueva</strong> con una copia del historial; la original no cambia</td>
+<td><code>claude --resume &lt;x&gt; --fork-session</code> o <code>/branch</code></td>
+<td><code>resume=session_id, fork_session=True</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Sesiones con nombre.</strong> Para retomar investigaciones de un día para otro, ponles nombre: <code>claude -n auth-refactor</code> al arrancar o <code>/rename auth-refactor</code> durante la sesión. Después, <code>claude --resume auth-refactor</code>. El curso <em>Claude Code in action</em> muestra la variante para scripts: capturar el <code>session_id</code> de la salida JSON y reanudar con <code>claude --resume &quot;$(jq -r .session_id plan.json)&quot;</code>, de modo que un script genera un plan y otro lo ejecuta.</p>
+<p><strong>Bifurcar para comparar enfoques.</strong> Has analizado un módulo y quieres comparar dos estrategias (dos enfoques de testing, dos refactorizaciones). Bifurcas desde el análisis común: cada rama tiene su propio ID y su propio historial, y ninguna contamina a la otra.</p>
+<pre><code class="hljs language-python"><span class="hljs-comment"># Rama B: explora OAuth2 sin tocar la sesión original (rama A: JWT)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> message <span class="hljs-keyword">in</span> query(
+    prompt=<span class="hljs-string">&quot;En lugar de JWT, describe cómo funcionaría OAuth2 en el módulo de auth&quot;</span>,
+    options=ClaudeAgentOptions(resume=session_id, fork_session=<span class="hljs-literal">True</span>),
+):
+    ...
+</code></pre>
+<p><strong>Advertencia:</strong> bifurcar copia la <strong>conversación</strong>, no los archivos. Si una rama edita archivos, los cambios son reales y los ve cualquier sesión que trabaje en el mismo directorio.</p>
+<p><strong>El problema de los resultados obsoletos.</strong> Al reanudar, Claude recuerda lo que leyó, pero si después <strong>has modificado el código</strong>, esos resultados de herramientas ya no reflejan la realidad. Dos estrategias según el caso:</p>
+<ul>
+<li><strong>El contexto sigue siendo mayoritariamente válido</strong> → reanuda e <strong>indícale qué archivos han cambiado</strong> para que vuelva a analizar solo esos. Por ejemplo: «Desde la última sesión he modificado <code>auth/middleware.py</code> y <code>auth/tokens.py</code>; vuelve a leerlos antes de continuar». Es mucho más eficiente que pedirle que lo explore todo de nuevo.</li>
+<li><strong>Los resultados guardados están obsoletos</strong> → abre una <strong>sesión nueva</strong> e inyecta un <strong>resumen estructurado</strong> de lo que importa (conclusiones, decisiones, archivos relevantes). La propia documentación del SDK lo recomienda: capturar los resultados que necesitas como estado de tu aplicación y pasarlos al prompt de una sesión nueva «suele ser más robusto» que transportar transcripciones.</li>
+</ul>
+<p>Relacionado con esto, el curso <em>Claude Code in action</em> recuerda que <code>/compact</code> resume la conversación y que puedes dirigir qué se conserva añadiendo instrucciones tras el comando. Un hook <code>SessionStart</code> con el <em>matcher</em> <code>compact</code> puede reinyectar contexto clave después de una compactación.</p>
+<h3 id="que-busca-el-examen-6">Qué busca el examen</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situación</th>
+<th>Respuesta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Continuar una investigación concreta otro día</td>
+<td><code>--resume &lt;nombre&gt;</code></td>
+</tr>
+<tr>
+<td>Comparar dos enfoques desde el mismo análisis</td>
+<td><code>fork_session</code></td>
+</tr>
+<tr>
+<td>Has cambiado unos pocos archivos desde la última sesión</td>
+<td>Reanudar e indicar qué archivos cambiaron</td>
+</tr>
+<tr>
+<td>Los resultados guardados ya no son válidos</td>
+<td>Sesión nueva con un resumen estructurado inyectado</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="fuentes-6">Fuentes</h3>
+<ul>
+<li>Claude Code in action › Automate repeat work › <a href="https://academy.claude.com/courses/claude-code-in-action/routines-and-headless" target="_blank" rel="noopener">Scheduled tasks and headless</a></li>
+<li>Claude Code in action › Steer the work › <a href="https://academy.claude.com/courses/claude-code-in-action/steering-long-sessions" target="_blank" rel="noopener">Steering long sessions</a> (<code>/compact</code>, <code>/rewind</code>)</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/agent-sdk/sessions" target="_blank" rel="noopener">Agent SDK › Work with sessions</a> · <a href="https://code.claude.com/docs/en/sessions" target="_blank" rel="noopener">Claude Code › Manage sessions</a> (nombrar, reanudar y bifurcar sesiones)</li>
+</ul>
+<hr>
+<h2 id="chuleta-de-decisiones">Chuleta de decisiones</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Si el enunciado dice...</th>
+<th>Piensa en...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«¿Cuándo termina el bucle?»</td>
+<td><code>stop_reason</code>: seguir con <code>tool_use</code>, parar con <code>end_turn</code></td>
+</tr>
+<tr>
+<td>«Límite de iteraciones» como forma de parar</td>
+<td>Antipatrón (solo como red de seguridad)</td>
+</tr>
+<tr>
+<td>«Siempre», «garantizado», «obligatorio», dinero, cumplimiento</td>
+<td>Hook o <em>gate</em> programático, no prompt</td>
+</tr>
+<tr>
+<td>Un paso obligatorio que a veces se salta</td>
+<td>Prerrequisito que bloquea la herramienta siguiente</td>
+</tr>
+<tr>
+<td>Formatos de datos distintos entre herramientas</td>
+<td><code>PostToolUse</code> que normaliza</td>
+</tr>
+<tr>
+<td>Bloquear una acción por política</td>
+<td><code>PreToolUse</code> con <code>deny</code> + redirección a escalado</td>
+</tr>
+<tr>
+<td>Escalar a un humano</td>
+<td>Resumen estructurado y autosuficiente</td>
+</tr>
+<tr>
+<td>El subagente «no sabe» algo del coordinador</td>
+<td>Pasarlo explícitamente en su prompt</td>
+</tr>
+<tr>
+<td>Subagentes en paralelo</td>
+<td>Varias llamadas <code>Task</code> en una sola respuesta</td>
+</tr>
+<tr>
+<td>Informe con huecos y subagentes que funcionan bien</td>
+<td>Descomposición del coordinador demasiado estrecha</td>
+</tr>
+<tr>
+<td>Subagentes duplicando trabajo</td>
+<td>Repartir subtemas o tipos de fuente con límites claros</td>
+</tr>
+<tr>
+<td>Pasos conocidos de antemano</td>
+<td>Workflow (<em>prompt chaining</em>)</td>
+</tr>
+<tr>
+<td>Tarea abierta</td>
+<td>Descomposición dinámica (mapear → priorizar → adaptar)</td>
+</tr>
+<tr>
+<td>Revisión de muchos archivos inconsistente</td>
+<td>Pasada por archivo + pasada de integración</td>
+</tr>
+<tr>
+<td>Comparar dos enfoques desde el mismo análisis</td>
+<td><code>fork_session</code></td>
+</tr>
+<tr>
+<td>Contexto guardado obsoleto</td>
+<td>Sesión nueva + resumen estructurado</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="preguntas-de-autoevaluacion">Preguntas de autoevaluación</h2>
+<p>Intenta responder antes de leer la solución.</p>
+<ol>
+<li>Tu bucle termina cuando la respuesta del asistente contiene texto. ¿Qué puede fallar?</li>
+<li>Un agente de soporte debe verificar la identidad del cliente antes de cualquier reembolso. Has reforzado el system prompt y aún falla un 3 % de las veces. ¿Qué haces?</li>
+<li>El subagente de síntesis cita afirmaciones sin fuente aunque los subagentes de búsqueda sí las encontraron. ¿Qué cambiarías en cómo se pasa el contexto?</li>
+<li>Tu coordinador lanza los subagentes de búsqueda uno detrás de otro y tarda demasiado. ¿Por qué ocurre y cómo se arregla?</li>
+<li>Tres herramientas MCP devuelven fechas en formatos distintos y el agente se equivoca al compararlas. ¿Prompt o hook? ¿Cuál?</li>
+<li>Ayer analizaste un módulo en una sesión. Hoy has refactorizado dos archivos de ese módulo. ¿Reanudas o empiezas de cero?</li>
+<li>¿Por qué un pipeline de tres subagentes (reproducir → depurar → arreglar) suele funcionar peor que un único agente?</li>
+</ol>
+<details>
+<summary>Soluciones</summary>
+<ol>
+<li>Claude puede escribir texto <strong>y</strong> pedir una herramienta en la misma respuesta; el bucle pararía antes de tiempo. El criterio correcto es <code>stop_reason</code>.</li>
+<li>Un prerrequisito programático: un hook <code>PreToolUse</code> que deniegue la herramienta de reembolso hasta que <code>get_customer</code> haya devuelto un ID verificado. El prompt es probabilístico.</li>
+<li>Pasar los hallazgos completos en el prompt del subagente de síntesis, con un formato estructurado que separe el contenido de los metadatos (URL, documento, página).</li>
+<li>Porque emite una llamada <code>Task</code> por turno. Debe emitir varias llamadas <code>Task</code> en la misma respuesta para que se ejecuten en paralelo.</li>
+<li>Hook <code>PostToolUse</code> que normalice los formatos antes de que Claude procese los resultados.</li>
+<li>Si el resto del análisis sigue siendo válido, reanuda e indica qué dos archivos cambiaron para que los vuelva a analizar. Si los cambios invalidan buena parte del análisis, empieza una sesión nueva con un resumen estructurado.</li>
+<li>Porque cada paso depende de lo que descubrió el anterior y la información se pierde en cada traspaso entre contextos aislados. La regla: si el trabajo intermedio importa, mantenlo en el hilo principal.</li>
+</ol>
+</details>
+
+<nav class="pager"><a class="prev" href="00-index.html"><small>← Anterior</small>Índice de recursos</a><a class="next" href="02-mcp-tools.html"><small>Siguiente →</small>Diseño de herramientas e integración con MCP</a></nav>
+    </main>
+  </div>
+</div>
+<script src="assets/mermaid.min.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

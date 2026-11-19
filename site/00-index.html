@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Índice de recursos por dominio – CCAR-F · CCAR-F</title>
+<script>
+  // Antes de pintar, para que no parpadee el tema. Misma clave que el examen 1.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("examccarf-theme") || "light"); } catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div id="progress"></div>
+<button class="backdrop" id="backdrop" aria-label="Cerrar menú"></button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <div class="logo">A</div>
+      <div>
+        <h1>Guía CCAR-F</h1>
+        <p>Claude Certified Architect – Foundations</p>
+      </div>
+    </a>
+    <div class="nav-label">Apuntes</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="index.html"><span class="code">★</span><span class="txt">Inicio</span></a>
+      <a class="lesson-btn nav-item active" href="00-index.html"><span class="code">≡</span><span class="txt">Índice de recursos</span></a>
+      <div class="toc">
+        <a href="#como-leer-este-indice">Cómo leer este índice</a>
+        <a href="#dominio-1-agentic-architecture-orchestration-27">Dominio 1 · Agentic Architecture &amp; Orchestration (27 %)</a>
+        <a href="#dominio-2-tool-design-mcp-integration-18">Dominio 2 · Tool Design &amp; MCP Integration (18 %)</a>
+        <a href="#dominio-3-claude-code-configuration-workflows-20">Dominio 3 · Claude Code Configuration &amp; Workflows (20 %)</a>
+        <a href="#dominio-4-prompt-engineering-structured-output-20">Dominio 4 · Prompt Engineering &amp; Structured Output (20 %)</a>
+        <a href="#dominio-5-context-management-reliability-15">Dominio 5 · Context Management &amp; Reliability (15 %)</a>
+        <a href="#ruta-minima-recomendada">Ruta mínima recomendada</a>
+      </div>
+      <a class="lesson-btn nav-item" href="01-agentic-architecture.html"><span class="code">D1</span><span class="txt">Arquitectura agéntica y orquestación</span></a>
+      <a class="lesson-btn nav-item" href="02-mcp-tools.html"><span class="code">D2</span><span class="txt">Diseño de herramientas e integración con MCP</span></a>
+      <a class="lesson-btn nav-item" href="03-claude.html"><span class="code">D3</span><span class="txt">Configuración y flujos de trabajo de Claude Code</span></a>
+      <a class="lesson-btn nav-item" href="04-prompt-structured-output.html"><span class="code">D4</span><span class="txt">Ingeniería de prompts y salida estructurada</span></a>
+      <a class="lesson-btn nav-item" href="05-context.html"><span class="code">D5</span><span class="txt">Gestión del contexto y fiabilidad</span></a>
+    </nav>
+    <div class="nav-label">Práctica</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="simulacros.html"><span class="code">⏱</span><span class="txt">Simulacros de examen</span></a>
+      <a class="lesson-btn nav-item" href="practica.html"><span class="code">✎</span><span class="txt">Practicar por dominio o task</span></a>
+    </nav>
+    <div class="side-foot">
+      <p>Generado desde los .md el 14 de noviembre de 2026</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" title="Menú">☰</button>
+      <span class="title">Índice de recursos por dominio – CCAR-F</span>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema claro/oscuro">🌙</button>
+      <button class="icon-btn" onclick="window.print()" title="Imprimir / PDF">⎙</button>
+    </div>
+
+    <main class="content prose wide-page">
+<h1 id="indice-de-recursos-por-dominio-ccar-f">Índice de recursos por dominio – CCAR-F</h1>
+<p>Este índice relaciona cada <em>task statement</em> de la guía oficial del examen <strong>Claude Certified Architect – Foundations</strong> (v1.0, julio 2026) con el material de Anthropic donde se explica: lecciones de los cursos gratuitos de <strong>Anthropic Academy</strong> (Skilljar), la <strong>documentación oficial</strong> (Claude Code, Agent SDK, Claude API), los artículos de <strong>ingeniería de Anthropic</strong>, la <strong>especificación MCP</strong> y los repositorios oficiales de <strong>cursos</strong> y <strong>cookbooks</strong> en GitHub.</p>
+<blockquote>
+<p>Complementa a <a href="index.html">00-guide.md</a>. Enlaces comprobados el 4 de noviembre de 2026.</p>
+</blockquote>
+<h2 id="como-leer-este-indice">Cómo leer este índice</h2>
+<ul>
+<li><strong>Cursos (Skilljar).</strong> Skilljar no expone URLs públicas por lección (requieren iniciar sesión), así que cada referencia enlaza al <strong>curso</strong> y nombra la lección como <code>Curso › Sección › Lección</code>, con los títulos tal como aparecen en el temario actual.</li>
+<li><strong>Documentación.</strong> Siempre que ha sido posible el enlace apunta directamente a la <strong>sección</strong> (ancla) relevante de la página.</li>
+<li><strong>Columnas.</strong> <em>Curso</em>: lecciones de Anthropic Academy. <em>Artículos de Anthropic</em>: blog de ingeniería y anuncios. <em>Prácticas</em>: cuadernos y ejemplos ejecutables (cursos de GitHub y Claude Cookbooks). <em>Otros</em>: documentación oficial (Claude Code, Agent SDK, Claude API), especificación MCP y guías de casos de uso.</li>
+<li><strong>Prioridad.</strong> Dentro de cada celda, el primer recurso es el más directo.</li>
+<li><strong>Aviso de nomenclatura.</strong> La guía habla de la herramienta <strong><code>Task</code></strong> para lanzar subagentes. En Claude Code 2.1.63 se renombró a <strong><code>Agent</code></strong>; <code>Task(...)</code> sigue funcionando como alias y en el mensaje <code>system:init</code> del SDK todavía aparece como <code>&quot;Task&quot;</code> (<a href="https://code.claude.com/docs/en/agent-sdk/subagents#detect-subagent-invocation" target="_blank" rel="noopener">fuente</a>). En el examen, <code>Task</code> = <code>Agent</code>.</li>
+</ul>
+<h3 id="cursos-gratuitos-de-anthropic-academy-usados">Cursos gratuitos de Anthropic Academy usados</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Abreviatura</th>
+<th>Curso</th>
+<th>Para qué dominios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>API</strong></td>
+<td><a href="https://anthropic.skilljar.com/claude-with-the-anthropic-api" target="_blank" rel="noopener">Building with the Claude API</a></td>
+<td>1, 2, 4, 5 (el más completo: tool use, prompting, evals, MCP, agentes y workflows)</td>
+</tr>
+<tr>
+<td><strong>P101</strong></td>
+<td><a href="https://anthropic.skilljar.com/claude-platform-101" target="_blank" rel="noopener">Claude Platform 101</a></td>
+<td>1, 2, 5 (bucle agéntico, tool use, contexto, managed agents)</td>
+</tr>
+<tr>
+<td><strong>CC101</strong></td>
+<td><a href="https://anthropic.skilljar.com/claude-code-101" target="_blank" rel="noopener">Claude Code 101</a></td>
+<td>3, 5</td>
+</tr>
+<tr>
+<td><strong>CCiA</strong></td>
+<td><a href="https://anthropic.skilljar.com/claude-code-in-action" target="_blank" rel="noopener">Claude Code in Action</a></td>
+<td>1, 3 (CLAUDE.md, hooks, permisos, headless, GitHub Actions)</td>
+</tr>
+<tr>
+<td><strong>SUB</strong></td>
+<td><a href="https://anthropic.skilljar.com/introduction-to-subagents" target="_blank" rel="noopener">Introduction to subagents</a></td>
+<td>1, 3, 5</td>
+</tr>
+<tr>
+<td><strong>SKL</strong></td>
+<td><a href="https://anthropic.skilljar.com/introduction-to-agent-skills" target="_blank" rel="noopener">Introduction to agent skills</a></td>
+<td>3</td>
+</tr>
+<tr>
+<td><strong>MCP</strong></td>
+<td><a href="https://anthropic.skilljar.com/introduction-to-model-context-protocol" target="_blank" rel="noopener">Introduction to Model Context Protocol</a></td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>MCP+</strong></td>
+<td><a href="https://anthropic.skilljar.com/model-context-protocol-advanced-topics" target="_blank" rel="noopener">Model Context Protocol: Advanced Topics</a></td>
+<td>2</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="otros-recursos-oficiales">Otros recursos oficiales</h3>
+<ul>
+<li><strong>Cursos en GitHub</strong> (<a href="https://github.com/anthropics/courses" target="_blank" rel="noopener">anthropics/courses</a>): <em>Tool use</em>, <em>Prompt engineering interactive tutorial</em>, <em>Real world prompting</em>, <em>Prompt evaluations</em> (cuadernos Jupyter ejecutables).</li>
+<li><strong>Claude Cookbooks</strong> (<a href="https://github.com/anthropics/claude-cookbooks" target="_blank" rel="noopener">anthropics/claude-cookbooks</a>): ejemplos de agentes, Agent SDK, tool use, extracción y batches.</li>
+<li><strong>Artículos de ingeniería</strong> clave: <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>, <a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">How we built our multi-agent research system</a>, <a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a>, <a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering for AI agents</a>.</li>
+<li><strong>E-book</strong> <a href="https://claude.com/resources/guides/building-effective-ai-agents" target="_blank" rel="noopener">Building Effective AI Agents: Architecture Patterns and Implementation Frameworks</a> (Anthropic, dic. 2025; copia en PDF en este repo): patrones de un agente, multiagente jerárquico y colaborativo, flujos secuenciales, paralelos y <em>evaluator-optimizer</em>, y un marco para elegir arquitectura. Se cita por página.</li>
+</ul>
+<hr>
+<h2 id="dominio-1-agentic-architecture-orchestration-27">Dominio 1 · Agentic Architecture &amp; Orchestration (27 %)</h2>
+<h3 id="1-1-disenar-e-implementar-bucles-agenticos">1.1 Diseñar e implementar bucles agénticos</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ciclo de vida del bucle: petición → inspeccionar <code>stop_reason</code> (<code>tool_use</code> / <code>end_turn</code>) → ejecutar herramientas → devolver resultados</td>
+<td>P101 › Teaching your Agent › <a href="https://academy.claude.com/courses/claude-platform-101/the-agent-loop-explained" target="_blank" rel="noopener"><em>The agent loop explained</em></a> · API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/multi-turn-conversations-with-tools" target="_blank" rel="noopener"><em>Multi-turn conversations with tools</em></a>, <a href="https://academy.claude.com/courses/building-with-the-claude-api/implementing-multiple-turns" target="_blank" rel="noopener"><em>Implementing multiple turns</em></a></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works#the-agentic-loop-client-tools" target="_blank" rel="noopener">How tool use works › The agentic loop (client tools)</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons#tool-use" target="_blank" rel="noopener">Stop reasons › <code>tool_use</code></a> y <a href="https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons#end-turn" target="_blank" rel="noopener"><code>end_turn</code></a> · <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop#the-loop-at-a-glance" target="_blank" rel="noopener">Agent SDK › How the agent loop works</a></td>
+</tr>
+<tr>
+<td>Añadir los resultados de herramientas al historial entre iteraciones</td>
+<td>API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/handling-message-blocks" target="_blank" rel="noopener"><em>Handling message blocks</em></a>, <a href="https://academy.claude.com/courses/building-with-the-claude-api/sending-tool-results" target="_blank" rel="noopener"><em>Sending tool results</em></a></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/tool_use/04_complete_workflow.ipynb" target="_blank" rel="noopener">Curso GitHub <em>Tool use</em> › 04 Complete workflow</a></td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls#handling-results-from-client-tools" target="_blank" rel="noopener">Handle tool calls › Handling results from client tools</a></td>
+</tr>
+<tr>
+<td>Decisión dirigida por el modelo frente a árboles de decisión / secuencias prefijadas</td>
+<td>API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/agents-and-workflows" target="_blank" rel="noopener"><em>Agents and workflows</em></a>, <a href="https://academy.claude.com/courses/building-with-the-claude-api/workflows-vs-agents" target="_blank" rel="noopener"><em>Workflows vs agents</em></a></td>
+<td><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a> (workflows vs agentes)</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents" target="_blank" rel="noopener">Cookbook › patterns/agents</a></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Antipatrones: parsear lenguaje natural para terminar, topes de iteraciones como mecanismo principal, usar la presencia de texto como señal de fin</td>
+<td>P101 › <a href="https://academy.claude.com/courses/claude-platform-101/the-agent-loop-explained" target="_blank" rel="noopener"><em>The agent loop explained</em></a></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons#always-check-stop-reason" target="_blank" rel="noopener">Stop reasons › Always check <code>stop_reason</code></a> · <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop#turns-and-budget" target="_blank" rel="noopener">Agent SDK › Turns and budget</a> (los límites como red de seguridad, no como criterio de parada) · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-runner" target="_blank" rel="noopener">Tool runner (SDK)</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-2-orquestar-sistemas-multiagente-mediante-patrones-de-coordinator-subagent">1.2 Orquestar sistemas multiagente mediante patrones de coordinator-subagent</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arquitectura <em>hub-and-spoke</em>: el coordinador gestiona comunicación, errores y enrutado</td>
+<td>SUB › <a href="https://academy.claude.com/courses/introduction-to-subagents/what-are-subagents" target="_blank" rel="noopener"><em>What are subagents?</em></a></td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">How we built our multi-agent research system</a> · <a href="https://www.anthropic.com/research/building-effective-agents#workflow-orchestrator-workers" target="_blank" rel="noopener">Building effective agents › Workflow: Orchestrator-workers</a></td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/orchestrator_workers.ipynb" target="_blank" rel="noopener">Cookbook › orchestrator_workers</a></td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/subagents#benefits-of-using-subagents" target="_blank" rel="noopener">Agent SDK › Subagents › Benefits of using subagents</a></td>
+</tr>
+<tr>
+<td>Los subagentes tienen contexto aislado y no heredan el historial del coordinador</td>
+<td>SUB › <a href="https://academy.claude.com/courses/introduction-to-subagents/what-are-subagents" target="_blank" rel="noopener"><em>What are subagents?</em></a> · CC101 › Customizing Claude Code › <a href="https://academy.claude.com/courses/claude-code-101/subagents" target="_blank" rel="noopener"><em>Subagents</em></a></td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">How we built our multi-agent research system</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/subagents#what-subagents-inherit" target="_blank" rel="noopener">Agent SDK › What subagents inherit</a> · <a href="https://code.claude.com/docs/en/sub-agents#manage-subagent-context" target="_blank" rel="noopener">Claude Code › Manage subagent context</a></td>
+</tr>
+<tr>
+<td>El papel del coordinador en la descomposición de tareas, la delegación, la agregación de resultados y la toma de decisiones sobre qué subagentes activar en función de la complejidad de la consulta</td>
+<td>API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/routing-workflows" target="_blank" rel="noopener"><em>Routing workflows</em></a>, <a href="https://academy.claude.com/courses/building-with-the-claude-api/parallelization-workflows" target="_blank" rel="noopener"><em>Parallelization workflows</em></a></td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a> (escalar el esfuerzo a la complejidad de la consulta)</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#subagent-orchestration" target="_blank" rel="noopener">Prompting best practices › Subagent orchestration</a></td>
+</tr>
+<tr>
+<td>Riesgos de una descomposición de tareas excesivamente limitada por parte del coordinador, lo que conlleva una cobertura incompleta de temas de investigación amplios</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a> (lecciones sobre delegación vaga y trabajo duplicado)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Bucles de refinamiento iterativo (evaluar la síntesis, re-delegar, re-sintetizar)</td>
+<td>API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/chaining-workflows" target="_blank" rel="noopener"><em>Chaining workflows</em></a></td>
+<td><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a> (evaluator-optimizer)</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/evaluator_optimizer.ipynb" target="_blank" rel="noopener">Cookbook › evaluator_optimizer</a></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Toda comunicación pasa por el coordinador (observabilidad, errores coherentes)</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a></td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/claude_agent_sdk/01_The_chief_of_staff_agent.ipynb" target="_blank" rel="noopener">Cookbook Agent SDK › 01 Chief of staff agent</a></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-3-invocacion-de-subagentes-paso-de-contexto-y-spawning">1.3 Invocación de subagentes, paso de contexto y <em>spawning</em></h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>La herramienta <code>Task</code> (hoy <code>Agent</code>) lanza subagentes; <code>allowedTools</code> debe incluirla</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/subagents#programmatic-definition-recommended" target="_blank" rel="noopener">Agent SDK › Subagents (overview y ejemplos con <code>allowedTools</code>)</a> · <a href="https://code.claude.com/docs/en/agent-sdk/subagents#detect-subagent-invocation" target="_blank" rel="noopener">Detect subagent invocation</a></td>
+</tr>
+<tr>
+<td>El contexto se pasa explícitamente en el prompt; no hay memoria compartida</td>
+<td>SUB › <a href="https://academy.claude.com/courses/introduction-to-subagents/what-are-subagents" target="_blank" rel="noopener"><em>What are subagents?</em></a> · SUB › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener"><em>Designing effective subagents</em></a></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/subagents#what-subagents-inherit" target="_blank" rel="noopener">Agent SDK › What subagents inherit</a></td>
+</tr>
+<tr>
+<td><code>AgentDefinition</code>: descripción, system prompt, restricción de herramientas</td>
+<td>SUB › <a href="https://academy.claude.com/courses/introduction-to-subagents/creating-a-subagent" target="_blank" rel="noopener"><em>Creating a subagent</em></a></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/subagents#agentdefinition-configuration" target="_blank" rel="noopener">Agent SDK › AgentDefinition configuration</a> · <a href="https://code.claude.com/docs/en/agent-sdk/subagents#tool-restrictions" target="_blank" rel="noopener">Tool restrictions</a> · <a href="https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields" target="_blank" rel="noopener">Claude Code › Supported frontmatter fields</a></td>
+</tr>
+<tr>
+<td>Sesiones <em>fork</em> para explorar enfoques divergentes</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/subagents#forked-subagents" target="_blank" rel="noopener">Agent SDK › Forked subagents</a> · <a href="https://code.claude.com/docs/en/agent-sdk/sessions#fork-to-explore-alternatives" target="_blank" rel="noopener">Sessions › Fork to explore alternatives</a></td>
+</tr>
+<tr>
+<td>Pasar hallazgos completos y datos estructurados (contenido separado de metadatos: URL, documento, página)</td>
+<td>SUB › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener"><em>Designing effective subagents</em></a></td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a></td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#structure-prompts-with-xml-tags" target="_blank" rel="noopener">Prompting best practices › Structure prompts with XML tags</a></td>
+</tr>
+<tr>
+<td>Subagentes en paralelo: varias llamadas <code>Task</code> en <strong>una sola</strong> respuesta</td>
+<td>API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/using-multiple-tools" target="_blank" rel="noopener"><em>Using multiple tools</em></a></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/parallel_tools.ipynb" target="_blank" rel="noopener">Cookbook › parallel_tools</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#optimize-parallel-tool-calling" target="_blank" rel="noopener">Prompting best practices › Optimize parallel tool calling</a> · <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop#parallel-tool-execution" target="_blank" rel="noopener">Agent SDK › Parallel tool execution</a></td>
+</tr>
+<tr>
+<td>Prompts del coordinador con objetivos y criterios de calidad, no pasos procedimentales</td>
+<td>SUB › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener"><em>Designing effective subagents</em></a></td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a> (sección sobre prompting del orquestador)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-4-flujos-multipaso-con-enforcement-y-handoff">1.4 Flujos multipaso con <em>enforcement</em> y <em>handoff</em></h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enforcement programático (hooks, <em>gates</em>) frente a guía por prompt; los prompts tienen tasa de fallo no nula</td>
+<td>CCiA › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/hooks" target="_blank" rel="noopener"><em>Hooks</em></a> · CC101 › <a href="https://academy.claude.com/courses/claude-code-101/hooks" target="_blank" rel="noopener"><em>Hooks</em></a></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/best-practices#deterministic-and-non-deterministic-instructions" target="_blank" rel="noopener">Claude Code best practices › Deterministic and non-deterministic instructions</a> · <a href="https://code.claude.com/docs/en/best-practices#enforce-steps-with-hooks" target="_blank" rel="noopener">Enforce steps with hooks</a></td>
+</tr>
+<tr>
+<td>Bloquear herramientas hasta cumplir prerrequisitos (p. ej. <code>process_refund</code> tras <code>get_customer</code> verificado)</td>
+<td>CCiA › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/hooks" target="_blank" rel="noopener"><em>Hooks</em></a></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/hooks#add-context-and-block-a-tool" target="_blank" rel="noopener">Agent SDK › Hooks › Add context and block a tool</a> · <a href="https://code.claude.com/docs/en/agent-sdk/permissions" target="_blank" rel="noopener">Agent SDK › Permissions</a></td>
+</tr>
+<tr>
+<td>Descomponer peticiones con varios asuntos e investigarlos en paralelo</td>
+<td>API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/parallelization-workflows" target="_blank" rel="noopener"><em>Parallelization workflows</em></a></td>
+<td><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a> (parallelization)</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat" target="_blank" rel="noopener">Customer support agent (guía de caso de uso)</a></td>
+</tr>
+<tr>
+<td>Resúmenes de <em>handoff</em> estructurados al escalar a humanos</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/customer_service_agent.ipynb" target="_blank" rel="noopener">Cookbook › customer_service_agent</a></td>
+<td><a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat" target="_blank" rel="noopener">Customer support agent</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-5-hooks-del-agent-sdk-para-interceptar-llamadas-y-normalizar-datos">1.5 Hooks del Agent SDK para interceptar llamadas y normalizar datos</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PostToolUse</code> para transformar resultados antes de que el modelo los procese</td>
+<td>CCiA › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/hooks" target="_blank" rel="noopener"><em>Hooks</em></a></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/hooks#posttooluse" target="_blank" rel="noopener">Hooks reference › PostToolUse</a> · <a href="https://code.claude.com/docs/en/agent-sdk/hooks#available-hooks" target="_blank" rel="noopener">Agent SDK › Hooks › Available hooks</a></td>
+</tr>
+<tr>
+<td><code>PreToolUse</code> para bloquear acciones que violan políticas (reembolsos &gt; 500 $) y redirigir a escalado</td>
+<td>CCiA › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/hooks" target="_blank" rel="noopener"><em>Hooks</em></a> · CC101 › <em>Hooks</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/hooks#pretooluse" target="_blank" rel="noopener">Hooks reference › PreToolUse</a> · <a href="https://code.claude.com/docs/en/agent-sdk/hooks#modify-tool-input" target="_blank" rel="noopener">Agent SDK › Modify tool input</a> · <a href="https://code.claude.com/docs/en/agent-sdk/hooks#add-context-and-block-a-tool" target="_blank" rel="noopener">Add context and block a tool</a></td>
+</tr>
+<tr>
+<td>Hooks = garantía determinista; prompt = cumplimiento probabilístico</td>
+<td>CCiA › <em>Hooks</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/hooks-guide" target="_blank" rel="noopener">Hooks guide</a> · <a href="https://code.claude.com/docs/en/best-practices#enforce-the-rules-that-cant-have-exceptions" target="_blank" rel="noopener">Best practices › Enforce the rules that can't have exceptions</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-6-estrategias-de-descomposicion-de-tareas">1.6 Estrategias de descomposición de tareas</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pipelines secuenciales (<em>prompt chaining</em>) frente a descomposición dinámica</td>
+<td>API › Agents and workflows › <em>Chaining workflows</em>, <em>Workflows vs agents</em> · SUB › <em>Using subagents effectively</em> (<em>Pipelines secuenciales</em>: funcionan con tareas independientes y fallan cuando cada paso depende del anterior)</td>
+<td><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a></td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/basic_workflows.ipynb" target="_blank" rel="noopener">Cookbook › basic_workflows</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#chain-complex-prompts" target="_blank" rel="noopener">Prompting best practices › Chain complex prompts</a></td>
+</tr>
+<tr>
+<td>Revisiones por archivo + pasada de integración entre archivos</td>
+<td>CC101 › Daily workflows › <em>Code review</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/prompt_engineering_interactive_tutorial/Anthropic%201P/10.1_Appendix_Chaining%20Prompts.ipynb" target="_blank" rel="noopener">Curso GitHub › Appendix: Chaining prompts</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#chain-complex-prompts" target="_blank" rel="noopener">Chain complex prompts</a></td>
+</tr>
+<tr>
+<td>Planes de investigación adaptativos (mapear estructura → priorizar → adaptar)</td>
+<td>CC101 › <em>The explore → plan → code → commit workflow</em></td>
+<td><a href="https://www.anthropic.com/research/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener">Effective harnesses for long-running agents</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/common-workflows#understand-new-codebases" target="_blank" rel="noopener">Common workflows › Understand new codebases</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-7-estado-de-sesion-reanudacion-y-forking">1.7 Estado de sesión, reanudación y <em>forking</em></h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--resume &lt;nombre&gt;</code> para continuar una conversación concreta</td>
+<td>CCiA › Steer the Work › <em>Steering Long Sessions</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/common-workflows#resume-previous-conversations" target="_blank" rel="noopener">Common workflows › Resume previous conversations</a> · <a href="https://code.claude.com/docs/en/cli-reference#cli-flags" target="_blank" rel="noopener">CLI reference › CLI flags</a></td>
+</tr>
+<tr>
+<td><code>fork_session</code> / <code>--fork-session</code> para ramas paralelas desde una base común</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/sessions#fork-to-explore-alternatives" target="_blank" rel="noopener">Agent SDK › Sessions › Fork to explore alternatives</a> · <a href="https://code.claude.com/docs/en/agent-sdk/sessions#continue-resume-and-fork" target="_blank" rel="noopener">Continue, resume, and fork</a></td>
+</tr>
+<tr>
+<td>Informar a la sesión reanudada de los archivos que cambiaron; empezar de cero con resumen estructurado cuando los resultados están obsoletos</td>
+<td>CCiA › <em>Steering Long Sessions</em> · CC101 › <em>Context management</em></td>
+<td><a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering</a> · <a href="https://www.anthropic.com/research/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener">Effective harnesses for long-running agents</a> (archivos de progreso y resúmenes entre sesiones)</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#workflows-across-multiple-context-windows" target="_blank" rel="noopener">Prompting best practices › Workflows across multiple context windows</a></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="dominio-2-tool-design-mcp-integration-18">Dominio 2 · Tool Design &amp; MCP Integration (18 %)</h2>
+<h3 id="2-1-interfaces-de-herramientas-con-descripciones-y-limites-claros">2.1 Interfaces de herramientas con descripciones y límites claros</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>La descripción es el mecanismo principal de selección; incluir formato de entrada, ejemplos, casos límite y cuándo <strong>no</strong> usarla</td>
+<td>API › Tool use with Claude › <em>Tool schemas</em> · P101 › <em>What is tool use?</em></td>
+<td><a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a></td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#best-practices-for-tool-definitions" target="_blank" rel="noopener">Define tools › Best practices for tool definitions</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#providing-tool-use-examples" target="_blank" rel="noopener">Providing tool use examples</a></td>
+</tr>
+<tr>
+<td>Descripciones ambiguas o solapadas causan <em>misrouting</em>; renombrar y separar herramientas genéricas en herramientas con propósito único</td>
+<td>API › <em>Using multiple tools</em></td>
+<td><a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a> (elegir las herramientas adecuadas, <em>namespacing</em>) · <a href="https://www.anthropic.com/research/advanced-tool-use" target="_blank" rel="noopener">Advanced tool use</a></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>El wording del system prompt puede crear asociaciones no deseadas con herramientas</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#tool-use-system-prompt" target="_blank" rel="noopener">Define tools › Tool use system prompt</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#tool-usage" target="_blank" rel="noopener">Prompting best practices › Tool usage</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-2-respuestas-de-error-estructuradas-en-herramientas-mcp">2.2 Respuestas de error estructuradas en herramientas MCP</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flag <code>isError</code> de MCP</td>
+<td>MCP › Hands-on with MCP servers › <em>Defining tools with MCP</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://modelcontextprotocol.io/specification/2025-06-18/server/tools#error-handling" target="_blank" rel="noopener">Especificación MCP › Tools › Error Handling</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls#handling-errors-with-is-error" target="_blank" rel="noopener">Handle tool calls › Handling errors with <code>is_error</code></a></td>
+</tr>
+<tr>
+<td>Errores transitorios / de validación / de negocio / de permisos; metadatos <code>errorCategory</code>, <code>isRetryable</code></td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a> (respuestas de error útiles y accionables)</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/custom-tools#handle-errors" target="_blank" rel="noopener">Agent SDK › Custom tools › Handle errors</a> · <a href="https://platform.claude.com/docs/en/api/errors" target="_blank" rel="noopener">Claude API errors</a> (referencia de clases de error HTTP)</td>
+</tr>
+<tr>
+<td>Recuperación local en subagentes y propagación al coordinador con resultados parciales; distinguir fallo de acceso de resultado vacío válido</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a></td>
+<td>—</td>
+<td>ver también <strong>5.3</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-3-distribuir-herramientas-entre-agentes-y-configurar-toolchoice">2.3 Distribuir herramientas entre agentes y configurar <code>tool_choice</code></h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Demasiadas herramientas degradan la selección; acceso acotado por rol</td>
+<td>SUB › <em>Designing effective subagents</em> (<em>Limitar el acceso a las herramientas</em>: solo lectura para investigación, <code>Bash</code> para revisores, <code>Edit</code>/<code>Write</code> solo para quien modifica código) · SUB › <em>Creating a subagent</em> (<em>Personalizar las herramientas</em>)</td>
+<td><a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/subagents#common-tool-combinations" target="_blank" rel="noopener">Agent SDK › Subagents › Tool restrictions / Common tool combinations</a> · <a href="https://code.claude.com/docs/en/sub-agents#control-subagent-capabilities" target="_blank" rel="noopener">Claude Code › Control subagent capabilities</a></td>
+</tr>
+<tr>
+<td>Sustituir herramientas genéricas por alternativas restringidas (<code>fetch_url</code> → <code>load_document</code>)</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>tool_choice</code>: <code>auto</code>, <code>any</code>, forzado <code>{&quot;type&quot;:&quot;tool&quot;,&quot;name&quot;:...}</code></td>
+<td>API › Tool use with Claude › <em>Structured data</em> (lección previa) y <em>Tool schemas</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/tool_use/05_tool_choice.ipynb" target="_blank" rel="noopener">Curso GitHub <em>Tool use</em> › 05 Tool choice</a> · <a href="https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/tool_choice.ipynb" target="_blank" rel="noopener">Cookbook › tool_choice</a></td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#forcing-tool-use" target="_blank" rel="noopener">Define tools › Forcing tool use</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-4-integrar-servidores-mcp-en-claude-code-y-en-agentes">2.4 Integrar servidores MCP en Claude Code y en agentes</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ámbitos: proyecto (<code>.mcp.json</code>) frente a usuario (<code>~/.claude.json</code>)</td>
+<td>CC101 › Customizing Claude Code › <em>MCP</em> · API › Anthropic apps › <em>Enhancements with MCP servers</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/mcp#mcp-installation-scopes" target="_blank" rel="noopener">Claude Code › MCP installation scopes</a> · <a href="https://code.claude.com/docs/en/mcp#project-scope" target="_blank" rel="noopener">Project scope</a> · <a href="https://code.claude.com/docs/en/mcp#user-scope" target="_blank" rel="noopener">User scope</a></td>
+</tr>
+<tr>
+<td>Expansión de variables de entorno en <code>.mcp.json</code> (<code>${GITHUB_TOKEN}</code>)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/mcp#environment-variable-expansion-in-mcp-json" target="_blank" rel="noopener">Environment variable expansion in <code>.mcp.json</code></a> · <a href="https://code.claude.com/docs/en/agent-sdk/mcp#pass-credentials-via-environment-variables" target="_blank" rel="noopener">Agent SDK › MCP › Pass credentials via environment variables</a></td>
+</tr>
+<tr>
+<td>Las herramientas de todos los servidores se descubren al conectar y están disponibles a la vez</td>
+<td>MCP › Introducing MCP › <em>MCP clients</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/mcp#discover-available-tools" target="_blank" rel="noopener">Agent SDK › MCP › Discover available tools</a> · <a href="https://code.claude.com/docs/en/mcp#tool-availability" target="_blank" rel="noopener">Tool availability</a></td>
+</tr>
+<tr>
+<td>Recursos MCP como catálogos de contenido (esquemas, jerarquías de docs)</td>
+<td>MCP › Connecting with MCP clients › <em>Defining resources</em>, <em>Accessing resources</em> · API › Model Context Protocol › mismas lecciones</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://modelcontextprotocol.io/specification/2025-06-18/server/resources" target="_blank" rel="noopener">Especificación MCP › Resources</a> · <a href="https://code.claude.com/docs/en/mcp#use-mcp-resources" target="_blank" rel="noopener">Claude Code › Use MCP resources</a></td>
+</tr>
+<tr>
+<td>Mejorar descripciones MCP para que el agente no prefiera <code>Grep</code> u otras herramientas integradas</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/mcp#tools-not-being-called" target="_blank" rel="noopener">Agent SDK › MCP › Tools not being called</a></td>
+</tr>
+<tr>
+<td>Usar servidores MCP de la comunidad para integraciones estándar</td>
+<td>API › <em>Enhancements with MCP servers</em></td>
+<td><a href="https://www.anthropic.com/news/model-context-protocol" target="_blank" rel="noopener">Anuncio de MCP</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/mcp#find-and-build-mcp-servers" target="_blank" rel="noopener">Claude Code › Find and build MCP servers</a></td>
+</tr>
+<tr>
+<td>Transporte y conceptos avanzados (stdio, Streamable HTTP, sampling, roots)</td>
+<td>MCP+ (curso completo)</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/remote-mcp-servers" target="_blank" rel="noopener">Remote MCP servers</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/mcp-connector" target="_blank" rel="noopener">MCP connector (API)</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-5-uso-de-herramientas-integradas-read-write-edit-bash-grep-glob">2.5 Uso de herramientas integradas (Read, Write, Edit, Bash, Grep, Glob)</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Grep = buscar contenido; Glob = buscar rutas por patrón; Read/Write = archivo completo; Edit = cambio dirigido con texto único</td>
+<td>CC101 › What is Claude Code? › <em>How Claude Code works</em> · CCiA › (lecciones de contexto y cambios)</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/how-claude-code-works" target="_blank" rel="noopener">How Claude Code works</a> · <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop#built-in-tools" target="_blank" rel="noopener">Agent SDK › Built-in tools</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/text-editor-tool" target="_blank" rel="noopener">Text editor tool (API; <code>str_replace</code> exige coincidencia única)</a></td>
+</tr>
+<tr>
+<td>Fallback Read + Write cuando Edit no encuentra un ancla única</td>
+<td>API › Tool use with Claude › <em>The text edit tool</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/text-editor-tool" target="_blank" rel="noopener">Text editor tool</a></td>
+</tr>
+<tr>
+<td>Entender un código de forma incremental (Grep para puntos de entrada → Read para seguir imports)</td>
+<td>CC101 › <em>The explore → plan → code → commit workflow</em></td>
+<td><a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering</a> (recuperación <em>just-in-time</em>)</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/common-workflows#understand-new-codebases" target="_blank" rel="noopener">Common workflows › Understand new codebases</a></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="dominio-3-claude-code-configuration-workflows-20">Dominio 3 · Claude Code Configuration &amp; Workflows (20 %)</h2>
+<h3 id="3-1-claude-md-jerarquia-alcance-y-organizacion-modular">3.1 CLAUDE.md: jerarquía, alcance y organización modular</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jerarquía usuario / proyecto / subdirectorio; lo de usuario no se comparte con el equipo</td>
+<td>CC101 › Customizing Claude Code › <em>The CLAUDE.md file</em> · CCiA › Configure Claude › <em>A CLAUDE.md That Follows</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files" target="_blank" rel="noopener">Memory › Choose where to put CLAUDE.md files</a> · <a href="https://code.claude.com/docs/en/memory#how-claude-md-files-load" target="_blank" rel="noopener">How CLAUDE.md files load</a></td>
+</tr>
+<tr>
+<td><code>@import</code> para modularizar</td>
+<td>CCiA › <em>A CLAUDE.md That Follows</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/memory#import-additional-files" target="_blank" rel="noopener">Memory › Import additional files</a></td>
+</tr>
+<tr>
+<td>Directorio <code>.claude/rules/</code> como alternativa a un CLAUDE.md monolítico</td>
+<td>CCiA › <em>A CLAUDE.md That Follows</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/memory#set-up-rules" target="_blank" rel="noopener">Memory › Set up rules</a> · <a href="https://code.claude.com/docs/en/best-practices#keep-claude-md-short" target="_blank" rel="noopener">Best practices › Keep CLAUDE.md short</a></td>
+</tr>
+<tr>
+<td><code>/memory</code> para ver qué archivos están cargados y diagnosticar</td>
+<td>CC101 › <em>The CLAUDE.md file</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/commands" target="_blank" rel="noopener">Commands › <code>/memory</code></a> · <a href="https://code.claude.com/docs/en/memory#troubleshoot-memory-issues" target="_blank" rel="noopener">Memory › Troubleshoot memory issues</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-2-slash-commands-y-skills-personalizados">3.2 Slash commands y skills personalizados</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comandos de proyecto (<code>.claude/commands/</code>) frente a personales (<code>~/.claude/commands/</code>)</td>
+<td>CC101 › <em>Skills</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Skills (los comandos personalizados se han unificado con skills)</a> · <a href="https://code.claude.com/docs/en/skills#where-skills-live" target="_blank" rel="noopener">Where skills live</a></td>
+</tr>
+<tr>
+<td>Skills en <code>.claude/skills/</code> con <code>SKILL.md</code> y frontmatter (<code>context: fork</code>, <code>allowed-tools</code>, <code>argument-hint</code>)</td>
+<td>SKL › <em>Creating your first skill</em>, <em>Configuration and multi-file skills</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/skills#frontmatter-reference" target="_blank" rel="noopener">Skills › Frontmatter reference</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview" target="_blank" rel="noopener">Agent Skills (plataforma)</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices" target="_blank" rel="noopener">Skill authoring best practices</a></td>
+</tr>
+<tr>
+<td><code>context: fork</code> para aislar salidas verbosas en un subagente</td>
+<td>SKL › <em>Configuration and multi-file skills</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/skills#run-skills-in-a-subagent" target="_blank" rel="noopener">Skills › Run skills in a subagent</a></td>
+</tr>
+<tr>
+<td><code>allowed-tools</code> para restringir herramientas; <code>argument-hint</code> para pedir parámetros</td>
+<td>SKL › <em>Configuration and multi-file skills</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/skills#pre-approve-tools-for-a-skill" target="_blank" rel="noopener">Skills › Pre-approve tools for a skill</a> · <a href="https://code.claude.com/docs/en/skills#pass-arguments-to-skills" target="_blank" rel="noopener">Pass arguments to skills</a></td>
+</tr>
+<tr>
+<td>Variantes personales en <code>~/.claude/skills/</code> con otro nombre</td>
+<td>SKL › <em>Sharing skills</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/skills#resolve-skills-that-share-a-name" target="_blank" rel="noopener">Skills › Resolve skills that share a name</a></td>
+</tr>
+<tr>
+<td>Skills (bajo demanda) frente a CLAUDE.md (siempre cargado)</td>
+<td>SKL › <em>Skills vs. other Claude Code features</em></td>
+<td><a href="https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills" target="_blank" rel="noopener">Equipping agents for the real world with Agent Skills</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/best-practices#put-team-procedures-in-skills" target="_blank" rel="noopener">Best practices › Put team procedures in skills</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-3-reglas-por-ruta-para-cargar-convenciones-de-forma-condicional">3.3 Reglas por ruta para cargar convenciones de forma condicional</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archivos en <code>.claude/rules/</code> con frontmatter <code>paths:</code> y globs</td>
+<td>CCiA › <em>A CLAUDE.md That Follows</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/memory#path-specific-rules" target="_blank" rel="noopener">Memory › Path-specific rules</a> · <a href="https://code.claude.com/docs/en/memory#rules-frontmatter-reference" target="_blank" rel="noopener">Rules frontmatter reference</a></td>
+</tr>
+<tr>
+<td>Se cargan solo al tocar archivos coincidentes (menos tokens); mejor que CLAUDE.md por directorio para convenciones repartidas (p. ej. <code>**/*.test.tsx</code>)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/best-practices#scope-rules-to-one-part-of-the-codebase" target="_blank" rel="noopener">Best practices › Scope rules to one part of the codebase</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-4-plan-mode-frente-a-ejecucion-directa">3.4 Plan mode frente a ejecución directa</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plan mode para cambios grandes, multiarchivo o con decisiones de arquitectura; ejecución directa para cambios simples y acotados</td>
+<td>CC101 › Daily workflows › <em>The explore → plan → code → commit workflow</em> · CCiA › Configure Claude › <em>Permission Modes</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode" target="_blank" rel="noopener">Permission modes › Analyze before you edit with plan mode</a> · <a href="https://code.claude.com/docs/en/common-workflows#plan-before-editing" target="_blank" rel="noopener">Common workflows › Plan before editing</a></td>
+</tr>
+<tr>
+<td>Combinar planificación (investigación) con ejecución directa (implementación)</td>
+<td>CC101 › <em>The explore → plan → code → commit workflow</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/permission-modes#review-and-approve-a-plan" target="_blank" rel="noopener">Permission modes › Review and approve a plan</a></td>
+</tr>
+<tr>
+<td>Subagente <strong>Explore</strong> para aislar el descubrimiento verboso</td>
+<td>SUB › <em>What are subagents?</em> (<em>Un ejemplo práctico</em> y <em>Subagentes integrados</em>: Explore, Plan y propósito general) · CC101 › <em>Subagents</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/sub-agents#built-in-subagents" target="_blank" rel="noopener">Sub-agents › Built-in subagents</a> · <a href="https://code.claude.com/docs/en/common-workflows#delegate-research-to-subagents" target="_blank" rel="noopener">Common workflows › Delegate research to subagents</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-5-refinamiento-iterativo">3.5 Refinamiento iterativo</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2–3 ejemplos concretos de entrada/salida cuando la prosa se interpreta de forma inconsistente</td>
+<td>API › Prompt engineering techniques › <em>Providing examples</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#use-examples-effectively" target="_blank" rel="noopener">Prompting best practices › Use examples effectively</a></td>
+</tr>
+<tr>
+<td>Iteración guiada por tests (escribir tests primero y compartir fallos)</td>
+<td>CCiA › Configure Claude › <em>Verification Skills</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/best-practices#give-claude-a-check-to-run" target="_blank" rel="noopener">Best practices › Give Claude a check to run</a> · <a href="https://code.claude.com/docs/en/common-workflows#work-with-tests" target="_blank" rel="noopener">Common workflows › Work with tests</a></td>
+</tr>
+<tr>
+<td>Patrón <em>interview</em>: que Claude pregunte antes de implementar</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/best-practices#brainstorm-with-claude-first" target="_blank" rel="noopener">Best practices › Brainstorm with Claude first</a></td>
+</tr>
+<tr>
+<td>Problemas que interactúan en un solo mensaje frente a problemas independientes en secuencia</td>
+<td>CCiA › <em>Steering Long Sessions</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/best-practices#write-a-specific-prompt" target="_blank" rel="noopener">Best practices › Write a specific prompt</a> · <a href="https://code.claude.com/docs/en/best-practices#steer-the-session" target="_blank" rel="noopener">Steer the session</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-6-claude-code-en-ci-cd">3.6 Claude Code en CI/CD</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-p</code> / <code>--print</code> para modo no interactivo</td>
+<td>CCiA › Automate Repeat Work › <em>Routines and Headless</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/headless" target="_blank" rel="noopener">Run Claude Code programmatically (headless)</a> · <a href="https://code.claude.com/docs/en/cli-reference#cli-flags" target="_blank" rel="noopener">CLI reference › CLI flags</a></td>
+</tr>
+<tr>
+<td><code>--output-format json</code> + <code>--json-schema</code> para hallazgos parseables</td>
+<td>CCiA › <em>Routines and Headless</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/headless#get-structured-output" target="_blank" rel="noopener">Headless › Get structured output</a> · <a href="https://code.claude.com/docs/en/agent-sdk/structured-outputs" target="_blank" rel="noopener">Agent SDK › Structured outputs</a></td>
+</tr>
+<tr>
+<td>CLAUDE.md como contexto del proyecto para CI (estándares de test, fixtures, criterios de revisión)</td>
+<td>CCiA › Automate Repeat Work › <em>GitHub Actions and Code Review</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/github-actions#define-project-standards-in-claude-md" target="_blank" rel="noopener">GitHub Actions › Define project standards in CLAUDE.md</a> · <a href="https://code.claude.com/docs/en/gitlab-ci-cd" target="_blank" rel="noopener">GitLab CI/CD</a></td>
+</tr>
+<tr>
+<td>Instancia de revisión independiente frente a la que generó el código; volver a revisar solo hallazgos nuevos</td>
+<td>CCiA › <em>GitHub Actions and Code Review</em>, Verify and Share › <em>Trust It: Verifying Unsupervised Runs</em> · CC101 › <em>Code review</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/github-actions#example-use-cases" target="_blank" rel="noopener">GitHub Actions › Example use cases</a> · <a href="https://code.claude.com/docs/en/best-practices#review-against-your-spec" target="_blank" rel="noopener">Best practices › Review against your spec</a> · ver también <strong>4.6</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="dominio-4-prompt-engineering-structured-output-20">Dominio 4 · Prompt Engineering &amp; Structured Output (20 %)</h2>
+<h3 id="4-1-criterios-explicitos-para-mejorar-precision-y-reducir-falsos-positivos">4.1 Criterios explícitos para mejorar precisión y reducir falsos positivos</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Criterios explícitos y categóricos frente a instrucciones vagas («sé conservador»)</td>
+<td>API › Prompt engineering techniques › <em>Being clear and direct</em>, <em>Being specific</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/prompt_engineering_interactive_tutorial/Anthropic%201P/02_Being_Clear_and_Direct.ipynb" target="_blank" rel="noopener">Curso GitHub › Ch. 2 Being clear and direct</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#be-clear-and-direct" target="_blank" rel="noopener">Prompting best practices › Be clear and direct</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#add-context-to-improve-performance" target="_blank" rel="noopener">Add context to improve performance</a></td>
+</tr>
+<tr>
+<td>Impacto de los falsos positivos en la confianza; criterios de severidad con ejemplos de código</td>
+<td>API › Prompt evaluation (sección completa)</td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/tree/master/real_world_prompting" target="_blank" rel="noopener">Real world prompting (curso GitHub)</a></td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" target="_blank" rel="noopener">Define success criteria and build evaluations</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-2-few-shot-prompting-para-consistencia-y-calidad">4.2 Few-shot prompting para consistencia y calidad</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Few-shot como técnica más eficaz para formato consistente y casos ambiguos</td>
+<td>API › Prompt engineering techniques › <em>Providing examples</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/prompt_engineering_interactive_tutorial/Anthropic%201P/07_Using_Examples_Few-Shot_Prompting.ipynb" target="_blank" rel="noopener">Curso GitHub › Ch. 7 Using examples (few-shot)</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#use-examples-effectively" target="_blank" rel="noopener">Prompting best practices › Use examples effectively</a></td>
+</tr>
+<tr>
+<td>Ejemplos que muestran el razonamiento de por qué se elige una acción; generalización a patrones nuevos</td>
+<td>API › <em>Providing examples</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency#constrain-with-examples" target="_blank" rel="noopener">Increase output consistency › Constrain with examples</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#providing-tool-use-examples" target="_blank" rel="noopener">Define tools › Providing tool use examples</a></td>
+</tr>
+<tr>
+<td>Few-shot para reducir alucinaciones y campos vacíos en extracción de documentos variados</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/prompt_engineering_interactive_tutorial/Anthropic%201P/08_Avoiding_Hallucinations.ipynb" target="_blank" rel="noopener">Curso GitHub › Ch. 8 Avoiding hallucinations</a></td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations" target="_blank" rel="noopener">Reduce hallucinations</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-3-salida-estructurada-con-tool-use-y-json-schema">4.3 Salida estructurada con tool use y JSON Schema</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tool use con JSON Schema como vía más fiable de salida estructurada; extraer el resultado del bloque <code>tool_use</code></td>
+<td>API › Accessing Claude with the API › <em>Structured data</em> · API › Tool use with Claude › <em>Tool schemas</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/tool_use/03_structured_outputs.ipynb" target="_blank" rel="noopener">Curso GitHub <em>Tool use</em> › 03 Structured outputs</a> · <a href="https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/extracting_structured_json.ipynb" target="_blank" rel="noopener">Cookbook › extracting_structured_json</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs#strict-tool-use" target="_blank" rel="noopener">Structured outputs › Strict tool use</a></td>
+</tr>
+<tr>
+<td><code>tool_choice</code> <code>auto</code> / <code>any</code> / forzado</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/tool_use/05_tool_choice.ipynb" target="_blank" rel="noopener">Curso GitHub <em>Tool use</em> › 05 Tool choice</a></td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#forcing-tool-use" target="_blank" rel="noopener">Define tools › Forcing tool use</a></td>
+</tr>
+<tr>
+<td>El esquema elimina errores de sintaxis pero no errores semánticos</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs#important-considerations" target="_blank" rel="noopener">Structured outputs › Important considerations</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs#invalid-outputs" target="_blank" rel="noopener">Invalid outputs</a></td>
+</tr>
+<tr>
+<td>Diseño del esquema: campos opcionales/nullables, <code>enum</code> con <code>&quot;other&quot;</code> + detalle, <code>&quot;unclear&quot;</code></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/tool_use_with_pydantic.ipynb" target="_blank" rel="noopener">Cookbook › tool_use_with_pydantic</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs#json-schema-limitations" target="_blank" rel="noopener">Structured outputs › JSON Schema limitations</a></td>
+</tr>
+<tr>
+<td>Reglas de normalización de formato en el prompt junto con el esquema</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency#specify-the-desired-output-format" target="_blank" rel="noopener">Increase output consistency › Specify the desired output format</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-4-validacion-reintentos-y-bucles-de-feedback-en-extraccion">4.4 Validación, reintentos y bucles de feedback en extracción</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reintento con feedback de error (documento + extracción fallida + errores concretos)</td>
+<td>API › Prompt evaluation › <em>Code based grading</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/evaluator_optimizer.ipynb" target="_blank" rel="noopener">Cookbook › evaluator_optimizer</a></td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls#handling-errors-with-is-error" target="_blank" rel="noopener">Handle tool calls › Handling errors with <code>is_error</code></a></td>
+</tr>
+<tr>
+<td>Límites del reintento: no sirve si la información no está en el documento</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations#basic-hallucination-minimization-strategies" target="_blank" rel="noopener">Reduce hallucinations › Basic strategies</a> (permitir «no lo sé»)</td>
+</tr>
+<tr>
+<td>Campos <code>detected_pattern</code>, <code>calculated_total</code> vs <code>stated_total</code>, <code>conflict_detected</code></td>
+<td>API › Prompt evaluation › <em>Running the eval</em>, <em>Model based grading</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/tree/master/prompt_evaluations" target="_blank" rel="noopener">Curso GitHub › Prompt evaluations</a> · <a href="https://github.com/anthropics/claude-cookbooks/blob/main/misc/building_evals.ipynb" target="_blank" rel="noopener">Cookbook › building_evals</a></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-5-procesamiento-por-lotes-message-batches-api">4.5 Procesamiento por lotes (Message Batches API)</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50 % de ahorro, ventana de hasta 24 h, sin SLA de latencia; solo para cargas no bloqueantes</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#how-the-message-batches-api-works" target="_blank" rel="noopener">Batch processing › How the Message Batches API works</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#pricing" target="_blank" rel="noopener">Pricing</a></td>
+</tr>
+<tr>
+<td>Sin tool calling multiturno dentro de una petición</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#server-tools-and-the-agentic-loop" target="_blank" rel="noopener">Batch processing › Server tools and the agentic loop</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#batch-limitations" target="_blank" rel="noopener">Batch limitations</a></td>
+</tr>
+<tr>
+<td><code>custom_id</code> para correlacionar; reenviar solo los fallidos</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/misc/batch_processing.ipynb" target="_blank" rel="noopener">Cookbook › batch_processing</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#retrieving-batch-results" target="_blank" rel="noopener">Retrieving batch results</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#best-practices-for-effective-batching" target="_blank" rel="noopener">Best practices for effective batching</a></td>
+</tr>
+<tr>
+<td>Refinar el prompt sobre una muestra antes del lote</td>
+<td>API › Prompt evaluation › <em>A typical eval workflow</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" target="_blank" rel="noopener">Define success criteria and build evaluations</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-6-arquitecturas-de-revision-multiinstancia-y-multipasada">4.6 Arquitecturas de revisión multiinstancia y multipasada</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Limitaciones de la autorrevisión; instancia independiente sin el contexto del generador</td>
+<td>CCiA › Verify and Share › <em>Trust It: Verifying Unsupervised Runs</em> · SUB › <em>Using subagents effectively</em> (<em>Revisiones de código</em>: el subagente revisor no conoce la historia de cómo se escribió el código)</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/sub-agents#code-reviewer" target="_blank" rel="noopener">Sub-agents › Example subagents › Code reviewer</a> · <a href="https://code.claude.com/docs/en/best-practices#review-against-your-spec" target="_blank" rel="noopener">Best practices › Review against your spec</a></td>
+</tr>
+<tr>
+<td>Pasadas por archivo + pasada de integración</td>
+<td>CC101 › <em>Code review</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#chain-complex-prompts" target="_blank" rel="noopener">Chain complex prompts</a></td>
+</tr>
+<tr>
+<td>Pasadas de verificación con confianza autodeclarada por hallazgo para enrutar la revisión</td>
+<td>API › Prompt evaluation › <em>Model based grading</em></td>
+<td><a href="https://www.anthropic.com/research/demystifying-evals-for-ai-agents" target="_blank" rel="noopener">Demystifying evals for AI agents</a></td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="dominio-5-context-management-reliability-15">Dominio 5 · Context Management &amp; Reliability (15 %)</h2>
+<h3 id="5-1-preservar-informacion-critica-en-interacciones-largas">5.1 Preservar información crítica en interacciones largas</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Riesgos del resumen progresivo; bloque persistente de «hechos del caso»</td>
+<td>CC101 › Daily workflows › <em>Context management</em> · P101 › Extending your Agent › <em>Context management</em></td>
+<td><a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering</a></td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/context-windows" target="_blank" rel="noopener">Context windows</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/compaction" target="_blank" rel="noopener">Compaction</a></td>
+</tr>
+<tr>
+<td>Efecto <em>lost in the middle</em>; poner los hallazgos clave al principio con cabeceras</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#long-context-prompting" target="_blank" rel="noopener">Prompting best practices › Long context prompting</a></td>
+</tr>
+<tr>
+<td>Los resultados de herramientas se acumulan; recortar a los campos relevantes</td>
+<td>API › Tool use with Claude › <em>Sending tool results</em></td>
+<td><a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a> (eficiencia de tokens en respuestas)</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/context-editing" target="_blank" rel="noopener">Context editing</a> · <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop#what-consumes-context" target="_blank" rel="noopener">Agent SDK › What consumes context</a></td>
+</tr>
+<tr>
+<td>Enviar el historial completo en cada petición</td>
+<td>API › Accessing Claude with the API › <em>Multi-Turn conversations</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/working-with-messages" target="_blank" rel="noopener">Using the Messages API</a></td>
+</tr>
+<tr>
+<td>Subagentes que devuelven datos estructurados (hechos, citas, relevancia) en lugar de razonamiento verboso</td>
+<td>SUB › <em>Designing effective subagents</em> (<em>Definir un formato de salida</em>)</td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a></td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5-2-escalado-y-resolucion-de-ambiguedad">5.2 Escalado y resolución de ambigüedad</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Disparadores de escalado: petición explícita de humano, huecos/excepciones de política, imposibilidad de avanzar</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/customer_service_agent.ipynb" target="_blank" rel="noopener">Cookbook › customer_service_agent</a></td>
+<td><a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat" target="_blank" rel="noopener">Customer support agent (guía de caso de uso)</a></td>
+</tr>
+<tr>
+<td>Sentimiento y confianza autodeclarada no son buenos indicadores de complejidad</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing" target="_blank" rel="noopener">Ticket routing (guía de caso de uso)</a></td>
+</tr>
+<tr>
+<td>Criterios explícitos de escalado con ejemplos few-shot en el system prompt</td>
+<td>API › Prompt engineering techniques › <em>Providing examples</em> · API › Accessing Claude with the API › <em>System prompts</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/blob/master/real_world_prompting/05_customer_support_ai.ipynb" target="_blank" rel="noopener">Real world prompting › 05 Customer support AI</a></td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#use-examples-effectively" target="_blank" rel="noopener">Prompting best practices › Use examples effectively</a></td>
+</tr>
+<tr>
+<td>Coincidencias múltiples: pedir identificadores adicionales en lugar de elegir por heurística</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#balancing-autonomy-and-safety" target="_blank" rel="noopener">Prompting best practices › Balancing autonomy and safety</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5-3-propagacion-de-errores-en-sistemas-multiagente">5.3 Propagación de errores en sistemas multiagente</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contexto de error estructurado (tipo de fallo, qué se intentó, resultados parciales, alternativas)</td>
+<td>SUB › <em>Designing effective subagents</em> (parcial, <em>Informar de los obstáculos</em>: una sección «Obstáculos encontrados» en el formato de salida)</td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a> · <a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Fallo de acceso frente a resultado vacío válido; ni suprimir errores ni abortar todo el flujo</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://modelcontextprotocol.io/specification/2025-06-18/server/tools#error-handling" target="_blank" rel="noopener">Especificación MCP › Tools › Error Handling</a> · <a href="https://code.claude.com/docs/en/agent-sdk/mcp#error-handling" target="_blank" rel="noopener">Agent SDK › MCP › Error handling</a></td>
+</tr>
+<tr>
+<td>Recuperación local de errores transitorios; anotaciones de cobertura en la síntesis</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/sub-agents#api-errors-in-subagents" target="_blank" rel="noopener">Claude Code › API errors in subagents</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5-4-contexto-en-la-exploracion-de-bases-de-codigo-grandes">5.4 Contexto en la exploración de bases de código grandes</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Degradación del contexto en sesiones largas</td>
+<td>CC101 › <em>Context management</em> · CCiA › <em>Steering Long Sessions</em></td>
+<td><a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/context-window" target="_blank" rel="noopener">Context window (Claude Code)</a></td>
+</tr>
+<tr>
+<td>Archivos <em>scratchpad</em> para persistir hallazgos</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener">Effective harnesses for long-running agents</a></td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool" target="_blank" rel="noopener">Memory tool (API)</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#state-management-best-practices" target="_blank" rel="noopener">Prompting best practices › State management best practices</a></td>
+</tr>
+<tr>
+<td>Delegar en subagentes para aislar la exploración verbosa</td>
+<td>SUB › <em>Using subagents effectively</em> (<em>Tareas de investigación</em> y la regla «¿importa el trabajo intermedio?») · SUB › <em>What are subagents?</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/common-workflows#delegate-research-to-subagents" target="_blank" rel="noopener">Common workflows › Delegate research to subagents</a> · <a href="https://code.claude.com/docs/en/sub-agents#choose-between-subagents-and-main-conversation" target="_blank" rel="noopener">Choose between subagents and main conversation</a></td>
+</tr>
+<tr>
+<td>Persistencia de estado para recuperación ante caídas (manifiestos)</td>
+<td>—</td>
+<td><a href="https://www.anthropic.com/research/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener">Effective harnesses for long-running agents</a></td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/agent-sdk/file-checkpointing" target="_blank" rel="noopener">Agent SDK › File checkpointing</a></td>
+</tr>
+<tr>
+<td><code>/compact</code> para reducir el uso de contexto</td>
+<td>CC101 › <em>Context management</em></td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://code.claude.com/docs/en/commands" target="_blank" rel="noopener">Commands › <code>/compact</code></a> · <a href="https://code.claude.com/docs/en/context-window#what-survives-compaction" target="_blank" rel="noopener">Context window › What survives compaction</a> · <a href="https://code.claude.com/docs/en/agent-sdk/agent-loop#automatic-compaction" target="_blank" rel="noopener">Agent SDK › Automatic compaction</a></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5-5-flujos-de-revision-humana-y-calibracion-de-confianza">5.5 Flujos de revisión humana y calibración de confianza</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Métricas agregadas que ocultan fallos por tipo de documento o campo; analizar por segmento</td>
+<td>API › Prompt evaluation (sección completa)</td>
+<td><a href="https://www.anthropic.com/research/demystifying-evals-for-ai-agents" target="_blank" rel="noopener">Demystifying evals for AI agents</a></td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" target="_blank" rel="noopener">Define success criteria and build evaluations</a></td>
+</tr>
+<tr>
+<td>Muestreo aleatorio estratificado; confianza por campo calibrada con conjuntos etiquetados</td>
+<td>API › Prompt evaluation › <em>Generating test datasets</em>, <em>Running the eval</em></td>
+<td>—</td>
+<td><a href="https://github.com/anthropics/courses/tree/master/prompt_evaluations" target="_blank" rel="noopener">Curso GitHub › Prompt evaluations</a> · <a href="https://github.com/anthropics/claude-cookbooks/blob/main/misc/building_evals.ipynb" target="_blank" rel="noopener">Cookbook › building_evals</a></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Enrutar a revisión humana lo de baja confianza o fuentes contradictorias</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing" target="_blank" rel="noopener">Ticket routing</a> · <a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations" target="_blank" rel="noopener">Reduce hallucinations</a></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>Nota: el muestreo estratificado y la calibración de umbrales son prácticas generales de evaluación; Anthropic las cubre de forma indirecta en sus guías de evals, sin una página dedicada.</p>
+</blockquote>
+<h3 id="5-6-procedencia-de-la-informacion-e-incertidumbre-en-sintesis-multifuente">5.6 Procedencia de la información e incertidumbre en síntesis multifuente</h3>
+<div class="table-wrap wide"><table>
+<thead>
+<tr>
+<th>Punto de la guía</th>
+<th>Curso</th>
+<th>Artículos de Anthropic</th>
+<th>Prácticas</th>
+<th>Otros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mapeos afirmación–fuente estructurados que se preservan en la síntesis</td>
+<td>API › Features of Claude › <em>Citations</em></td>
+<td><a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a> (agente de citas)</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/citations" target="_blank" rel="noopener">Citations</a></td>
+</tr>
+<tr>
+<td>Anotar conflictos entre fuentes con su atribución en vez de escoger uno</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations#advanced-techniques" target="_blank" rel="noopener">Reduce hallucinations › Advanced techniques</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#research-and-information-gathering" target="_blank" rel="noopener">Prompting best practices › Research and information gathering</a></td>
+</tr>
+<tr>
+<td>Exigir fechas de publicación o recogida para interpretar diferencias temporales</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/legal-summarization" target="_blank" rel="noopener">Legal summarization (guía de caso de uso)</a></td>
+</tr>
+<tr>
+<td>Presentar cada tipo de contenido en su formato (tablas, prosa, listas)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#control-the-format-of-responses" target="_blank" rel="noopener">Prompting best practices › Control the format of responses</a></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="ruta-minima-recomendada">Ruta mínima recomendada</h2>
+<ol>
+<li><strong>API</strong> completo (sobre todo <em>Tool use with Claude</em>, <em>Prompt engineering techniques</em>, <em>Prompt evaluation</em> y <em>Agents and workflows</em>) → dominios 1, 2 y 4.</li>
+<li><strong>P101</strong> → bucle agéntico y gestión de contexto (dominios 1 y 5).</li>
+<li><strong>CC101</strong> y <strong>CCiA</strong> → dominio 3 y la parte de CI/CD.</li>
+<li><strong>SUB</strong> y <strong>SKL</strong> → subagentes, <code>context: fork</code>, frontmatter de skills.</li>
+<li><strong>MCP</strong> (y <strong>MCP+</strong> si queda tiempo) → dominio 2.</li>
+<li>Leer los cuatro artículos de ingeniería: <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>, <a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a>, <a href="https://www.anthropic.com/research/writing-tools-for-agents" target="_blank" rel="noopener">Writing effective tools for agents</a> y <a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering</a>.</li>
+<li>Practicar con los <a href="https://github.com/anthropics/claude-cookbooks/tree/main/claude_agent_sdk" target="_blank" rel="noopener">notebooks de Agent SDK del cookbook</a> y la <a href="https://code.claude.com/docs/en/agent-sdk/overview" target="_blank" rel="noopener">referencia del Agent SDK</a>.</li>
+</ol>
+<!-- Enlaces de referencia -->
+
+<nav class="pager"><a class="prev" href="index.html"><small>← Anterior</small>Inicio</a><a class="next" href="01-agentic-architecture.html"><small>Siguiente →</small>Arquitectura agéntica y orquestación</a></nav>
+    </main>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

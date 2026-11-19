@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dominio 3 · Configuración y flujos de trabajo de Claude Code (20 %) · CCAR-F</title>
+<script>
+  // Antes de pintar, para que no parpadee el tema. Misma clave que el examen 1.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("examccarf-theme") || "light"); } catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div id="progress"></div>
+<button class="backdrop" id="backdrop" aria-label="Cerrar menú"></button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <div class="logo">A</div>
+      <div>
+        <h1>Guía CCAR-F</h1>
+        <p>Claude Certified Architect – Foundations</p>
+      </div>
+    </a>
+    <div class="nav-label">Apuntes</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="index.html"><span class="code">★</span><span class="txt">Inicio</span></a>
+      <a class="lesson-btn nav-item" href="00-index.html"><span class="code">≡</span><span class="txt">Índice de recursos</span></a>
+      <a class="lesson-btn nav-item" href="01-agentic-architecture.html"><span class="code">D1</span><span class="txt">Arquitectura agéntica y orquestación</span></a>
+      <a class="lesson-btn nav-item" href="02-mcp-tools.html"><span class="code">D2</span><span class="txt">Diseño de herramientas e integración con MCP</span></a>
+      <a class="lesson-btn nav-item active" href="03-claude.html"><span class="code">D3</span><span class="txt">Configuración y flujos de trabajo de Claude Code</span></a>
+      <div class="toc">
+        <a href="#como-usar-este-documento">Cómo usar este documento</a>
+        <a href="#3-1-configurar-claude-md-jerarquia-alcance-y-organizacion-modular"><span class="num">3.1</span>Configurar CLAUDE.md: jerarquía, alcance y organización modular</a>
+        <a href="#3-2-comandos-slash-y-skills-personalizados"><span class="num">3.2</span>Comandos slash y skills personalizados</a>
+        <a href="#3-3-reglas-por-ruta-para-cargar-convenciones-de-forma-condicional"><span class="num">3.3</span>Reglas por ruta para cargar convenciones de forma condicional</a>
+        <a href="#3-4-plan-mode-frente-a-ejecucion-directa"><span class="num">3.4</span>Plan mode frente a ejecución directa</a>
+        <a href="#3-5-tecnicas-de-refinamiento-iterativo"><span class="num">3.5</span>Técnicas de refinamiento iterativo</a>
+        <a href="#3-6-integrar-claude-code-en-pipelines-de-ci-cd"><span class="num">3.6</span>Integrar Claude Code en pipelines de CI/CD</a>
+        <a href="#chuleta-de-decisiones">Chuleta de decisiones</a>
+        <a href="#preguntas-de-autoevaluacion">Preguntas de autoevaluación</a>
+      </div>
+      <a class="lesson-btn nav-item" href="04-prompt-structured-output.html"><span class="code">D4</span><span class="txt">Ingeniería de prompts y salida estructurada</span></a>
+      <a class="lesson-btn nav-item" href="05-context.html"><span class="code">D5</span><span class="txt">Gestión del contexto y fiabilidad</span></a>
+    </nav>
+    <div class="nav-label">Práctica</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="simulacros.html"><span class="code">⏱</span><span class="txt">Simulacros de examen</span></a>
+      <a class="lesson-btn nav-item" href="practica.html"><span class="code">✎</span><span class="txt">Practicar por dominio o task</span></a>
+    </nav>
+    <div class="side-foot">
+      <p>Generado desde los .md el 14 de noviembre de 2026</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" title="Menú">☰</button>
+      <span class="title">Dominio 3 · Configuración y flujos de trabajo de Claude Code (20 %)</span>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema claro/oscuro">🌙</button>
+      <button class="icon-btn" onclick="window.print()" title="Imprimir / PDF">⎙</button>
+    </div>
+
+    <main class="content prose">
+<h1 id="dominio-3-configuracion-y-flujos-de-trabajo-de-claude-code-20">Dominio 3 · Configuración y flujos de trabajo de Claude Code (20 %)</h1>
+<blockquote>
+<p>Síntesis didáctica de los conceptos del Dominio 3 de la guía oficial del examen <strong>Claude Certified Architect – Foundations</strong> (v1.0).
+Fuentes principales: los cursos de Anthropic Academy de la carpeta <code>Anthropic/</code> (enlazados como <code>[[...]]</code>), sobre todo <em>Claude Code 101</em>, <em>Claude Code in action</em> e <em>Introducción a agent skills</em>. Donde los cursos no llegan (reglas por ruta, comandos personalizados, <code>context: fork</code>, refinamiento iterativo), se completa con la documentación oficial de Claude Code. El índice de recursos por <em>task statement</em> está en <a href="00-index.html">Índice de recursos</a>.</p>
+</blockquote>
+<h2 id="como-usar-este-documento">Cómo usar este documento</h2>
+<p>Cada sección corresponde a un <em>task statement</em> (3.1 a 3.6) y sigue el mismo esquema que <a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a>:</p>
+<ol>
+<li><strong>La idea en una frase</strong>.</li>
+<li><strong>Explicación</strong>, con ejemplos.</li>
+<li><strong>Qué busca el examen</strong>: los razonamientos que la guía premia y las trampas habituales.</li>
+<li><strong>Fuentes</strong>.</li>
+</ol>
+<p>Al final hay una chuleta de decisiones y preguntas de autoevaluación.</p>
+<p>Este dominio aparece sobre todo en dos escenarios del examen: <strong>«Code Generation with Claude Code»</strong> (CLAUDE.md, comandos, plan mode) y <strong>«Claude Code for Continuous Integration»</strong> (CI/CD, revisiones automáticas, generación de tests).</p>
+<h3 id="el-mapa-del-dominio-donde-va-cada-instruccion">El mapa del dominio: dónde va cada instrucción</h3>
+<p>La pregunta que recorre todo el dominio es <strong>dónde poner cada cosa</strong>. Claude Code tiene varios mecanismos de personalización y cada uno resuelve un problema distinto:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mecanismo</th>
+<th>Cuándo se carga</th>
+<th>Para qué</th>
+<th>Naturaleza</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLAUDE.md</code></td>
+<td><strong>Siempre</strong>, al inicio de cada sesión</td>
+<td>Estándares universales del proyecto</td>
+<td>Instrucción (probabilística)</td>
+</tr>
+<tr>
+<td><code>.claude/rules/</code> sin <code>paths</code></td>
+<td>Siempre, igual que <code>CLAUDE.md</code></td>
+<td>Lo mismo, pero dividido por temas</td>
+<td>Instrucción</td>
+</tr>
+<tr>
+<td><code>.claude/rules/</code> con <code>paths</code></td>
+<td>Solo al trabajar con archivos que coinciden</td>
+<td>Convenciones de un tipo de archivo</td>
+<td>Instrucción</td>
+</tr>
+<tr>
+<td>Skills (<code>.claude/skills/</code>)</td>
+<td><strong>Bajo demanda</strong>: solo el nombre y la descripción hasta que hacen falta</td>
+<td>Procedimientos y conocimiento de una tarea concreta</td>
+<td>Instrucción</td>
+</tr>
+<tr>
+<td>Comandos (<code>.claude/commands/</code>)</td>
+<td>Cuando los invocas con <code>/nombre</code></td>
+<td>Flujos que lanzas explícitamente</td>
+<td>Instrucción</td>
+</tr>
+<tr>
+<td>Subagentes (<code>.claude/agents/</code>)</td>
+<td>Cuando se delega en ellos</td>
+<td>Trabajo en un contexto aislado</td>
+<td>Delegación</td>
+</tr>
+<tr>
+<td>Hooks (<code>settings.json</code>)</td>
+<td>En eventos del ciclo de vida</td>
+<td>Reglas que <strong>no</strong> pueden fallar</td>
+<td>Código (determinista)</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>Al conectar el servidor</td>
+<td>Herramientas y datos externos</td>
+<td>Integración</td>
+</tr>
+</tbody>
+</table></div>
+<p>El curso <em>Claude Code in action</em> lo resume en una regla de tres partes: las convenciones que se aplican siempre van en <code>CLAUDE.md</code>; los procedimientos de un tipo de tarea, en una skill; y una regla que Claude <strong>no debe poder omitir</strong>, en un hook, «porque tanto <code>CLAUDE.md</code> como las skills son instrucciones que Claude sigue, mientras que un hook es código que realmente se ejecuta».</p>
+<hr>
+<h2 id="3-1-configurar-claude-md-jerarquia-alcance-y-organizacion-modular">3.1 Configurar <code>CLAUDE.md</code>: jerarquía, alcance y organización modular</h2>
+<a class="practice-chip" href="practica.html?task=3.1">✎ Practicar 3.1 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase">La idea en una frase</h3>
+<p><code>CLAUDE.md</code> es el «guion de incorporación» que Claude lee en cada sesión. Existe en varios niveles (organización, usuario, proyecto, local, subdirectorio) que <strong>se suman</strong>, y solo el de proyecto se comparte con el equipo a través de git.</p>
+<h3 id="explicacion">Explicación</h3>
+<p><strong>El problema que resuelve.</strong> Sin <code>CLAUDE.md</code>, Claude empieza de cero en cada sesión: tiene que volver a explorar el código, averiguar los comandos y adivinar las convenciones. Con él, ya sabe, por ejemplo, que el proyecto usa <code>pnpm</code>, dónde van las rutas de la API o que se prefieren los <em>exports</em> con nombre. El curso lo describe como un archivo cuyo contenido «se añade automáticamente a cada prompt».</p>
+<p><strong>La jerarquía.</strong> Claude carga <strong>todos</strong> los niveles que encuentra y los concatena; ninguno sustituye a otro:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Nivel</th>
+<th>Ubicación</th>
+<th>Quién lo ve</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Política gestionada</strong> (organización)</td>
+<td>Ruta del sistema, controlada por IT (p. ej. <code>/etc/claude-code/CLAUDE.md</code>)</td>
+<td>Toda la organización; no se puede excluir</td>
+</tr>
+<tr>
+<td><strong>Usuario</strong></td>
+<td><code>~/.claude/CLAUDE.md</code></td>
+<td><strong>Solo tú</strong>, en todos tus proyectos</td>
+</tr>
+<tr>
+<td><strong>Proyecto</strong></td>
+<td><code>./CLAUDE.md</code> o <code>./.claude/CLAUDE.md</code></td>
+<td><strong>Todo el equipo</strong>, vía control de versiones</td>
+</tr>
+<tr>
+<td><strong>Local</strong></td>
+<td><code>./CLAUDE.local.md</code> (en <code>.gitignore</code>)</td>
+<td>Solo tú, en ese proyecto</td>
+</tr>
+<tr>
+<td><strong>Subdirectorio</strong></td>
+<td><code>&lt;subdir&gt;/CLAUDE.md</code></td>
+<td>Se carga <strong>bajo demanda</strong>, cuando Claude lee o edita archivos de ese subdirectorio</td>
+</tr>
+</tbody>
+</table></div>
+<p>Se cargan de lo más general a lo más específico. Los archivos de los directorios por encima del directorio de trabajo se cargan al arrancar; los de subdirectorios, cuando Claude toca archivos dentro de ellos.</p>
+<p><strong>El error de diagnóstico clásico.</strong> Un compañero nuevo clona el repositorio y Claude no sigue las convenciones del equipo. Causa típica: las instrucciones están en el <code>~/.claude/CLAUDE.md</code> de quien las escribió (nivel de usuario), que <strong>no se comparte por git</strong>. Solución: moverlas al <code>CLAUDE.md</code> del proyecto.</p>
+<p><strong>Modularidad con <code>@import</code>.</strong> Un <code>CLAUDE.md</code> puede importar otros archivos con <code>@ruta</code>:</p>
+<pre><code class="hljs language-markdown"><span class="hljs-section"># Proyecto</span>
+Consulta @README.md para la visión general y @package.json para los scripts disponibles.
+
+<span class="hljs-section"># Estándares</span>
+<span class="hljs-bullet">-</span> Estilo de código @.claude/conventions/code-style.md
+<span class="hljs-bullet">-</span> Tests @.claude/conventions/testing.md
+</code></pre>
+<p>Las rutas relativas se resuelven respecto al archivo que importa, y los imports pueden anidarse (hasta cuatro niveles). En un monorepo, cada paquete puede importar solo los estándares que le corresponden (por ejemplo, el <code>CLAUDE.md</code> del paquete de pagos importa <code>@../../standards/pci.md</code>), según el criterio de quien lo mantiene.</p>
+<p><strong>Matiz importante del curso:</strong> los imports sirven para <strong>organizar</strong>, no para ahorrar contexto. Claude expande los archivos importados en línea al arrancar, así que todo se carga igualmente.</p>
+<p><strong><code>.claude/rules/</code>: dividir por temas.</strong> La alternativa a un <code>CLAUDE.md</code> monolítico es una carpeta de reglas, un archivo por tema:</p>
+<pre><code class="hljs language-text">.claude/
+├── CLAUDE.md
+└── rules/
+    ├── testing.md
+    ├── api-conventions.md
+    └── deployment.md
+</code></pre>
+<p>Las reglas <strong>sin</strong> <code>paths</code> se cargan siempre, con la misma prioridad que <code>.claude/CLAUDE.md</code>. Las reglas <strong>con</strong> <code>paths</code> se cargan solo cuando hace falta (lo vemos en 3.3).</p>
+<p><strong>Verificar qué se ha cargado: <code>/memory</code>.</strong> La guía pide usar <code>/memory</code> para comprobar qué archivos de memoria hay y diagnosticar comportamientos inconsistentes entre sesiones. <code>/memory</code> lista los <code>CLAUDE.md</code>, <code>CLAUDE.local.md</code> y demás archivos de memoria de los ámbitos de usuario y proyecto, y permite abrirlos y editarlos. En la versión actual, para ver exactamente qué se cargó al arrancar se usa además <code>/context</code> (lista <strong>Memory files</strong>). Para depurar reglas por ruta o archivos de subdirectorio está el hook <code>InstructionsLoaded</code>.</p>
+<p><strong>Cómo escribir un <code>CLAUDE.md</code> que se cumpla.</strong> El curso <em>Claude Code in action</em> insiste en que el archivo <strong>no es una configuración obligatoria, sino una guía</strong>: cada línea compite con las demás por la atención de Claude. Sus consejos:</p>
+<ol>
+<li><strong>Mantenlo corto.</strong> La documentación recomienda menos de 200 líneas por archivo. Cuanto más largo, menos fiable es que se siga una regla concreta.</li>
+<li><strong>Reglas específicas y verificables.</strong> No «sigue las buenas prácticas para las rutas de API», sino «coloca las nuevas rutas de API en <code>src/api/handlers</code>, una por archivo».</li>
+<li><strong>Indica la alternativa.</strong> No «no uses <em>exports</em> por defecto», sino «usa <em>exports</em> con nombre, no por defecto».</li>
+<li><strong>El énfasis es un presupuesto.</strong> Si todas las reglas dicen «IMPORTANTE», ninguna destaca.</li>
+<li><strong>Las reglas estrictas van a hooks.</strong> «Nunca hagas push a <code>main</code>» no debe depender de que Claude lo recuerde.</li>
+<li><strong>Revísalo continuamente.</strong> Cada error de Claude es un informe de error sobre tu <code>CLAUDE.md</code>; puedes decirle «añade eso al <code>CLAUDE.md</code>».</li>
+</ol>
+<p>Y del curso <em>Claude Code 101</em>: puedes empezar sin <code>CLAUDE.md</code> para ver dónde corriges a Claude, y luego generar uno con <code>/init</code>.</p>
+<h3 id="que-busca-el-examen">Qué busca el examen</h3>
+<ul>
+<li>Un compañero no recibe las instrucciones → están a nivel de <strong>usuario</strong> en lugar de <strong>proyecto</strong>.</li>
+<li>Las preferencias personales van en <code>~/.claude/CLAUDE.md</code> (o <code>CLAUDE.local.md</code>), nunca en el de proyecto.</li>
+<li><code>CLAUDE.md</code> demasiado grande → dividir en <code>.claude/rules/</code> por temas o usar <code>@import</code> para organizar.</li>
+<li>Comportamiento inconsistente entre sesiones → <code>/memory</code> (y <code>/context</code>) para ver qué archivos de memoria están en juego.</li>
+</ul>
+<h3 id="fuentes">Fuentes</h3>
+<ul>
+<li>Claude Code 101 › Customizing Claude Code › <a href="https://academy.claude.com/courses/claude-code-101/the-claude-md-file" target="_blank" rel="noopener">The CLAUDE.md file</a></li>
+<li>Claude Code in action › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/a-claude-md-that-follows" target="_blank" rel="noopener">A CLAUDE.md that follows</a> (las cuatro ubicaciones, imports, redacción)</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">How Claude remembers your project</a> (secciones <em>Choose where to put CLAUDE.md files</em>, <em>Import additional files</em>, <em>Organize rules with .claude/rules/</em> y <em>View and edit with /memory</em>)</li>
+</ul>
+<hr>
+<h2 id="3-2-comandos-slash-y-skills-personalizados">3.2 Comandos <em>slash</em> y skills personalizados</h2>
+<a class="practice-chip" href="practica.html?task=3.2">✎ Practicar 3.2 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-1">La idea en una frase</h3>
+<p>Un <strong>comando</strong> es un flujo que lanzas tú con <code>/nombre</code>; una <strong>skill</strong> es conocimiento de una tarea que Claude carga <strong>bajo demanda</strong> cuando la petición encaja con su descripción. Los de proyecto (<code>.claude/</code>) se comparten por git; los personales (<code>~/.claude/</code>) solo te afectan a ti.</p>
+<h3 id="explicacion-1">Explicación</h3>
+<p><strong>Comandos personalizados.</strong> Un archivo Markdown en <code>.claude/commands/</code> crea un comando: <code>.claude/commands/review.md</code> → <code>/review</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ámbito</th>
+<th>Ubicación</th>
+<th>Quién lo tiene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proyecto</td>
+<td><code>.claude/commands/</code></td>
+<td>Todo el equipo al clonar o hacer <em>pull</em></td>
+</tr>
+<tr>
+<td>Usuario</td>
+<td><code>~/.claude/commands/</code></td>
+<td>Solo tú</td>
+</tr>
+</tbody>
+</table></div>
+<p>En la versión actual de Claude Code, <strong>los comandos se han fusionado con las skills</strong>: <code>.claude/commands/deploy.md</code> y <code>.claude/skills/deploy/SKILL.md</code> crean el mismo <code>/deploy</code>, y los comandos existentes siguen funcionando. La documentación recomienda skills para el trabajo nuevo, pero la guía del examen sigue tratando <code>.claude/commands/</code> como el sitio de los comandos de proyecto.</p>
+<p><strong>Skills.</strong> Una skill es una <strong>carpeta</strong> con un <code>SKILL.md</code>:</p>
+<pre><code class="hljs language-markdown">---
+name: pr-description
+<span class="hljs-section">description: Escribe descripciones de pull requests. Úsala al crear una PR o cuando el usuario pida resumir los cambios de una rama.
+---</span>
+Al escribir una descripción de PR:
+<span class="hljs-bullet">1.</span> Ejecuta <span class="hljs-code">`git diff main...HEAD`</span> para ver los cambios.
+<span class="hljs-bullet">2.</span> Escribe la descripción con las secciones: Qué, Por qué, Cambios.
+</code></pre>
+<p>Cómo funcionan, según el curso <em>Introducción a agent skills</em>:</p>
+<ul>
+<li>Al arrancar, Claude solo carga el <strong>nombre y la descripción</strong> de cada skill. Por eso tener muchas no cuesta contexto.</li>
+<li>Cuando tu petición coincide con una descripción, Claude carga el <code>SKILL.md</code> completo y sigue sus instrucciones.</li>
+<li>La <strong>descripción</strong> es lo que decide la activación. Debe responder a dos preguntas: qué hace y cuándo usarla. Si una skill no se activa, casi siempre hay que mejorar la descripción con las palabras que usas de verdad.</li>
+<li><strong>Divulgación progresiva</strong>: mantén <code>SKILL.md</code> por debajo de 500 líneas y mueve el material extenso a archivos de apoyo (<code>references/</code>, <code>scripts/</code>, <code>assets/</code>) que Claude solo lee cuando los necesita. Los scripts se <strong>ejecutan</strong> sin cargarse en el contexto: solo su salida consume tokens.</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ámbito</th>
+<th>Ubicación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Personal</td>
+<td><code>~/.claude/skills/&lt;nombre&gt;/SKILL.md</code></td>
+</tr>
+<tr>
+<td>Proyecto</td>
+<td><code>.claude/skills/&lt;nombre&gt;/SKILL.md</code></td>
+</tr>
+<tr>
+<td>Empresa</td>
+<td>Configuración gestionada (máxima prioridad)</td>
+</tr>
+<tr>
+<td>Plugin</td>
+<td><code>&lt;plugin&gt;/skills/&lt;nombre&gt;/SKILL.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Si dos skills se llaman igual, gana la de mayor prioridad: <strong>empresa → personal → proyecto</strong> (las de plugin van con espacio de nombres propio).</p>
+<p><strong>Los tres campos de <em>frontmatter</em> que pide la guía:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Qué hace</th>
+<th>Ejemplo de uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>context: fork</code></td>
+<td>Ejecuta la skill en un <strong>subagente aislado</strong>: la salida y el trabajo intermedio no ensucian la conversación principal</td>
+<td>Análisis del código que genera mucha salida; <em>brainstorming</em> de alternativas</td>
+</tr>
+<tr>
+<td><code>allowed-tools</code></td>
+<td>Lista de herramientas que la skill puede usar sin pedir permiso mientras está activa</td>
+<td>Limitar una skill a lectura (<code>Read, Grep, Glob</code>) o a escritura de archivos, sin acciones destructivas</td>
+</tr>
+<tr>
+<td><code>argument-hint</code></td>
+<td>Pista que muestra el autocompletado con los argumentos esperados (p. ej. <code>[issue-number]</code>); no valida ni obliga</td>
+<td>Recordar al desarrollador qué parámetro tiene que escribir al invocar la skill</td>
+</tr>
+</tbody>
+</table></div>
+<p>Un ejemplo que combina los tres:</p>
+<pre><code class="hljs language-markdown">---
+name: analyze-module
+description: Analiza en profundidad un módulo y resume su arquitectura y dependencias.
+argument-hint: [ruta-del-módulo]
+context: fork
+agent: Explore
+<span class="hljs-section">allowed-tools: Read, Grep, Glob
+---</span>
+Analiza el módulo $ARGUMENTS:
+<span class="hljs-bullet">1.</span> Localiza sus archivos con Glob y Grep.
+<span class="hljs-bullet">2.</span> Lee y analiza el código.
+<span class="hljs-bullet">3.</span> Resume la arquitectura y las dependencias con referencias concretas a archivos.
+</code></pre>
+<p><strong><code>argument-hint</code> y cómo llegan los argumentos.</strong> Una skill se puede invocar con texto detrás del nombre: <code>/fix-issue 123</code>. Ese texto son los <strong>argumentos</strong>, y hay dos piezas distintas que conviene no confundir:</p>
+<ul>
+<li><strong><code>argument-hint</code></strong> solo es una <strong>pista visual</strong>. Cuando escribes <code>/fix-issue</code> en Claude Code, el autocompletado muestra al lado lo que espera la skill, por ejemplo <code>/fix-issue [issue-number]</code>. No valida nada ni obliga a escribir el argumento: solo le recuerda al desarrollador qué tiene que poner.</li>
+<li><strong><code>$ARGUMENTS</code></strong> es el <strong>hueco</strong> del <code>SKILL.md</code> donde se inserta lo que escribiste. Antes de que Claude lea la skill, Claude Code sustituye <code>$ARGUMENTS</code> por el texto de la invocación.</li>
+</ul>
+<p>Ejemplo completo:</p>
+<pre><code class="hljs language-markdown">---
+name: fix-issue
+description: Corrige una issue de GitHub siguiendo nuestros estándares.
+<span class="hljs-section">argument-hint: [issue-number]
+---</span>
+Corrige la issue $ARGUMENTS de GitHub:
+<span class="hljs-bullet">1.</span> Lee la descripción de la issue.
+<span class="hljs-bullet">2.</span> Implementa la corrección.
+<span class="hljs-bullet">3.</span> Escribe tests y haz un commit.
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Lo que escribes</th>
+<th>Lo que ves en el autocompletado</th>
+<th>Lo que recibe Claude</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/fix-issue</code></td>
+<td><code>/fix-issue [issue-number]</code></td>
+<td>— (aún no has invocado la skill)</td>
+</tr>
+<tr>
+<td><code>/fix-issue 123</code></td>
+<td>—</td>
+<td>«Corrige la issue 123 de GitHub: 1. Lee la descripción…»</td>
+</tr>
+</tbody>
+</table></div>
+<p>Si la skill necesita <strong>varios argumentos</strong>, se usan por posición, empezando en 0: <code>$0</code> es el primero, <code>$1</code> el segundo, etc. (forma corta de <code>$ARGUMENTS[0]</code>, <code>$ARGUMENTS[1]</code>…). Los valores con espacios van entre comillas.</p>
+<pre><code class="hljs language-markdown">---
+name: migrate-component
+description: Migra un componente de un lenguaje a otro.
+<span class="hljs-section">argument-hint: [componente] [desde] [hasta]
+---</span>
+Migra el componente $0 de $1 a $2 conservando el comportamiento y los tests.
+</code></pre>
+<p><code>/migrate-component SearchBar JavaScript TypeScript</code> llega como «Migra el componente SearchBar de JavaScript a TypeScript…». Si invocas una skill con argumentos y su contenido no tiene ningún hueco, Claude Code añade al final <code>ARGUMENTS: &lt;lo que escribiste&gt;</code> para que Claude lo vea igualmente.</p>
+<p><strong>Qué hace exactamente <code>context: fork</code>.</strong> Sin este campo, la skill se carga <strong>en tu conversación</strong>: Claude la lee y sigue sus instrucciones con todo lo que ya habéis hablado. Con <code>context: fork</code>, Claude Code lanza un <strong>subagente nuevo</strong> y le pasa como única tarea el contenido del <code>SKILL.md</code>, ya con los argumentos sustituidos. Tres consecuencias:</p>
+<ol>
+<li><strong>El subagente no ve la conversación.</strong> Solo conoce el texto de la skill (y el <code>CLAUDE.md</code> del proyecto). Si escribes «revisa lo que hemos hablado» en una skill con <code>context: fork</code>, no sabrá a qué te refieres. Las instrucciones tienen que bastarse solas, y lo que dependa de la conversación tiene que llegar como argumento.</li>
+<li><strong>El campo <code>agent</code> decide qué subagente lo hace</strong>, y con él qué herramientas y permisos tiene: <code>Explore</code> (exploración de solo lectura), <code>Plan</code>, <code>general-purpose</code> (el que se usa si no pones <code>agent</code>) o uno propio de <code>.claude/agents/</code>.</li>
+<li><strong>A tu conversación solo vuelve el resumen final.</strong> Toda la lectura de archivos y la salida intermedia se quedan en el contexto del subagente. Por eso encaja con análisis que generan mucha salida.</li>
+</ol>
+<p>Por la misma razón, <code>context: fork</code> <strong>solo sirve para skills que piden una tarea autocontenida</strong>. Compara:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>¿Sirve con <code>context: fork</code>?</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>analyze-module</code> (arriba): «Analiza el módulo $ARGUMENTS y resume su arquitectura»</td>
+<td>Sí</td>
+<td>Es una tarea completa: el subagente la hace y devuelve el resumen</td>
+</tr>
+<tr>
+<td><code>api-conventions</code>: «Usa nombres en camelCase y devuelve siempre errores con este formato»</td>
+<td>No</td>
+<td>Son pautas para el trabajo que haces <strong>tú</strong> en la conversación. El subagente las recibe, pero no tiene ninguna tarea que hacer con ellas y vuelve sin resultado útil</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ojo con el nombre: <code>context: fork</code> <strong>no</strong> copia la conversación actual en el subagente (eso es otra función distinta de Claude Code, «bifurcar la conversación»). Si la tarea necesita lo que ya habéis hablado, no uses <code>context: fork</code>.</p>
+<p><strong>Variantes personales sin pisar al equipo.</strong> Si quieres tu propia versión de una skill del proyecto, créala en <code>~/.claude/skills/</code> <strong>con otro nombre</strong> (por ejemplo, <code>review-mario</code> en lugar de <code>review</code>). Así no alteras lo que usan tus compañeros ni entras en conflictos de prioridad.</p>
+<p><strong>Skill o <code>CLAUDE.md</code>.</strong> La decisión central de esta sección:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>CLAUDE.md</code></th>
+<th>Skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Se carga <strong>siempre</strong></td>
+<td>Se carga <strong>bajo demanda</strong></td>
+</tr>
+<tr>
+<td>Estándares universales del proyecto («usa TypeScript estricto»)</td>
+<td>Procedimientos de una tarea («checklist de revisión de PR»)</td>
+</tr>
+<tr>
+<td>Restricciones y preferencias generales</td>
+<td>Conocimiento que solo importa a veces y llenaría el contexto</td>
+</tr>
+</tbody>
+</table></div>
+<p>La regla práctica de los cursos: <strong>si has escrito la misma instrucción de varios pasos dos veces, eso es una skill</strong>. Y la primera que el curso recomienda crear es una de <strong>verificación</strong> (ejecutar tests, leer el <em>diff</em>, comprobar que no se han debilitado tests y dar evidencias).</p>
+<p>Otras diferencias que menciona el curso: las skills añaden conocimiento a la conversación <strong>actual</strong>, mientras que los subagentes trabajan en un contexto <strong>aparte</strong>; y los subagentes <strong>no heredan</strong> las skills automáticamente (hay que listarlas en su campo <code>skills</code>).</p>
+<h3 id="que-busca-el-examen-1">Qué busca el examen</h3>
+<ul>
+<li><strong>Pregunta 4 de la guía</strong>: un comando <code>/review</code> disponible para todo el equipo al clonar → <strong><code>.claude/commands/</code></strong> del repositorio. <code>~/.claude/commands/</code> es personal; <code>CLAUDE.md</code> no define comandos; <code>.claude/config.json</code> con un array de comandos no existe.</li>
+<li>Skill que genera mucha salida o explora alternativas → <code>context: fork</code>.</li>
+<li>Restringir lo que puede hacer una skill → <code>allowed-tools</code>.</li>
+<li>Parámetro que el usuario olvida al invocar la skill → <code>argument-hint</code> (la pista del autocompletado; el valor llega a la skill con <code>$ARGUMENTS</code>).</li>
+<li>Siempre aplicable → <code>CLAUDE.md</code>; específico de una tarea → skill.</li>
+</ul>
+<h3 id="fuentes-1">Fuentes</h3>
+<ul>
+<li>Introduction to agent skills › <a href="https://academy.claude.com/courses/introduction-to-agent-skills/what-are-skills" target="_blank" rel="noopener">What are skills?</a></li>
+<li>Introduction to agent skills › <a href="https://academy.claude.com/courses/introduction-to-agent-skills/configuration-and-multi-file-skills" target="_blank" rel="noopener">Configuration and multi-file skills</a></li>
+<li>Introduction to agent skills › <a href="https://academy.claude.com/courses/introduction-to-agent-skills/skills-vs-other-claude-code-features" target="_blank" rel="noopener">Skills vs. other Claude Code features</a></li>
+<li>Claude Code 101 › Organizing your work and knowledge › <a href="https://academy.claude.com/courses/claude-101/working-with-skills" target="_blank" rel="noopener">Working with skills</a></li>
+<li>Claude Code in action › Configure Claude › <a href="https://academy.claude.com/courses/claude-code-in-action/verification-skills" target="_blank" rel="noopener">Verification skills</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Extend Claude with skills</a> (<em>frontmatter</em> completo, <a href="https://code.claude.com/docs/en/skills#pass-arguments-to-skills" target="_blank" rel="noopener">Pass arguments to skills</a> y <a href="https://code.claude.com/docs/en/skills#run-skills-in-a-subagent" target="_blank" rel="noopener">Run skills in a subagent</a>)</li>
+</ul>
+<hr>
+<h2 id="3-3-reglas-por-ruta-para-cargar-convenciones-de-forma-condicional">3.3 Reglas por ruta para cargar convenciones de forma condicional</h2>
+<a class="practice-chip" href="practica.html?task=3.3">✎ Practicar 3.3 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-2">La idea en una frase</h3>
+<p>Un archivo de <code>.claude/rules/</code> con <code>paths:</code> en su <em>frontmatter</em> solo se carga cuando Claude trabaja con archivos que coinciden con esos patrones <em>glob</em>. Es la mejor opción para convenciones que dependen del <strong>tipo</strong> de archivo y no de la carpeta.</p>
+<h3 id="explicacion-2">Explicación</h3>
+<p><strong>La sintaxis:</strong></p>
+<pre><code class="hljs language-markdown">---
+paths:
+<span class="hljs-section">  - &quot;terraform/<span class="hljs-strong">**/<span class="hljs-emphasis">*&quot;
+---
+
+# Convenciones de Terraform
+- Cada módulo tiene su propio `variables.tf` y `outputs.tf`.
+- Etiqueta todos los recursos con `owner` y `cost-center`.
+</span></span></span></code></pre>
+<p>La regla se carga cuando Claude lee, escribe o edita un archivo que coincide con algún patrón. Las reglas <strong>sin</strong> <code>paths</code> se cargan siempre.</p>
+<p><strong>Patrones habituales:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Patrón</th>
+<th>Coincide con</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>**/*.ts</code></td>
+<td>Todos los archivos TypeScript, en cualquier carpeta</td>
+</tr>
+<tr>
+<td><code>src/**/*</code></td>
+<td>Todo lo que hay bajo <code>src/</code></td>
+</tr>
+<tr>
+<td><code>**/*.test.tsx</code></td>
+<td>Todos los tests de React, estén donde estén</td>
+</tr>
+<tr>
+<td><code>src/**/*.{ts,tsx}</code></td>
+<td>Varias extensiones a la vez</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Por qué existen: contexto y relevancia.</strong> Cargar las convenciones de Terraform mientras editas un componente de React es ruido y gasta tokens. Con reglas por ruta, cada convención aparece solo cuando es relevante.</p>
+<p><strong>Reglas por ruta frente a <code>CLAUDE.md</code> de subdirectorio.</strong> Un <code>CLAUDE.md</code> de subdirectorio está <strong>atado a una carpeta</strong>. Si los archivos a los que aplica una convención están repartidos por todo el código (por ejemplo, <code>Button.test.tsx</code> junto a <code>Button.tsx</code> en cada carpeta), tendrías que duplicar el <code>CLAUDE.md</code> en decenas de sitios. Una sola regla con <code>paths: [&quot;**/*.test.tsx&quot;]</code> lo cubre todo.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Usa...</th>
+<th>Cuando...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLAUDE.md</code> de subdirectorio</td>
+<td>La convención aplica a <strong>una carpeta</strong> concreta (p. ej. <code>packages/billing/</code>)</td>
+</tr>
+<tr>
+<td>Regla con <code>paths</code></td>
+<td>La convención aplica a un <strong>tipo de archivo</strong> repartido por el código</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="que-busca-el-examen-2">Qué busca el examen</h3>
+<ul>
+<li><strong>Pregunta 6 de la guía</strong>: convenciones distintas por área y tests repartidos por todo el código → <strong><code>.claude/rules/</code> con <em>globs</em></strong> (<code>**/*.test.tsx</code>). Los distractores: todo en el <code>CLAUDE.md</code> raíz (Claude tiene que inferir qué sección aplica), skills (dependen de invocación o de que Claude decida cargarlas, no de la ruta) o un <code>CLAUDE.md</code> por subdirectorio (no cubre archivos dispersos).</li>
+<li>«Que se aplique automáticamente según el archivo» → regla con <code>paths</code>, no skill.</li>
+</ul>
+<h3 id="fuentes-2">Fuentes</h3>
+<ul>
+<li>Los cursos no cubren esta funcionalidad; la fuente es la documentación oficial.</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/memory#path-specific-rules" target="_blank" rel="noopener">How Claude remembers your project › Path-specific rules</a></li>
+</ul>
+<hr>
+<h2 id="3-4-plan-mode-frente-a-ejecucion-directa">3.4 Plan mode frente a ejecución directa</h2>
+<a class="practice-chip" href="practica.html?task=3.4">✎ Practicar 3.4 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-3">La idea en una frase</h3>
+<p>Usa <strong>plan mode</strong> cuando la tarea tiene implicaciones de arquitectura, varios enfoques válidos o cambios en muchos archivos: Claude explora en solo lectura y propone un plan antes de tocar nada. Usa <strong>ejecución directa</strong> para cambios pequeños con alcance claro.</p>
+<h3 id="explicacion-3">Explicación</h3>
+<p><strong>El flujo base del curso <em>Claude Code 101</em>:</strong> explorar → planificar → programar → confirmar (<em>commit</em>). «Si solo te quedas con una idea de este curso, que sea este flujo». Sin él, la mayoría de la gente pide código directamente y acaba corrigiendo el rumbo más tarde.</p>
+<p><strong>Qué es plan mode.</strong> Un modo de permisos en el que Claude <strong>solo puede leer</strong>: investiga el código, puede buscar en la web y presenta un plan de acción. Se activa con <code>Shift + Tab</code>. Es el mejor momento para corregir el rumbo, «porque todavía no se ha escrito ningún código». El curso <em>Claude Code in action</em> añade: <strong>lee el plan de verdad</strong>; iterar sobre un plan es mucho más rápido que arreglar una implementación equivocada.</p>
+<p><strong>Cuándo usar cada uno:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Plan mode</th>
+<th>Ejecución directa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reestructurar un monolito en microservicios</td>
+<td>Arreglar un bug en un archivo con un <em>stack trace</em> claro</td>
+</tr>
+<tr>
+<td>Migrar una librería que afecta a más de 45 archivos</td>
+<td>Añadir una validación de fecha a una función</td>
+</tr>
+<tr>
+<td>Elegir entre enfoques de integración con requisitos de infraestructura distintos</td>
+<td>Cambios bien entendidos y de alcance acotado</td>
+</tr>
+<tr>
+<td>Decisiones de arquitectura, varios enfoques válidos</td>
+<td>Una sola forma razonable de hacerlo</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Combinarlos.</strong> No es una elección exclusiva: lo habitual es <strong>planificar en plan mode y luego ejecutar</strong> el plan aprobado. Al aprobar el plan, Claude pasa a implementarlo con el modo de permisos que elijas. Una ventaja que señala el curso: después de ejecutar, Claude conserva el contexto de cómo se llegó al plan.</p>
+<p><strong>El subagente Explore.</strong> Las fases de descubrimiento generan mucha salida (decenas de archivos leídos, búsquedas). El subagente integrado <strong>Explore</strong> hace esa exploración en su propio contexto y devuelve solo un resumen, de modo que la conversación principal no se llena. Es útil en tareas de varias fases para que el contexto no se agote antes de llegar a la implementación. (El subagente <strong>Plan</strong> es el que usa internamente el plan mode.)</p>
+<p><strong>Consejos del curso para la fase de programación:</strong> define criterios de éxito explícitos en el plan, dale a Claude herramientas para comprobar su trabajo y una suite de tests contra la que validar.</p>
+<h3 id="que-busca-el-examen-3">Qué busca el examen</h3>
+<ul>
+<li><strong>Pregunta 5 de la guía</strong>: reestructurar un monolito en microservicios → <strong>plan mode desde el principio</strong>. Los distractores: empezar ejecutando y «dejar que la implementación revele los límites» (retrabajo caro), instrucciones exhaustivas sin explorar (asume que ya conoces la estructura) o cambiar a plan mode solo si surge complejidad (la complejidad ya está en el enunciado).</li>
+<li>Cambio de un solo archivo con causa clara → ejecución directa; plan mode sería sobreingeniería.</li>
+<li>Exploración que llena el contexto → subagente Explore.</li>
+</ul>
+<h3 id="fuentes-3">Fuentes</h3>
+<ul>
+<li>Claude Code 101 › Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/the-explore-plan-code-commit-workflow" target="_blank" rel="noopener">The explore → plan → code → commit workflow</a></li>
+<li>Claude Code in action › Steer the work › <a href="https://academy.claude.com/courses/claude-code-in-action/steering-long-sessions" target="_blank" rel="noopener">Steering long sessions</a> (Scope the work first with plan mode)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/what-are-subagents" target="_blank" rel="noopener">What are subagents?</a> (Built-in Subagents)</li>
+<li>Docs: <a href="https://code.claude.com/docs/en/permission-modes" target="_blank" rel="noopener">Permission modes › Plan mode</a> · <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Best practices</a></li>
+</ul>
+<hr>
+<h2 id="3-5-tecnicas-de-refinamiento-iterativo">3.5 Técnicas de refinamiento iterativo</h2>
+<a class="practice-chip" href="practica.html?task=3.5">✎ Practicar 3.5 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-4">La idea en una frase</h3>
+<p>Cuando la descripción en prosa no basta, <strong>muestra</strong> lo que quieres: ejemplos concretos de entrada y salida, tests que fallan o una entrevista previa. Y agrupa en un solo mensaje los problemas que interactúan; corrige uno a uno los que son independientes.</p>
+<h3 id="explicacion-4">Explicación</h3>
+<p>Los cursos tocan estas ideas de pasada (sé específico, define criterios de éxito, usa una suite de tests); la mayor parte de esta sección viene de la guía de buenas prácticas de Claude Code y de la propia guía del examen.</p>
+<p><strong>1. Ejemplos concretos de entrada y salida.</strong> Si describes una transformación en prosa y Claude la interpreta de forma distinta cada vez, la forma más eficaz de comunicarla es dar <strong>2 o 3 ejemplos</strong> concretos:</p>
+<pre><code class="hljs language-text">Convierte los nombres de las columnas así:
+- &quot;fecha_alta_cliente&quot;  → &quot;clientSignupDate&quot;
+- &quot;ID_PEDIDO&quot;           → &quot;orderId&quot;
+- &quot;importe total (€)&quot;   → &quot;totalAmountEur&quot;
+</code></pre>
+<p>Los ejemplos eliminan la ambigüedad que la prosa deja abierta. Para casos límite, lo mismo: si un script de migración falla con valores nulos, dale el caso exacto («entrada: <code>{&quot;email&quot;: null}</code> → salida esperada: la fila se omite y se registra un aviso»).</p>
+<p><strong>2. Iteración guiada por tests (TDD).</strong> Escribe primero una suite que cubra el comportamiento esperado, los casos límite y los requisitos de rendimiento; después pide la implementación e itera <strong>compartiendo los fallos de los tests</strong>. La guía de buenas prácticas lo explica así: Claude se detiene cuando el trabajo <em>parece</em> terminado; si tiene algo que devuelve «pasa / no pasa», puede cerrar el ciclo por sí mismo (cambiar, ejecutar, leer el fallo, corregir). Un ejemplo de prompt de esa guía: «escribe un test que falle y reproduzca el problema, y luego arréglalo».</p>
+<p><strong>3. El patrón entrevista.</strong> Antes de implementar algo en un dominio que no conoces bien, pide a Claude que <strong>te entreviste</strong> para sacar a la luz consideraciones que quizá no habías previsto (estrategias de invalidación de caché, modos de fallo, qué queda fuera del alcance):</p>
+<pre><code class="hljs language-text">Quiero añadir rate limiting a la API pública, pero no lo he pensado a fondo.
+Entrevístame hasta que puedas escribir la especificación y guárdala en SPEC.md.
+</code></pre>
+<p>Claude responde con preguntas sobre lo que no has decidido y sigue hasta tener una especificación completa. Después, se recomienda empezar una sesión nueva para implementar a partir de <code>SPEC.md</code>.</p>
+<p><strong>4. ¿Todo en un mensaje o paso a paso?</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situación</th>
+<th>Estrategia</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Los problemas <strong>interactúan</strong> (arreglar uno afecta a otro)</td>
+<td>Un solo mensaje detallado con todos</td>
+<td>Claude necesita verlos juntos para diseñar una solución coherente</td>
+</tr>
+<tr>
+<td>Los problemas son <strong>independientes</strong></td>
+<td>Iterar de uno en uno</td>
+<td>Cada corrección es más enfocada y fácil de verificar</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>5. Corregir el rumbo pronto.</strong> De la guía de buenas prácticas: vigila el primer minuto, pulsa <code>Esc</code> en cuanto Claude se desvíe y, si después de dos correcciones sigue mal, usa <code>/clear</code> y escribe un prompt mejor en lugar de una tercera corrección. El curso <em>Claude Code in action</em> añade <code>/rewind</code> (<code>Esc</code> dos veces) para volver a un punto de control, y <code>/compact &lt;instrucciones&gt;</code> para dirigir qué se conserva al resumir.</p>
+<h3 id="que-busca-el-examen-4">Qué busca el examen</h3>
+<ul>
+<li>Descripciones en prosa interpretadas de forma inconsistente → <strong>2–3 ejemplos concretos de entrada/salida</strong>.</li>
+<li>Mejorar progresivamente una implementación → <strong>tests primero</strong> y compartir los fallos.</li>
+<li>Dominio desconocido con decisiones de diseño → <strong>patrón entrevista</strong> antes de implementar.</li>
+<li>Problemas que interactúan → <strong>un único mensaje</strong>; independientes → <strong>secuencial</strong>.</li>
+</ul>
+<h3 id="fuentes-4">Fuentes</h3>
+<ul>
+<li>Claude Code 101 › Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/the-explore-plan-code-commit-workflow" target="_blank" rel="noopener">The explore → plan → code → commit workflow</a> (Code: criterios de éxito, suite de pruebas)</li>
+<li>Claude Code in action › Steer the work › <a href="https://academy.claude.com/courses/claude-code-in-action/steering-long-sessions" target="_blank" rel="noopener">Steering long sessions</a> (Steer while Claude works: <code>/compact</code>, <code>/rewind</code>)</li>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/being-specific" target="_blank" rel="noopener">Being specific</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Best practices for Claude Code</a> (secciones <em>Write a specific prompt</em>, <em>Brainstorm with Claude first</em>, <em>Give Claude a check to run</em> y <em>Steer the session</em>)</li>
+</ul>
+<hr>
+<h2 id="3-6-integrar-claude-code-en-pipelines-de-ci-cd">3.6 Integrar Claude Code en pipelines de CI/CD</h2>
+<a class="practice-chip" href="practica.html?task=3.6">✎ Practicar 3.6 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-5">La idea en una frase</h3>
+<p>En CI, Claude Code se ejecuta con <strong><code>-p</code></strong> (no interactivo), devuelve resultados estructurados con <strong><code>--output-format json</code> + <code>--json-schema</code></strong>, toma el contexto del proyecto del <strong><code>CLAUDE.md</code></strong> y revisa el código desde una <strong>instancia independiente</strong> de la que lo generó.</p>
+<h3 id="explicacion-5">Explicación</h3>
+<p><strong><code>-p</code> (<code>--print</code>): modo no interactivo.</strong> Ejecuta Claude Code como un comando de una sola vez: lee de la entrada estándar, escribe en la salida estándar y termina. Sin <code>-p</code>, Claude Code abre la interfaz interactiva y el <em>job</em> de CI <strong>se queda colgado</strong> esperando una entrada que nunca llegará.</p>
+<pre><code class="hljs language-bash">gh <span class="hljs-built_in">pr</span> diff <span class="hljs-string">&quot;<span class="hljs-variable">$PR</span>&quot;</span> | claude -p <span class="hljs-string">&quot;Revisa este diff en busca de problemas de seguridad&quot;</span>
+</code></pre>
+<p><strong>Salida estructurada para máquinas.</strong> <code>--output-format json</code> devuelve un JSON con el resultado, el <code>session_id</code>, el uso y el coste. Si además pasas <code>--json-schema</code>, Claude ajusta la respuesta al esquema y el objeto aparece en el campo <code>structured_output</code>:</p>
+<pre><code class="hljs language-bash">claude -p <span class="hljs-string">&quot;Revisa los cambios y lista los problemas encontrados&quot;</span> \
+  --output-format json \
+  --json-schema <span class="hljs-string">&#x27;{&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;findings&quot;:{&quot;type&quot;:&quot;array&quot;,&quot;items&quot;:{
+      &quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;file&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;line&quot;:{&quot;type&quot;:&quot;integer&quot;},
+      &quot;severity&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;message&quot;:{&quot;type&quot;:&quot;string&quot;}},
+      &quot;required&quot;:[&quot;file&quot;,&quot;line&quot;,&quot;severity&quot;,&quot;message&quot;]}}},&quot;required&quot;:[&quot;findings&quot;]}&#x27;</span> \
+  | jq <span class="hljs-string">&#x27;.structured_output.findings&#x27;</span>
+</code></pre>
+<p>Con eso, un script puede publicar cada hallazgo como <strong>comentario en línea</strong> del PR. Conviene comprobar que <code>structured_output</code> existe antes de usarlo (falta si la ejecución no produjo una salida válida).</p>
+<p><strong><code>CLAUDE.md</code> como contexto del proyecto en CI.</strong> Lo que Claude necesita saber para revisar o generar tests (estándares de testing, qué se considera un test valioso, <em>fixtures</em> disponibles, criterios de revisión) va en el <code>CLAUDE.md</code> del proyecto, que <code>claude -p</code> carga igual que una sesión interactiva. Documentarlo ahí mejora la calidad de los tests generados y reduce los de poco valor.</p>
+<blockquote>
+<p><strong>Ojo con un matiz de los apuntes del curso.</strong> El modo que <strong>omite</strong> el descubrimiento automático de <code>CLAUDE.md</code>, hooks, skills, plugins y servidores MCP es <code>--bare</code>, no <code>-p</code>. Según la documentación, <code>--bare</code> existe para arrancar más rápido y obtener el mismo resultado en cualquier máquina (no carga la configuración local de nadie); en ese modo, el contexto se pasa explícitamente con flags como <code>--append-system-prompt</code> o <code>--settings</code>. Un <code>claude -p</code> normal sí carga el <code>CLAUDE.md</code> del proyecto.</p>
+</blockquote>
+<p><strong>Aislamiento del contexto: quien genera no debe revisar.</strong> El curso <em>Claude Code 101</em> lo dice claramente: «la misma sesión que escribió los cambios y los explicó no es el mejor juez para evaluar la calidad de esos cambios». Arrastra el razonamiento que la llevó a esa solución y tiende a justificarla. Una instancia independiente (una sesión nueva o un subagente) revisa el código como si lo hubiera escrito otro. El curso <em>Claude Code in action</em> lo resume: «un segundo revisor con ojos nuevos encuentra aquello que el autor consiguió justificar para sí mismo».</p>
+<p><strong>Evitar ruido en revisiones repetidas.</strong> Cuando llegan nuevos <em>commits</em> y vuelves a ejecutar la revisión, incluye en el contexto <strong>los hallazgos de la revisión anterior</strong> y pide a Claude que informe <strong>solo de los problemas nuevos o aún sin resolver</strong>. Si no, el PR se llena de comentarios duplicados.</p>
+<p><strong>Generación de tests sin duplicados.</strong> Pasa los <strong>archivos de tests existentes</strong> en el contexto para que Claude no proponga escenarios que la suite ya cubre.</p>
+<p><strong>Las piezas de CI que enseña el curso <em>Claude Code in action</em>:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Opción</th>
+<th>Qué es</th>
+<th>Cuándo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Code Review</strong> (gestionado)</td>
+<td>Servicio de Anthropic que revisa PRs y publica hallazgos como comentarios en línea, deduplicados y priorizados. No aprueba ni bloquea</td>
+<td>Revisiones de PR sin montar nada</td>
+</tr>
+<tr>
+<td><strong>GitHub Action</strong> <code>anthropics/claude-code-action@v1</code></td>
+<td>Ejecuta Claude Code en tu <em>workflow</em>, con <code>prompt</code>, <code>trigger_phrase</code> (<code>@claude</code>) y <code>claude_args</code></td>
+<td>Cuando Claude debe <strong>hacer</strong> algo en CI (implementar, informes programados)</td>
+</tr>
+<tr>
+<td><strong>Headless</strong> (<code>claude -p</code>)</td>
+<td>Claude dentro de tus scripts y <em>pipes</em></td>
+<td>Pasos de tu propio pipeline</td>
+</tr>
+<tr>
+<td><strong>Agent SDK</strong></td>
+<td>Claude Code como biblioteca de Python o TypeScript</td>
+<td>Integrarlo en tu producto</td>
+</tr>
+</tbody>
+</table></div>
+<p>En <code>claude_args</code> se ajusta la ejecución desatendida: <code>--max-turns</code> para acotar el bucle, el modo de permisos (que no se pare a pedir confirmación porque nadie va a responder) y las herramientas permitidas (solo lectura para un informe). Para ejecuciones desatendidas, el curso recomienda además convertir los tests en una <strong>barrera</strong>: un hook <code>Stop</code> que ejecuta los tests y no deja terminar el turno si fallan (código de salida 2).</p>
+<h3 id="que-busca-el-examen-5">Qué busca el examen</h3>
+<ul>
+<li><strong>Pregunta 10 de la guía (escenario CI)</strong>: un <em>job</em> que ejecuta <code>claude &quot;...&quot;</code> se queda colgado → falta <strong><code>-p</code></strong>.</li>
+<li>Hallazgos que se publican como comentarios en línea → <code>--output-format json</code> + <code>--json-schema</code>.</li>
+<li>Tests de poco valor o que repiten casos → documentar estándares y <em>fixtures</em> en <code>CLAUDE.md</code> y pasar los tests existentes.</li>
+<li>Comentarios duplicados tras nuevos <em>commits</em> → incluir los hallazgos previos y pedir solo los nuevos o no resueltos.</li>
+<li>Revisión poco crítica → <strong>instancia independiente</strong>, no la sesión que generó el código.</li>
+</ul>
+<h3 id="fuentes-5">Fuentes</h3>
+<ul>
+<li>Claude Code in action › Automate repeat work › <a href="https://academy.claude.com/courses/claude-code-in-action/routines-and-headless" target="_blank" rel="noopener">Scheduled tasks and headlesss</a> (<code>-p</code>, salida estructurada, sesiones)</li>
+<li>Claude Code in action › Automate repeat work › <a href="https://academy.claude.com/courses/claude-code-in-action/github-actions-and-code-review" target="_blank" rel="noopener">GitHub Actions and Code Review</a></li>
+<li>Claude Code in action › Verify and share › <a href="https://academy.claude.com/courses/claude-code-in-action/trust-it-verifying-unsupervised-runs" target="_blank" rel="noopener">SteerTrust it: Verifying unsupervised runs</a></li>
+<li>Claude Code 101 › Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/code-review" target="_blank" rel="noopener">Code Review</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/headless" target="_blank" rel="noopener">Run Claude Code programmatically</a> (<code>-p</code>, <code>--bare</code>, <code>--output-format</code>, <code>--json-schema</code>) · <a href="https://code.claude.com/docs/en/github-actions" target="_blank" rel="noopener">GitHub Actions</a></li>
+</ul>
+<hr>
+<h2 id="chuleta-de-decisiones">Chuleta de decisiones</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Si el enunciado dice...</th>
+<th>Piensa en...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Un compañero no recibe las instrucciones</td>
+<td>Están en <code>~/.claude/CLAUDE.md</code> (usuario); muévelas al de proyecto</td>
+</tr>
+<tr>
+<td>Preferencias personales que no deben afectar al equipo</td>
+<td><code>~/.claude/CLAUDE.md</code> o <code>CLAUDE.local.md</code></td>
+</tr>
+<tr>
+<td><code>CLAUDE.md</code> enorme y difícil de mantener</td>
+<td><code>.claude/rules/</code> por temas o <code>@import</code> (que organiza, no ahorra contexto)</td>
+</tr>
+<tr>
+<td>Comportamiento inconsistente entre sesiones</td>
+<td><code>/memory</code> (y <code>/context</code>) para ver qué memoria se carga</td>
+</tr>
+<tr>
+<td>Comando para todo el equipo</td>
+<td><code>.claude/commands/</code> (o <code>.claude/skills/</code>) en el repositorio</td>
+</tr>
+<tr>
+<td>Skill con mucha salida o exploratoria</td>
+<td><code>context: fork</code></td>
+</tr>
+<tr>
+<td>Limitar lo que puede hacer una skill</td>
+<td><code>allowed-tools</code></td>
+</tr>
+<tr>
+<td>Parámetro obligatorio de una skill</td>
+<td><code>argument-hint</code></td>
+</tr>
+<tr>
+<td>Siempre aplicable / solo en una tarea</td>
+<td><code>CLAUDE.md</code> / skill</td>
+</tr>
+<tr>
+<td>Convención para un tipo de archivo repartido por el código</td>
+<td>Regla en <code>.claude/rules/</code> con <code>paths</code> <em>glob</em></td>
+</tr>
+<tr>
+<td>Convención de una carpeta concreta</td>
+<td><code>CLAUDE.md</code> de subdirectorio</td>
+</tr>
+<tr>
+<td>Arquitectura, muchos archivos, varios enfoques</td>
+<td>Plan mode (y luego ejecución)</td>
+</tr>
+<tr>
+<td>Cambio pequeño con causa clara</td>
+<td>Ejecución directa</td>
+</tr>
+<tr>
+<td>Exploración que llena el contexto</td>
+<td>Subagente Explore</td>
+</tr>
+<tr>
+<td>Prosa interpretada de forma inconsistente</td>
+<td>2–3 ejemplos de entrada/salida</td>
+</tr>
+<tr>
+<td>Dominio desconocido</td>
+<td>Patrón entrevista</td>
+</tr>
+<tr>
+<td>Problemas que interactúan / independientes</td>
+<td>Un solo mensaje / de uno en uno</td>
+</tr>
+<tr>
+<td>CI colgado</td>
+<td><code>-p</code></td>
+</tr>
+<tr>
+<td>Hallazgos parseables para comentarios en línea</td>
+<td><code>--output-format json</code> + <code>--json-schema</code></td>
+</tr>
+<tr>
+<td>Revisión del código recién generado</td>
+<td>Instancia independiente</td>
+</tr>
+<tr>
+<td>Comentarios duplicados al re-revisar</td>
+<td>Pasar hallazgos previos; informar solo de nuevos</td>
+</tr>
+<tr>
+<td>Regla que nunca debe saltarse</td>
+<td>Hook, no <code>CLAUDE.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="preguntas-de-autoevaluacion">Preguntas de autoevaluación</h2>
+<ol>
+<li>Tu equipo quiere que todos los tests (<code>*.spec.ts</code>, repartidos por 30 carpetas) sigan las mismas convenciones. ¿Dónde las pones?</li>
+<li>Has puesto «nunca hagas push a <code>main</code>» en el <code>CLAUDE.md</code> y un día Claude lo hace. ¿Qué cambias?</li>
+<li>Una skill de análisis de dependencias vuelca cientos de líneas en la conversación y luego Claude pierde el hilo de la tarea. ¿Qué campo de <em>frontmatter</em> añades?</li>
+<li>Tienes que migrar de una librería de fechas a otra en 60 archivos. ¿Cómo lo abordas?</li>
+<li>Le has explicado dos veces a Claude cómo normalizar nombres de columnas y lo hace distinto cada vez. ¿Qué haces?</li>
+<li>Tu pipeline de CI publica comentarios de revisión en cada <em>push</em> y el PR acumula los mismos comentarios repetidos. ¿Cómo lo arreglas?</li>
+<li>Generas código con Claude en una sesión larga y le pides en esa misma sesión que lo revise. Las revisiones son complacientes. ¿Por qué y qué haces?</li>
+</ol>
+<details>
+<summary>Soluciones</summary>
+<ol>
+<li>En un archivo de <code>.claude/rules/</code> con <code>paths: [&quot;**/*.spec.ts&quot;]</code>. Un <code>CLAUDE.md</code> por carpeta no escala y el <code>CLAUDE.md</code> raíz cargaría esas reglas siempre.</li>
+<li>Lo conviertes en un hook <code>PreToolUse</code> que bloquee el comando. <code>CLAUDE.md</code> es una guía, no una garantía.</li>
+<li><code>context: fork</code>, para que la skill se ejecute en un subagente aislado y solo vuelva el resumen.</li>
+<li>Plan mode para explorar y diseñar la migración (con Explore para las fases de descubrimiento) y, una vez aprobado el plan, ejecución directa.</li>
+<li>Dar 2–3 ejemplos concretos de entrada y salida. Si es algo recurrente, guardarlo en <code>CLAUDE.md</code> o en una skill.</li>
+<li>Incluir en el contexto los hallazgos de la revisión anterior y pedir que informe solo de los problemas nuevos o aún sin resolver.</li>
+<li>La sesión que generó el código arrastra el razonamiento que lo justifica. Revisa desde una instancia independiente: una sesión nueva o un subagente revisor.</li>
+</ol>
+</details>
+
+<nav class="pager"><a class="prev" href="02-mcp-tools.html"><small>← Anterior</small>Diseño de herramientas e integración con MCP</a><a class="next" href="04-prompt-structured-output.html"><small>Siguiente →</small>Ingeniería de prompts y salida estructurada</a></nav>
+    </main>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

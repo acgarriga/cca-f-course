@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dominio 5 · Gestión del contexto y fiabilidad (15 %) · CCAR-F</title>
+<script>
+  // Antes de pintar, para que no parpadee el tema. Misma clave que el examen 1.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("examccarf-theme") || "light"); } catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div id="progress"></div>
+<button class="backdrop" id="backdrop" aria-label="Cerrar menú"></button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <div class="logo">A</div>
+      <div>
+        <h1>Guía CCAR-F</h1>
+        <p>Claude Certified Architect – Foundations</p>
+      </div>
+    </a>
+    <div class="nav-label">Apuntes</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="index.html"><span class="code">★</span><span class="txt">Inicio</span></a>
+      <a class="lesson-btn nav-item" href="00-index.html"><span class="code">≡</span><span class="txt">Índice de recursos</span></a>
+      <a class="lesson-btn nav-item" href="01-agentic-architecture.html"><span class="code">D1</span><span class="txt">Arquitectura agéntica y orquestación</span></a>
+      <a class="lesson-btn nav-item" href="02-mcp-tools.html"><span class="code">D2</span><span class="txt">Diseño de herramientas e integración con MCP</span></a>
+      <a class="lesson-btn nav-item" href="03-claude.html"><span class="code">D3</span><span class="txt">Configuración y flujos de trabajo de Claude Code</span></a>
+      <a class="lesson-btn nav-item" href="04-prompt-structured-output.html"><span class="code">D4</span><span class="txt">Ingeniería de prompts y salida estructurada</span></a>
+      <a class="lesson-btn nav-item active" href="05-context.html"><span class="code">D5</span><span class="txt">Gestión del contexto y fiabilidad</span></a>
+      <div class="toc">
+        <a href="#como-usar-este-documento">Cómo usar este documento</a>
+        <a href="#5-1-conservar-la-informacion-critica-en-interacciones-largas"><span class="num">5.1</span>Conservar la información crítica en interacciones largas</a>
+        <a href="#5-2-escalado-y-resolucion-de-la-ambiguedad"><span class="num">5.2</span>Escalado y resolución de la ambigüedad</a>
+        <a href="#5-3-propagacion-de-errores-en-sistemas-multiagente"><span class="num">5.3</span>Propagación de errores en sistemas multiagente</a>
+        <a href="#5-4-gestionar-el-contexto-al-explorar-bases-de-codigo-grandes"><span class="num">5.4</span>Gestionar el contexto al explorar bases de código grandes</a>
+        <a href="#5-5-flujos-de-revision-humana-y-calibracion-de-la-confianza"><span class="num">5.5</span>Flujos de revisión humana y calibración de la confianza</a>
+        <a href="#5-6-conservar-la-procedencia-y-gestionar-la-incertidumbre-en-sintesis-multifuente"><span class="num">5.6</span>Conservar la procedencia y gestionar la incertidumbre en síntesis multifuente</a>
+        <a href="#chuleta-de-decisiones">Chuleta de decisiones</a>
+        <a href="#preguntas-de-autoevaluacion">Preguntas de autoevaluación</a>
+      </div>
+    </nav>
+    <div class="nav-label">Práctica</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="simulacros.html"><span class="code">⏱</span><span class="txt">Simulacros de examen</span></a>
+      <a class="lesson-btn nav-item" href="practica.html"><span class="code">✎</span><span class="txt">Practicar por dominio o task</span></a>
+    </nav>
+    <div class="side-foot">
+      <p>Generado desde los .md el 14 de noviembre de 2026</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" title="Menú">☰</button>
+      <span class="title">Dominio 5 · Gestión del contexto y fiabilidad (15 %)</span>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema claro/oscuro">🌙</button>
+      <button class="icon-btn" onclick="window.print()" title="Imprimir / PDF">⎙</button>
+    </div>
+
+    <main class="content prose">
+<h1 id="dominio-5-gestion-del-contexto-y-fiabilidad-15">Dominio 5 · Gestión del contexto y fiabilidad (15 %)</h1>
+<blockquote>
+<p>Síntesis didáctica de los conceptos del Dominio 5 de la guía oficial del examen <strong>Claude Certified Architect – Foundations</strong> (v1.0).
+Fuentes principales: los apuntes de la carpeta <code>Anthropic/</code> (enlazados como <code>[[...]]</code>), sobre todo la gestión de contexto de <em>Claude Code 101</em> y <em>Claude Code in action</em>, <em>Introducción a subagentes</em> y la evaluación de prompts de <em>Creación con la API de Claude</em>. Este dominio es el que menos cubren los cursos: escalado, propagación de errores, calibración de la confianza y procedencia de la información se completan con los artículos de ingeniería de Anthropic (<em>Effective context engineering</em>, <em>Multi-agent research system</em>, <em>Effective harnesses for long-running agents</em>) y la documentación de la plataforma. El índice de recursos por <em>task statement</em> está en <a href="00-index.html">Índice de recursos</a>.</p>
+</blockquote>
+<h2 id="como-usar-este-documento">Cómo usar este documento</h2>
+<p>Cada sección corresponde a un <em>task statement</em> (5.1 a 5.6) y sigue el mismo esquema que los documentos anteriores (<a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a>, <a href="03-claude.html">Configuración y flujos de trabajo de Claude Code</a>, <a href="04-prompt-structured-output.html">Ingeniería de prompts y salida estructurada</a>):</p>
+<ol>
+<li><strong>La idea en una frase</strong>.</li>
+<li><strong>Explicación</strong>, con ejemplos.</li>
+<li><strong>Qué busca el examen</strong>: los razonamientos que la guía premia y las trampas habituales.</li>
+<li><strong>Fuentes</strong>.</li>
+</ol>
+<p>Al final hay una chuleta de decisiones y preguntas de autoevaluación.</p>
+<p>Este dominio es transversal: aparece como dominio principal en cuatro de los seis escenarios del examen, <strong>«Customer Support Resolution Agent»</strong> (escalado, hechos del caso), <strong>«Multi-Agent Research System»</strong> (errores entre agentes, procedencia), <strong>«Code Generation with Claude Code»</strong> (sesiones largas) y <strong>«Structured Data Extraction»</strong> (revisión humana). Las preguntas 3 y 8 de la guía son de este dominio.</p>
+<h3 id="el-hilo-conductor-el-contexto-es-un-recurso-finito">El hilo conductor: el contexto es un recurso finito</h3>
+<p>El artículo <em>Effective context engineering</em> lo formula así: el contexto es <strong>un recurso finito con rendimientos decrecientes</strong>. Cada token que añades consume parte del «presupuesto de atención» del modelo, y a medida que la ventana se llena la memoria se vuelve menos fiable. El curso <em>Claude Code 101</em> lo dice con otras palabras: el contexto es <strong>la memoria de trabajo</strong> de Claude, y cada archivo leído, cada comando y cada resultado de herramienta ocupa espacio en ella.</p>
+<p>De ahí salen las dos mitades del dominio:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mitad</th>
+<th>Pregunta</th>
+<th>Secciones</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gestión del contexto</strong></td>
+<td>¿Qué información entra, cuál se conserva y dónde se guarda lo que no cabe?</td>
+<td>5.1, 5.4</td>
+</tr>
+<tr>
+<td><strong>Fiabilidad</strong></td>
+<td>¿Cuándo debe el sistema pararse, avisar, pedir ayuda o reconocer lo que no sabe?</td>
+<td>5.2, 5.3, 5.5, 5.6</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="5-1-conservar-la-informacion-critica-en-interacciones-largas">5.1 Conservar la información crítica en interacciones largas</h2>
+<a class="practice-chip" href="practica.html?task=5.1">✎ Practicar 5.1 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase">La idea en una frase</h3>
+<p>Los datos que no pueden perderse (importes, fechas, identificadores, lo que el cliente espera) se guardan <strong>fuera del historial resumido</strong>, en un bloque estructurado que acompaña a cada petición; y lo que entra al contexto se recorta y se ordena para que lo importante no quede enterrado.</p>
+<h3 id="explicacion">Explicación</h3>
+<p><strong>El punto de partida: la API no tiene memoria.</strong> El curso de la API lo explica en las conversaciones de varios turnos: Claude no guarda el historial, cada petición es independiente. Para mantener la coherencia, <strong>tu código</strong> guarda la lista de mensajes y envía <strong>el historial completo</strong> en cada petición. Si omites turnos anteriores, Claude responde sin saber de qué se estaba hablando.</p>
+<p><strong>El problema: el historial crece y hay que resumirlo.</strong> En una conversación larga (o en un agente con muchas herramientas), tarde o temprano hay que compactar. <em>Claude Code 101</em> avisa de que la compactación automática «resume los detalles importantes» pero «<strong>pueden perderse algunos detalles</strong>». El riesgo concreto del <strong>resumen progresivo</strong> es que convierte datos precisos en frases vagas:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Antes del resumen</th>
+<th>Después de dos resúmenes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«Pedido 88213, cobrado 149,90 € el 3 de octubre; el cliente quiere el reembolso completo, no un vale»</td>
+<td>«El cliente tiene un problema con un pedido reciente y quiere una compensación»</td>
+</tr>
+</tbody>
+</table></div>
+<p>Los números, porcentajes, fechas y <strong>expectativas declaradas por el cliente</strong> son justo lo que más sufre.</p>
+<p><strong>La solución: un bloque de «hechos del caso».</strong> Extrae los datos transaccionales a una estructura persistente que se incluye en <strong>cada</strong> prompt, <strong>fuera</strong> del historial que se resume:</p>
+<pre><code class="hljs language-text">&lt;case_facts&gt;
+customer_id: C-10442 (verificado)
+issues:
+  - order_id: 88213 · importe: 149,90 € · fecha: 2026-10-03 · estado: entregado dañado
+    expectativa del cliente: reembolso completo (rechaza vale)
+  - order_id: 88420 · importe: 32,00 € · estado: en tránsito · sin acción pedida
+&lt;/case_facts&gt;
+</code></pre>
+<p>Si la sesión trata <strong>varios problemas</strong> a la vez, esta capa separada (un elemento por problema, con su identificador, importe y estado) evita que se mezclen al resumir.</p>
+<p><strong>Recortar los resultados de herramientas.</strong> Los resultados se acumulan en el contexto y consumen tokens <strong>en proporción a su tamaño, no a su relevancia</strong>. Una consulta de pedido que devuelve más de 40 campos cuando para una devolución solo importan 5 llena el contexto de ruido en pocas vueltas. Recorta <strong>antes</strong> de que entren: quédate con los campos relevantes para la tarea (en el Agent SDK, un hook <code>PostToolUse</code> puede hacerlo; ver <a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a>, 1.5). El artículo de contexto añade una variante: <strong>borrar resultados antiguos</strong> que ya se usaron es la forma más ligera y segura de compactación.</p>
+<p><strong>El efecto <em>lost in the middle</em>.</strong> Los modelos procesan bien el principio y el final de una entrada larga, pero pueden pasar por alto lo que está en medio. Cuando juntas muchos resultados (por ejemplo, los informes de diez subagentes):</p>
+<ul>
+<li>pon un <strong>resumen de los hallazgos clave al principio</strong>;</li>
+<li>organiza el detalle con <strong>cabeceras de sección explícitas</strong> (o etiquetas XML), para que cada parte sea localizable.</li>
+</ul>
+<p>La documentación da una regla complementaria para documentos largos: el material extenso arriba y <strong>la pregunta al final</strong> (mejora la calidad hasta un 30 % en sus pruebas), y cada documento en sus propias etiquetas con sus metadatos (<code>&lt;document&gt;</code>, <code>&lt;source&gt;</code>).</p>
+<p><strong>Lo que devuelven los agentes de arriba.</strong> Si el agente de abajo (por ejemplo, el sintetizador) tiene poco presupuesto de contexto, los agentes de arriba deben devolver <strong>datos estructurados</strong> (hechos clave, citas, puntuación de relevancia) y no su contenido íntegro ni su cadena de razonamiento. Y deben incluir <strong>metadatos</strong>: fechas, ubicación de la fuente, contexto metodológico. Sin ellos, la síntesis no puede interpretar bien los hallazgos (ver 5.6). El curso de subagentes lo aplica con el <strong>formato de salida definido</strong> en el <em>system prompt</em> del subagente.</p>
+<h3 id="que-busca-el-examen">Qué busca el examen</h3>
+<ul>
+<li>Datos transaccionales en un bloque persistente de <strong>hechos del caso</strong>, fuera del historial resumido.</li>
+<li><strong>Recortar</strong> los resultados de herramientas a los campos relevantes antes de que se acumulen.</li>
+<li><strong>Resumen de hallazgos al principio</strong> y cabeceras explícitas contra el efecto <em>lost in the middle</em>.</li>
+<li>Enviar el <strong>historial completo</strong> en cada petición a la API.</li>
+<li>Agentes de arriba que devuelven <strong>datos estructurados con metadatos</strong>, no texto largo ni razonamiento.</li>
+<li>Trampa: confiar en que el resumen automático conservará los importes y las fechas.</li>
+</ul>
+<h3 id="fuentes">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Multi-Turn conversations › <a href="https://academy.claude.com/courses/building-with-the-claude-api/multi-turn-conversations" target="_blank" rel="noopener">Multi-turn conversations with tools</a> (historial completo en cada petición)</li>
+<li>Claude Code 101 › Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/context-management" target="_blank" rel="noopener">Context management</a> (la compactación puede perder detalles)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a> (Defining an Output Format)</li>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/structure-with-xml-tags" target="_blank" rel="noopener">Structure with XML tags</a></li>
+<li>Artículo: <a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering for AI agents</a></li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#long-context-prompting" target="_blank" rel="noopener">Prompting best practices › Long context prompting</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/context-editing" target="_blank" rel="noopener">Context editing</a></li>
+</ul>
+<hr>
+<h2 id="5-2-escalado-y-resolucion-de-la-ambiguedad">5.2 Escalado y resolución de la ambigüedad</h2>
+<a class="practice-chip" href="practica.html?task=5.2">✎ Practicar 5.2 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-1">La idea en una frase</h3>
+<p>Escala cuando el cliente <strong>pide un humano</strong>, cuando la política <strong>no cubre</strong> el caso o cuando <strong>no puedes avanzar</strong>; no escales por el tono del cliente ni por una confianza autodeclarada, y ante varias coincidencias <strong>pregunta</strong>, no adivines.</p>
+<h3 id="explicacion-1">Explicación</h3>
+<p><em>Tus apuntes no cubren esta sección; sale de la guía y de las guías de casos de uso de la documentación.</em></p>
+<p><strong>Los disparadores correctos:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Disparador</th>
+<th>Ejemplo</th>
+<th>Qué hacer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>El cliente <strong>pide explícitamente</strong> un humano</td>
+<td>«Quiero hablar con una persona»</td>
+<td>Escalar <strong>de inmediato</strong>, sin intentar investigar antes</td>
+</tr>
+<tr>
+<td><strong>Excepción o hueco</strong> en la política</td>
+<td>Pide igualar el precio de un competidor y la política solo habla de ajustes de precio en la propia web</td>
+<td>Escalar: la política no cubre el caso</td>
+</tr>
+<tr>
+<td><strong>No hay progreso</strong> posible</td>
+<td>Tras varios intentos, el sistema no permite resolverlo</td>
+<td>Escalar con un resumen del caso</td>
+</tr>
+</tbody>
+</table></div>
+<p>Fíjate en el segundo: el disparador no es «caso complejo», sino «caso que la política <strong>no contempla</strong>». Un caso largo pero cubierto por la política (devolución estándar con foto del daño) se resuelve sin escalar.</p>
+<p><strong>Frustración no es lo mismo que petición de humano.</strong> Si el cliente está molesto pero el problema es sencillo y está a tu alcance, <strong>reconoce la frustración y ofrece la solución</strong>. Solo escalas si el cliente <strong>reitera</strong> que prefiere a una persona. En cambio, si lo pide claramente desde el principio, se respeta sin más.</p>
+<p><strong>Malos indicadores de complejidad.</strong> La pregunta 3 de la guía lo resume: un agente con un 55 % de resolución en el primer contacto escala los casos sencillos y se atreve con los que requieren excepciones. Las opciones incorrectas son tentadoras:</p>
+<ul>
+<li><strong>Confianza autodeclarada</strong> (1–10) con un umbral: la confianza del modelo está mal calibrada; el agente ya está <strong>seguro y equivocado</strong> en los casos difíciles.</li>
+<li><strong>Análisis de sentimiento</strong>: el enfado del cliente <strong>no se correlaciona</strong> con la complejidad del caso.</li>
+<li><strong>Un clasificador entrenado aparte</strong>: excesivo antes de haber probado a mejorar el prompt.</li>
+</ul>
+<p>La respuesta correcta es la proporcionada: <strong>criterios de escalado explícitos con ejemplos few-shot</strong> en el <em>system prompt</em> que muestren cuándo escalar y cuándo resolver. Es lo mismo que vimos en 4.1 y 4.2 (<a href="04-prompt-structured-output.html">Ingeniería de prompts y salida estructurada</a>): criterios categóricos + ejemplos que enseñan el juicio en los casos frontera.</p>
+<p><strong>Varias coincidencias: pedir más datos.</strong> Si <code>get_customer</code> devuelve tres clientes llamados «Laura Martín», el agente no debe elegir el más reciente ni el que «parece» encajar. Debe pedir <strong>otro identificador</strong> (correo, número de pedido, últimos dígitos del teléfono). Una suposición errónea aquí tiene consecuencias reales: reembolsar al cliente equivocado o revelar datos de otra persona.</p>
+<p><strong>Cómo se escala.</strong> Recuerda lo que vimos en el Dominio 1 (1.4): la persona que recibe el caso <strong>no ve la transcripción</strong>, así que el agente entrega un resumen estructurado y autosuficiente (cliente, problema, qué se ha hecho, qué se recomienda).</p>
+<h3 id="que-busca-el-examen-1">Qué busca el examen</h3>
+<ul>
+<li>Petición explícita de humano → escalar <strong>inmediatamente</strong>.</li>
+<li>Política ambigua o que no cubre el caso → escalar; caso complejo pero cubierto → resolver.</li>
+<li>Frustración con problema sencillo → reconocerla y ofrecer la solución; escalar si el cliente insiste.</li>
+<li>Sentimiento y confianza autodeclarada <strong>no</strong> sirven para decidir el escalado.</li>
+<li>Mejorar la calibración con <strong>criterios explícitos + few-shot</strong> antes que con infraestructura.</li>
+<li>Varias coincidencias → <strong>pedir un identificador adicional</strong>, nunca elegir por heurística.</li>
+</ul>
+<h3 id="fuentes-1">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Accessing Claude with the API › <a href="https://academy.claude.com/courses/building-with-the-claude-api/system-prompts" target="_blank" rel="noopener">System prompts</a>  (dónde van los criterios de comportamiento)</li>
+<li><a href="04-prompt-structured-output.html">Ingeniería de prompts y salida estructurada</a> (4.1 criterios explícitos y 4.2 few-shot)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat" target="_blank" rel="noopener">Customer support agent (guía de caso de uso)</a> · <a href="https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing" target="_blank" rel="noopener">Ticket routing</a></li>
+<li>Práctica: <a href="https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/customer_service_agent.ipynb" target="_blank" rel="noopener">Cookbook › customer_service_agent</a></li>
+</ul>
+<hr>
+<h2 id="5-3-propagacion-de-errores-en-sistemas-multiagente">5.3 Propagación de errores en sistemas multiagente</h2>
+<a class="practice-chip" href="practica.html?task=5.3">✎ Practicar 5.3 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-2">La idea en una frase</h3>
+<p>Cuando un subagente falla, debe devolver al coordinador un <strong>error estructurado</strong> (qué falló, qué intentó, qué consiguió y qué alternativas hay), distinguiendo un <strong>fallo de acceso</strong> de un <strong>resultado vacío válido</strong>; ni ocultar el error ni tumbar todo el flujo.</p>
+<h3 id="explicacion-2">Explicación</h3>
+<p><strong>Por qué importa.</strong> El coordinador es quien tiene la visión de conjunto: puede reintentar con otra consulta, probar otra fuente o seguir con resultados parciales. Pero solo puede decidir bien si le llega <strong>información</strong> sobre el fallo.</p>
+<p><strong>Las cuatro respuestas a un <em>timeout</em></strong> (pregunta 8 de la guía):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Respuesta del subagente</th>
+<th>Problema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lanzar la excepción hasta arriba y <strong>abortar</strong> todo el flujo</td>
+<td>Un fallo local tira el trabajo de todos los demás subagentes</td>
+</tr>
+<tr>
+<td>Devolver <strong>un resultado vacío marcado como éxito</strong></td>
+<td><strong>Suprime</strong> el error: el coordinador cree que «no hay nada» y el informe sale incompleto sin aviso</td>
+</tr>
+<tr>
+<td>Reintentar internamente y devolver un genérico <strong>«búsqueda no disponible»</strong></td>
+<td>Oculta el contexto: el coordinador no sabe qué se buscó ni qué se obtuvo</td>
+</tr>
+<tr>
+<td><strong>Error estructurado</strong> con tipo, consulta intentada, resultados parciales y alternativas</td>
+<td>✓ El coordinador puede decidir</td>
+</tr>
+</tbody>
+</table></div>
+<pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;error&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;failure_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;timeout&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;attempted&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;query: &#x27;impacto de la IA en la industria musical 2025&#x27; (3 intentos)&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;partial_results&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;summary&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;alternatives&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;acotar la consulta a &#x27;streaming&#x27;&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;usar la fuente de informes sectoriales&quot;</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Fallo de acceso frente a resultado vacío.</strong> Son cosas opuestas y el coordinador tiene que distinguirlas:</p>
+<ul>
+<li><strong>Fallo de acceso</strong> (<em>timeout</em>, permiso denegado, servicio caído): la consulta <strong>no se pudo hacer</strong>. Tiene sentido decidir si reintentar.</li>
+<li><strong>Resultado vacío válido</strong>: la consulta <strong>se hizo bien</strong> y no hay coincidencias. Reintentar no sirve; es información en sí misma.</li>
+</ul>
+<p>Si ambos llegan como «0 resultados», el coordinador reintentará lo que no tiene arreglo o dará por concluido lo que nunca se buscó.</p>
+<p><strong>Recuperación local primero.</strong> Los fallos transitorios (un <em>timeout</em> puntual) los resuelve el propio subagente con un reintento. Solo <strong>propaga</strong> lo que no puede resolver, y cuando lo hace incluye lo que intentó y los resultados parciales. El curso de subagentes apunta en la misma dirección con su sección <strong>«Obstáculos encontrados»</strong> en el formato de salida: los problemas, soluciones alternativas y particularidades descubiertas deben volver al hilo principal, o este tendrá que redescubrirlos. Y en la API, el curso enseña a devolver los fallos de herramientas como <code>tool_result</code> con <code>&quot;is_error&quot;: true</code> y el mensaje del error, en vez de romper el bucle.</p>
+<p>El artículo <em>Multi-agent research system</em> confirma la idea desde la práctica: «hacer saber al agente que una herramienta está fallando y dejar que se adapte funciona sorprendentemente bien», combinado con salvaguardas deterministas (reintentos, <em>checkpoints</em>) y la capacidad de <strong>reanudar desde donde se produjo el error</strong> en lugar de empezar de cero.</p>
+<p><strong>Anotaciones de cobertura en la síntesis.</strong> Si una fuente no estuvo disponible, el informe final debe decirlo: qué hallazgos están <strong>bien respaldados</strong> y qué áreas tienen <strong>huecos</strong> por fuentes inaccesibles. Un informe que parece completo pero no lo es resulta peor que uno que declara sus límites.</p>
+<h3 id="que-busca-el-examen-2">Qué busca el examen</h3>
+<ul>
+<li>Error estructurado con <strong>tipo de fallo, intento, resultados parciales y alternativas</strong>.</li>
+<li>Distinguir <strong>fallo de acceso</strong> de <strong>resultado vacío válido</strong>.</li>
+<li>Antipatrones: <strong>suprimir</strong> el error (vacío como éxito) y <strong>abortar</strong> todo el flujo por un fallo.</li>
+<li>Estado genérico («no disponible») = contexto perdido.</li>
+<li>Recuperación <strong>local</strong> de fallos transitorios; propagar solo lo irresoluble.</li>
+<li>Síntesis con <strong>anotaciones de cobertura</strong>.</li>
+</ul>
+<h3 id="fuentes-2">Fuentes</h3>
+<ul>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a> (Reporting Obstacles)</li>
+<li>Building with the Claude API › Tool use with Claudes › <a href="https://academy.claude.com/courses/building-with-the-claude-api/implementing-multiple-turns" target="_blank" rel="noopener">Implementing multiple turns</a> (Error Handling: <code>is_error</code>)</li>
+<li><a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a> (1.2, coordinador y subagentes)</li>
+<li>Artículo: <a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">How we built our multi-agent research system</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/sub-agents#api-errors-in-subagents" target="_blank" rel="noopener">Claude Code › API errors in subagents</a></li>
+</ul>
+<hr>
+<h2 id="5-4-gestionar-el-contexto-al-explorar-bases-de-codigo-grandes">5.4 Gestionar el contexto al explorar bases de código grandes</h2>
+<a class="practice-chip" href="practica.html?task=5.4">✎ Practicar 5.4 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-3">La idea en una frase</h3>
+<p>En sesiones largas de exploración, el contexto se degrada: <strong>delega</strong> la exploración verbosa en subagentes, <strong>guarda</strong> los hallazgos en archivos fuera del contexto, <strong>resume</strong> entre fases y usa <code>/compact</code> con instrucciones.</p>
+<h3 id="explicacion-3">Explicación</h3>
+<p><strong>El síntoma: degradación del contexto.</strong> Tras una sesión larga explorando un código desconocido, el modelo empieza a dar respuestas inconsistentes y a hablar de «patrones típicos» en lugar de las clases concretas que encontró antes. El curso de subagentes lo explica: el espacio es finito y, cuando se llena, <strong>Claude empieza a perder el hilo</strong> de las partes anteriores de la conversación.</p>
+<p><strong>Herramienta 1: subagentes para aislar la exploración.</strong> Es el uso estrella del curso. Un subagente recibe una pregunta concreta («encuentra todos los archivos de test», «traza las dependencias del flujo de reembolsos»), lee lo que haga falta en <strong>su propio contexto</strong> y devuelve un resumen («La validación del JWT se hace en <code>middleware/auth.js</code>, línea 42»). El agente principal conserva la <strong>coordinación de alto nivel</strong> sin el ruido. La regla del curso para decidir: <strong>¿importa el trabajo intermedio?</strong> Si solo necesitas el resultado, delega; si cada paso depende del anterior, mantenlo en el hilo principal. La contrapartida: pierdes visibilidad sobre cómo llegó el subagente a su conclusión.</p>
+<p><strong>Herramienta 2: archivos <em>scratchpad</em>.</strong> El agente escribe los hallazgos clave en un archivo (por ejemplo, <code>NOTES.md</code> o <code>findings.md</code>) y lo <strong>consulta</strong> para las preguntas siguientes en lugar de fiarse de lo que recuerda del historial. El artículo de <em>context engineering</em> lo llama <strong>toma de notas estructurada</strong>: notas que persisten fuera de la ventana de contexto y se recargan cuando hacen falta. La documentación recomienda JSON para el estado estructurado (resultados de tests, estado de tareas), texto libre para las notas de progreso y <strong>git</strong> como registro y punto de control.</p>
+<p><strong>Herramienta 3: resumir entre fases.</strong> Antes de lanzar los subagentes de la siguiente fase, <strong>resume</strong> los hallazgos de la anterior e <strong>inyecta ese resumen</strong> en su contexto inicial. Así cada fase empieza sabiendo lo que se descubrió, sin heredar todo el ruido. El artículo <em>Multi-agent research system</em> describe lo mismo: los agentes resumen las fases completadas y guardan lo esencial en memoria externa; el agente principal guarda incluso <strong>su plan</strong> en memoria por si la ventana se trunca.</p>
+<p><strong>Herramienta 4: <code>/compact</code> con instrucciones.</strong> El curso <em>Claude Code 101</em> distingue: <code>/compact</code> cuando sigues con la <strong>misma</strong> tarea y el contexto se llena; <code>/clear</code> cuando empiezas otra cosa. <em>Claude Code in action</em> añade el matiz importante: <strong>no ejecutes <code>/compact</code> sin más</strong>; escribe después qué debe conservar (<code>/compact Céntrate en el flujo de reembolsos y las clases que lo implementan</code>), porque el resumen puede perder justo lo que necesitas. <code>/context</code> te muestra cuánto ocupa cada cosa.</p>
+<p><strong>Herramienta 5: recuperación tras una caída (manifiestos).</strong> En un sistema multiagente largo, si el proceso se cae no quieres empezar de cero. Diseño:</p>
+<ol>
+<li>Cada agente <strong>exporta su estado</strong> (qué ha hecho, qué ha encontrado, qué falta) a una <strong>ubicación conocida</strong>.</li>
+<li>El coordinador mantiene un <strong>manifiesto</strong> que apunta a esos estados.</li>
+<li>Al reanudar, el coordinador <strong>carga el manifiesto</strong> e inyecta el estado de cada agente en su prompt.</li>
+</ol>
+<p>El artículo <em>Effective harnesses for long-running agents</em> aplica la misma idea entre sesiones: un archivo de progreso (<code>claude-progress.txt</code>), una lista de funcionalidades en JSON y los commits de git permiten que una sesión nueva «se oriente» leyendo el estado en lugar de adivinarlo.</p>
+<h3 id="que-busca-el-examen-3">Qué busca el examen</h3>
+<ul>
+<li>Respuestas inconsistentes y «patrones típicos» = <strong>degradación del contexto</strong>.</li>
+<li>Subagentes para preguntas concretas; el principal <strong>coordina</strong>.</li>
+<li><strong>Scratchpad</strong> con hallazgos clave, consultado en preguntas posteriores.</li>
+<li><strong>Resumir</strong> una fase antes de lanzar la siguiente e inyectar ese resumen.</li>
+<li><strong>Manifiestos</strong> de estado para reanudar tras una caída.</li>
+<li><code>/compact</code> (con instrucciones) cuando el contexto se llena de salida de exploración.</li>
+<li>Trampa: seguir en la misma sesión acumulando lecturas, o empezar de cero tras una caída.</li>
+</ul>
+<h3 id="fuentes-3">Fuentes</h3>
+<ul>
+<li>Claude Code 101 › Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/context-management" target="_blank" rel="noopener">Context management</a> (Tips for Saving Context Space)</li>
+<li>Claude Code 101 › Customizing Claude Code › <a href="https://academy.claude.com/courses/claude-code-101/subagents" target="_blank" rel="noopener">Subagents</a></li>
+<li>Claude Code in action › Steer the work › <a href="https://academy.claude.com/courses/claude-code-in-action/steering-long-sessions" target="_blank" rel="noopener">Steering long sessions</a> (Steer while Claude works: <code>/compact</code> con instrucciones, <em>Rewind</em> y <em>Summarize</em>)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/what-are-subagents" target="_blank" rel="noopener">What are subagents?</a> (Why Subagents Matter)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/using-subagents-effectively" target="_blank" rel="noopener">Using subagents effectively</a> (Research tasks; The Decision Rule)</li>
+<li>Artículos: <a href="https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">Effective context engineering</a> · <a href="https://www.anthropic.com/research/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener">Effective harnesses for long-running agents</a> · <a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">Multi-agent research system</a></li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#state-management-best-practices" target="_blank" rel="noopener">Prompting best practices › State management best practices</a></li>
+</ul>
+<hr>
+<h2 id="5-5-flujos-de-revision-humana-y-calibracion-de-la-confianza">5.5 Flujos de revisión humana y calibración de la confianza</h2>
+<a class="practice-chip" href="practica.html?task=5.5">✎ Practicar 5.5 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-4">La idea en una frase</h3>
+<p>Antes de reducir la revisión humana, <strong>mide la precisión por tipo de documento y por campo</strong> (no solo la global), calibra los umbrales de confianza con <strong>datos etiquetados</strong> y sigue <strong>muestreando</strong> lo que se automatiza.</p>
+<h3 id="explicacion-4">Explicación</h3>
+<p><strong>El curso: medir en lugar de suponer.</strong> La parte de evaluación del curso de la API es la base de esta sección: un conjunto de casos de prueba, una ejecución sobre todos ellos y una nota objetiva. El curso distingue tres tipos de evaluadores (de código, de modelo y humanos) y advierte que los humanos son los más flexibles pero los más lentos, por eso hay que <strong>usarlos donde más aportan</strong>.</p>
+<p><strong>La trampa de la métrica agregada.</strong> Un sistema de extracción con un <strong>97 % de precisión global</strong> puede tener un 99 % en facturas, que son la mayoría, y un 60 % en contratos, o fallar casi siempre en un campo concreto (la fecha de vencimiento). La media lo esconde. Antes de automatizar, analiza la precisión <strong>por segmento</strong>: tipo de documento y campo. Solo automatizas los segmentos que cumplen.</p>
+<p><strong>Confianza por campo, calibrada.</strong> El modelo puede devolver una confianza <strong>por campo</strong> (no una global). Pero, como vimos en 5.2, la confianza autodeclarada no está calibrada de entrada. Se calibra con un <strong>conjunto de validación etiquetado</strong>: compruebas a qué precisión real corresponde cada nivel de confianza y fijas el umbral a partir de eso («por encima de 0,9, la precisión real es del 99 % → no revisar; por debajo, revisar»).</p>
+<p><strong>Qué va a revisión humana.</strong> La capacidad de revisión es limitada; prioriza:</p>
+<ul>
+<li>campos con <strong>confianza baja</strong>;</li>
+<li>documentos <strong>ambiguos o contradictorios</strong> (el <code>conflict_detected</code> de 4.4);</li>
+<li>segmentos (tipos de documento, campos) que aún no han demostrado buena precisión.</li>
+</ul>
+<p><strong>Muestreo aleatorio estratificado.</strong> Aunque automatices lo de confianza alta, revisa una <strong>muestra aleatoria</strong> de ello, estratificada por tipo de documento y campo. Sirve para dos cosas: medir la tasa de error real de lo que nadie mira y detectar <strong>patrones de error nuevos</strong> (un proveedor cambió el formato de sus facturas) antes de que se acumulen.</p>
+<h3 id="que-busca-el-examen-4">Qué busca el examen</h3>
+<ul>
+<li>Una precisión global alta <strong>no basta</strong>: validar por <strong>tipo de documento y campo</strong> antes de reducir la revisión.</li>
+<li>Confianza <strong>por campo</strong>, calibrada con un <strong>conjunto de validación etiquetado</strong>.</li>
+<li>Enrutar a humanos lo de <strong>baja confianza</strong> y las fuentes <strong>ambiguas o contradictorias</strong>.</li>
+<li><strong>Muestreo aleatorio estratificado</strong> de lo de confianza alta para medir errores y detectar patrones nuevos.</li>
+<li>Trampa: usar la confianza autodeclarada sin calibrar como umbral.</li>
+</ul>
+<h3 id="fuentes-4">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/prompt-evaluation" target="_blank" rel="noopener">Prompt evaluation</a> (Prompt Engineering vs Prompt Evaluation)</li>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/generating-test-datasets" target="_blank" rel="noopener">Generating test datasets</a></li>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/model-based-grading" target="_blank" rel="noopener">Model based grading</a> (evaluadores de código, de modelo y humanos)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" target="_blank" rel="noopener">Define success criteria and build evaluations</a></li>
+<li>Artículo: <a href="https://www.anthropic.com/research/demystifying-evals-for-ai-agents" target="_blank" rel="noopener">Demystifying evals for AI agents</a></li>
+</ul>
+<blockquote>
+<p>Nota: el muestreo estratificado y la calibración de umbrales son prácticas generales de evaluación; Anthropic las trata de forma indirecta en sus guías de evals, sin una página dedicada.</p>
+</blockquote>
+<hr>
+<h2 id="5-6-conservar-la-procedencia-y-gestionar-la-incertidumbre-en-sintesis-multifuente">5.6 Conservar la procedencia y gestionar la incertidumbre en síntesis multifuente</h2>
+<a class="practice-chip" href="practica.html?task=5.6">✎ Practicar 5.6 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-5">La idea en una frase</h3>
+<p>Cada afirmación debe viajar <strong>con su fuente</strong> (URL, documento, extracto, fecha) a través de todos los pasos; los conflictos entre fuentes se <strong>anotan</strong>, no se resuelven eligiendo un valor al azar.</p>
+<h3 id="explicacion-5">Explicación</h3>
+<p><em>Tus apuntes no cubren esta sección (falta la lección de</em> Citations <em>del curso de la API); sale de la guía, del artículo</em> Multi-agent research system <em>y de la documentación.</em></p>
+<p><strong>Cómo se pierde la procedencia.</strong> El subagente A encuentra «el mercado creció un 12 % (informe X, 2024)». El coordinador lo resume como «el mercado crece con fuerza». El sintetizador ya no puede citar nada. Cada paso de <strong>resumen</strong> que comprime hallazgos sin conservar el <strong>vínculo afirmación–fuente</strong> destruye la atribución. El artículo de Anthropic lo llama el «juego del teléfono» y propone que los subagentes guarden su trabajo en sistemas externos y pasen <strong>referencias ligeras</strong> al coordinador; al final, un <strong>agente de citas</strong> asocia cada afirmación con su fuente.</p>
+<p><strong>El vínculo afirmación–fuente estructurado.</strong> Exige a los subagentes una salida como esta, y exige al sintetizador que la <strong>preserve y fusione</strong>:</p>
+<pre><code class="hljs language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;claim&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;El 38 % de los estudios de animación usa IA generativa en preproducción&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;source_url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;document&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Encuesta sectorial 2025&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;excerpt&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...38% of studios reported...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;published&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2025-03&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;methodology&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;encuesta a 412 estudios&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Conflictos entre fuentes fiables.</strong> Dos fuentes creíbles dan cifras distintas (38 % y 22 %). El error es <strong>elegir una</strong> sin decirlo. Lo correcto:</p>
+<ul>
+<li>terminar el análisis <strong>con ambos valores</strong> incluidos y anotados con su fuente;</li>
+<li>dejar que el <strong>coordinador</strong> decida cómo reconciliarlos antes de la síntesis;</li>
+<li>en el informe, separar los hallazgos <strong>consolidados</strong> de los <strong>discutidos</strong>, conservando cómo los caracteriza cada fuente y su contexto metodológico (quizá una encuesta mide estudios grandes y la otra, todos).</li>
+</ul>
+<p><strong>Fechas: no confundir cambio con contradicción.</strong> «22 % en 2023» y «38 % en 2025» no se contradicen; describen una evolución. Sin <strong>fechas de publicación o de recogida</strong> en la salida estructurada, el sintetizador puede tomarlas por un conflicto o, peor, mezclarlas. Por eso la guía pide que los subagentes <strong>siempre</strong> incluyan esas fechas.</p>
+<p><strong>Cada tipo de contenido en su formato.</strong> No conviertas todo al mismo molde: los <strong>datos financieros en tablas</strong>, las <strong>noticias en prosa</strong>, los <strong>hallazgos técnicos en listas estructuradas</strong>. Forzar un único formato hace perder información (una tabla de cifras convertida en párrafos es ilegible; una noticia convertida en viñetas pierde el contexto).</p>
+<p><strong>Relación con 5.3.</strong> Las <strong>anotaciones de cobertura</strong> (qué está bien respaldado y dónde hay huecos por fuentes no disponibles) son la otra cara de la procedencia: el informe dice de dónde sale cada cosa <strong>y</strong> qué no se pudo comprobar.</p>
+<h3 id="que-busca-el-examen-5">Qué busca el examen</h3>
+<ul>
+<li>Vínculos <strong>afirmación–fuente</strong> estructurados (URL, documento, extracto) que se preservan hasta el informe final.</li>
+<li>Conflictos entre fuentes fiables: <strong>anotarlos con su atribución</strong>, no elegir uno; el coordinador decide la reconciliación.</li>
+<li>Informe con secciones de hallazgos <strong>consolidados</strong> frente a <strong>discutidos</strong>.</li>
+<li><strong>Fechas</strong> de publicación o recogida para no confundir diferencias temporales con contradicciones.</li>
+<li>Formato <strong>adecuado a cada tipo de contenido</strong>.</li>
+<li>Trampa: un resumen intermedio que comprime sin conservar las fuentes.</li>
+</ul>
+<h3 id="fuentes-5">Fuentes</h3>
+<ul>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a> (Defining an Output Format: salida estructurada del subagente)</li>
+<li>Artículo: <a href="https://www.anthropic.com/research/multi-agent-research-system" target="_blank" rel="noopener">How we built our multi-agent research system</a> (juego del teléfono, CitationAgent)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/build-with-claude/citations" target="_blank" rel="noopener">Citations</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#research-and-information-gathering" target="_blank" rel="noopener">Prompting best practices › Research and information gathering</a> · <a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations#advanced-techniques" target="_blank" rel="noopener">Reduce hallucinations › Advanced techniques</a></li>
+</ul>
+<hr>
+<h2 id="chuleta-de-decisiones">Chuleta de decisiones</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Si el enunciado dice...</th>
+<th>Piensa en...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>El agente olvida importes, fechas o lo que pidió el cliente</td>
+<td>Bloque persistente de <strong>hechos del caso</strong> fuera del historial resumido</td>
+</tr>
+<tr>
+<td>Sesión con varios problemas a la vez</td>
+<td>Capa estructurada separada, un elemento por problema</td>
+</tr>
+<tr>
+<td>Resultados de herramientas con decenas de campos</td>
+<td>Recortar a los campos relevantes antes de que entren al contexto</td>
+</tr>
+<tr>
+<td>Hallazgos del medio de una entrada larga ignorados</td>
+<td>Resumen clave al principio + cabeceras de sección</td>
+</tr>
+<tr>
+<td>Claude no recuerda lo anterior en la API</td>
+<td>Enviar el historial completo en cada petición</td>
+</tr>
+<tr>
+<td>El sintetizador tiene poco presupuesto de contexto</td>
+<td>Agentes de arriba que devuelven datos estructurados con metadatos</td>
+</tr>
+<tr>
+<td>El cliente pide un humano</td>
+<td>Escalar de inmediato</td>
+</tr>
+<tr>
+<td>La política no cubre el caso</td>
+<td>Escalar</td>
+</tr>
+<tr>
+<td>Cliente frustrado, problema sencillo</td>
+<td>Reconocer y ofrecer solución; escalar si insiste</td>
+</tr>
+<tr>
+<td>Escalado mal calibrado</td>
+<td>Criterios explícitos + few-shot en el <em>system prompt</em></td>
+</tr>
+<tr>
+<td>Propuestas de sentimiento o confianza autodeclarada</td>
+<td>Malos indicadores de complejidad</td>
+</tr>
+<tr>
+<td>Varias coincidencias de cliente</td>
+<td>Pedir un identificador adicional</td>
+</tr>
+<tr>
+<td><em>Timeout</em> de un subagente</td>
+<td>Error estructurado: tipo, intento, parciales, alternativas</td>
+</tr>
+<tr>
+<td>«0 resultados» ambiguo</td>
+<td>Distinguir fallo de acceso de resultado vacío válido</td>
+</tr>
+<tr>
+<td>Error devuelto como éxito vacío / flujo abortado</td>
+<td>Antipatrones</td>
+</tr>
+<tr>
+<td>Fallo transitorio</td>
+<td>Recuperación local; propagar solo lo irresoluble</td>
+</tr>
+<tr>
+<td>Fuentes inaccesibles en el informe</td>
+<td>Anotaciones de cobertura</td>
+</tr>
+<tr>
+<td>Respuestas inconsistentes tras una sesión larga</td>
+<td>Degradación del contexto: subagentes, scratchpad, <code>/compact</code></td>
+</tr>
+<tr>
+<td>Exploración que llena el contexto</td>
+<td>Subagente con pregunta concreta</td>
+</tr>
+<tr>
+<td>Fase siguiente de la exploración</td>
+<td>Resumir la anterior e inyectar el resumen</td>
+</tr>
+<tr>
+<td>Caída a mitad de un proceso multiagente</td>
+<td>Manifiesto de estados que el coordinador carga al reanudar</td>
+</tr>
+<tr>
+<td>Precisión global del 97 %</td>
+<td>Analizar por tipo de documento y campo antes de automatizar</td>
+</tr>
+<tr>
+<td>Fijar umbrales de confianza</td>
+<td>Confianza por campo calibrada con datos etiquetados</td>
+</tr>
+<tr>
+<td>Vigilar lo automatizado</td>
+<td>Muestreo aleatorio estratificado</td>
+</tr>
+<tr>
+<td>Se pierden las fuentes al resumir</td>
+<td>Vínculos afirmación–fuente que se preservan</td>
+</tr>
+<tr>
+<td>Dos fuentes fiables discrepan</td>
+<td>Anotar ambos valores con su fuente; decide el coordinador</td>
+</tr>
+<tr>
+<td>Cifras de años distintos parecen contradecirse</td>
+<td>Exigir fechas de publicación o recogida</td>
+</tr>
+<tr>
+<td>Informe con datos financieros, noticias y hallazgos técnicos</td>
+<td>Tablas, prosa y listas, respectivamente</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="preguntas-de-autoevaluacion">Preguntas de autoevaluación</h2>
+<ol>
+<li>Tras una conversación de 40 turnos, tu agente de soporte ofrece un vale al cliente que, al principio, dijo que solo aceptaría un reembolso del importe completo (149,90 €). ¿Qué ha pasado y cómo lo evitas?</li>
+<li>Un cliente escribe: «Es la tercera vez que contacto, esto es una vergüenza». Su problema es un cambio de dirección que el agente puede hacer. ¿Escala?</li>
+<li>El cliente pide que le igualen el precio de otra tienda. Vuestra política solo menciona ajustes de precio en la propia web. ¿Qué hace el agente?</li>
+<li>Tu subagente de búsqueda captura los <em>timeouts</em> y devuelve <code>{&quot;results&quot;: []}</code>. ¿Qué problema causa y qué debería devolver?</li>
+<li>Después de dos horas explorando un monorepo, Claude empieza a decir que «normalmente estos servicios usan un patrón repositorio» en vez de nombrar las clases que leyó. ¿Qué haces?</li>
+<li>Tu extractor tiene un 97 % de precisión global y el equipo quiere eliminar la revisión humana. ¿Qué compruebas antes?</li>
+<li>Dos subagentes devuelven cifras distintas sobre el mismo indicador: una de un informe de 2023 y otra de una encuesta de 2025. El sintetizador elige la más reciente sin decir nada. ¿Qué cambias?</li>
+</ol>
+<details>
+<summary>Soluciones</summary>
+<ol>
+<li>El resumen progresivo convirtió la expectativa concreta del cliente en algo vago. Extrae los hechos del caso (pedido, importe, fecha, expectativa) a un bloque persistente que se incluya en cada prompt, fuera del historial que se resume.</li>
+<li>No por defecto. Reconoce la frustración y ofrece resolverlo, porque está a su alcance. Escala solo si el cliente reitera que quiere hablar con una persona.</li>
+<li>Escala. La política no cubre ese caso, y es una excepción que no le corresponde decidir al agente.</li>
+<li>Suprime el error: el coordinador cree que no había nada que encontrar. Debe devolver un error estructurado (tipo <code>timeout</code>, consulta intentada, resultados parciales, alternativas) distinguible de un resultado vacío válido.</li>
+<li>Es degradación del contexto. Guarda los hallazgos clave en un scratchpad y consúltalo, delega las preguntas concretas en subagentes y usa <code>/compact</code> con instrucciones sobre qué conservar (o empieza una fase nueva inyectando un resumen).</li>
+<li>La precisión por tipo de documento y por campo, la calibración de la confianza por campo con un conjunto etiquetado y un plan de muestreo aleatorio estratificado de lo que se automatice.</li>
+<li>Exige fechas de publicación o recogida y vínculos afirmación–fuente en la salida de los subagentes. En el informe, presenta ambos valores con su fuente y su fecha (probablemente es una evolución, no una contradicción). Si discrepan de verdad, se anotan como hallazgo discutido.</li>
+</ol>
+</details>
+
+<nav class="pager"><a class="prev" href="04-prompt-structured-output.html"><small>← Anterior</small>Ingeniería de prompts y salida estructurada</a><span></span></nav>
+    </main>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

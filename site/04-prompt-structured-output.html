@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dominio 4 · Ingeniería de prompts y salida estructurada (20 %) · CCAR-F</title>
+<script>
+  // Antes de pintar, para que no parpadee el tema. Misma clave que el examen 1.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("examccarf-theme") || "light"); } catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div id="progress"></div>
+<button class="backdrop" id="backdrop" aria-label="Cerrar menú"></button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <div class="logo">A</div>
+      <div>
+        <h1>Guía CCAR-F</h1>
+        <p>Claude Certified Architect – Foundations</p>
+      </div>
+    </a>
+    <div class="nav-label">Apuntes</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="index.html"><span class="code">★</span><span class="txt">Inicio</span></a>
+      <a class="lesson-btn nav-item" href="00-index.html"><span class="code">≡</span><span class="txt">Índice de recursos</span></a>
+      <a class="lesson-btn nav-item" href="01-agentic-architecture.html"><span class="code">D1</span><span class="txt">Arquitectura agéntica y orquestación</span></a>
+      <a class="lesson-btn nav-item" href="02-mcp-tools.html"><span class="code">D2</span><span class="txt">Diseño de herramientas e integración con MCP</span></a>
+      <a class="lesson-btn nav-item" href="03-claude.html"><span class="code">D3</span><span class="txt">Configuración y flujos de trabajo de Claude Code</span></a>
+      <a class="lesson-btn nav-item active" href="04-prompt-structured-output.html"><span class="code">D4</span><span class="txt">Ingeniería de prompts y salida estructurada</span></a>
+      <div class="toc">
+        <a href="#como-usar-este-documento">Cómo usar este documento</a>
+        <a href="#4-1-disenar-prompts-con-criterios-explicitos-para-ganar-precision-y-reducir-falsos-positivos"><span class="num">4.1</span>Diseñar prompts con criterios explícitos para ganar precisión y reducir falsos positivos</a>
+        <a href="#4-2-few-shot-prompting-para-mejorar-la-consistencia-y-la-calidad"><span class="num">4.2</span>Few-shot prompting para mejorar la consistencia y la calidad</a>
+        <a href="#4-3-forzar-salida-estructurada-con-tool-use-y-json-schema"><span class="num">4.3</span>Forzar salida estructurada con tool use y JSON Schema</a>
+        <a href="#4-4-validacion-reintentos-y-bucles-de-feedback-en-la-extraccion"><span class="num">4.4</span>Validación, reintentos y bucles de feedback en la extracción</a>
+        <a href="#4-5-estrategias-eficientes-de-procesamiento-por-lotes"><span class="num">4.5</span>Estrategias eficientes de procesamiento por lotes</a>
+        <a href="#4-6-arquitecturas-de-revision-con-varias-instancias-y-varias-pasadas"><span class="num">4.6</span>Arquitecturas de revisión con varias instancias y varias pasadas</a>
+        <a href="#chuleta-de-decisiones">Chuleta de decisiones</a>
+        <a href="#preguntas-de-autoevaluacion">Preguntas de autoevaluación</a>
+      </div>
+      <a class="lesson-btn nav-item" href="05-context.html"><span class="code">D5</span><span class="txt">Gestión del contexto y fiabilidad</span></a>
+    </nav>
+    <div class="nav-label">Práctica</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="simulacros.html"><span class="code">⏱</span><span class="txt">Simulacros de examen</span></a>
+      <a class="lesson-btn nav-item" href="practica.html"><span class="code">✎</span><span class="txt">Practicar por dominio o task</span></a>
+    </nav>
+    <div class="side-foot">
+      <p>Generado desde los .md el 14 de noviembre de 2026</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" title="Menú">☰</button>
+      <span class="title">Dominio 4 · Ingeniería de prompts y salida estructurada (20 %)</span>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema claro/oscuro">🌙</button>
+      <button class="icon-btn" onclick="window.print()" title="Imprimir / PDF">⎙</button>
+    </div>
+
+    <main class="content prose">
+<h1 id="dominio-4-ingenieria-de-prompts-y-salida-estructurada-20">Dominio 4 · Ingeniería de prompts y salida estructurada (20 %)</h1>
+<blockquote>
+<p>Síntesis didáctica de los conceptos del Dominio 4 de la guía oficial del examen <strong>Claude Certified Architect – Foundations</strong> (v1.0).
+Fuentes principales: los apuntes del curso <em>Creación con la API de Claude</em> de la carpeta <code>Anthropic/</code> (enlazados como <code>[[...]]</code>), sobre todo las partes de evaluación de prompts, técnicas de ingeniería de prompts y uso de herramientas, más <em>Introducción a subagentes</em> y <em>Claude Code 101</em> para la revisión independiente. Donde los apuntes no llegan (few-shot, <code>tool_choice</code>, structured outputs, Message Batches API), se completa con la documentación oficial de la plataforma. El índice de recursos por <em>task statement</em> está en <a href="00-index.html">Índice de recursos</a>.</p>
+</blockquote>
+<h2 id="como-usar-este-documento">Cómo usar este documento</h2>
+<p>Cada sección corresponde a un <em>task statement</em> (4.1 a 4.6) y sigue el mismo esquema que <a href="01-agentic-architecture.html">Arquitectura agéntica y orquestación</a> y <a href="03-claude.html">Configuración y flujos de trabajo de Claude Code</a>:</p>
+<ol>
+<li><strong>La idea en una frase</strong>.</li>
+<li><strong>Explicación</strong>, con ejemplos.</li>
+<li><strong>Qué busca el examen</strong>: los razonamientos que la guía premia y las trampas habituales.</li>
+<li><strong>Fuentes</strong>.</li>
+</ol>
+<p>Al final hay una chuleta de decisiones y preguntas de autoevaluación.</p>
+<p>Este dominio aparece sobre todo en dos escenarios del examen: <strong>«Structured Data Extraction»</strong> (esquemas, <code>tool_choice</code>, validación y reintentos, lotes) y <strong>«Claude Code for Continuous Integration»</strong> (criterios de revisión, falsos positivos, revisión en varias pasadas). Las preguntas 11 y 12 de la guía son de este dominio.</p>
+<h3 id="el-hilo-conductor-precision-forma-y-fiabilidad">El hilo conductor: precisión, forma y fiabilidad</h3>
+<p>El dominio responde a tres preguntas que aparecen en cualquier sistema que usa Claude en producción:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Pregunta</th>
+<th>Herramienta principal</th>
+<th>Sección</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>¿Cómo consigo que Claude decida <strong>lo que yo quiero</strong> (qué reportar, qué ignorar)?</td>
+<td>Criterios explícitos y ejemplos</td>
+<td>4.1, 4.2</td>
+</tr>
+<tr>
+<td>¿Cómo consigo que la respuesta tenga <strong>la forma</strong> que mi código espera?</td>
+<td>Tool use con JSON Schema, <code>tool_choice</code></td>
+<td>4.3</td>
+</tr>
+<tr>
+<td>¿Cómo detecto y corrijo <strong>lo que sale mal</strong>, a escala y a buen precio?</td>
+<td>Validación con reintento, lotes, revisión independiente</td>
+<td>4.4, 4.5, 4.6</td>
+</tr>
+</tbody>
+</table></div>
+<p>Una idea atraviesa todo el dominio y viene del curso: <strong>la ingeniería de prompts se mide</strong>. El curso separa la <em>ingeniería</em> de prompts (técnicas para escribirlos: claridad, especificidad, etiquetas XML, ejemplos) de la <em>evaluación</em> de prompts (pruebas automáticas que dan una nota). El proceso es iterativo: escribe un prompt, evalúalo, aplica <strong>una</strong> técnica, vuelve a evaluar. En el ejemplo del curso, la nota de un prompt de planes de comida pasa de 2,32 a 3,92 al hacerlo claro y directo, y a 7,86 al añadirle pautas específicas.</p>
+<hr>
+<h2 id="4-1-disenar-prompts-con-criterios-explicitos-para-ganar-precision-y-reducir-falsos-positivos">4.1 Diseñar prompts con criterios explícitos para ganar precisión y reducir falsos positivos</h2>
+<a class="practice-chip" href="practica.html?task=4.1">✎ Practicar 4.1 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase">La idea en una frase</h3>
+<p>Para que Claude reporte solo lo que importa, <strong>define categorías concretas</strong> de lo que hay que reportar y de lo que hay que ignorar; las instrucciones vagas como «sé conservador» no mejoran la precisión.</p>
+<h3 id="explicacion">Explicación</h3>
+<p><strong>Claro, directo y específico.</strong> Es la base del curso. Ser <strong>claro y directo</strong> significa empezar con un verbo de acción que diga qué hacer («Genera», «Identifica»), no con una pregunta ni con un rodeo. Ser <strong>específico</strong> significa añadir pautas. El curso distingue dos tipos:</p>
+<ul>
+<li><strong>Pautas de calidad de la salida</strong> (longitud, estructura, elementos obligatorios). Se usan «en casi todos los prompts».</li>
+<li><strong>Pasos del proceso</strong> (qué analizar y en qué orden). Se usan en problemas complejos o cuando quieres que Claude considere varias perspectivas.</li>
+</ul>
+<p>La documentación lo resume con una imagen: trata a Claude como a <strong>un empleado brillante pero nuevo</strong>, que no conoce tus normas. Y una prueba: si un compañero sin contexto se confundiría con tu prompt, Claude también. Añade además <strong>el porqué</strong> de cada instrucción: Claude generaliza a partir de la explicación.</p>
+<p><strong>Criterios categóricos frente a filtros de confianza.</strong> Este es el núcleo del examen. Compara dos instrucciones para un revisor de código:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Vaga</th>
+<th>Explícita</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«Comprueba que los comentarios son correctos»</td>
+<td>«Marca un comentario solo si el comportamiento que describe <strong>contradice</strong> lo que hace el código»</td>
+</tr>
+<tr>
+<td>«Sé conservador» / «reporta solo hallazgos de alta confianza»</td>
+<td>«Reporta: errores de lógica, vulnerabilidades, fugas de recursos. <strong>No reportes</strong>: estilo menor, nombres, patrones locales que el equipo usa a propósito»</td>
+</tr>
+</tbody>
+</table></div>
+<p>Las instrucciones de la izquierda dejan el criterio en manos del modelo, así que el resultado sigue siendo irregular. «Sé conservador» no dice <strong>qué</strong> es un falso positivo, y la confianza que el modelo se atribuye no está calibrada con lo que tu equipo considera ruido. Las de la derecha convierten el juicio en una decisión por categorías, que se puede comprobar y repetir.</p>
+<p><strong>Severidad con ejemplos de código.</strong> Si pides «clasifica por severidad» sin más, cada ejecución usa un umbral distinto. Define cada nivel con un criterio y un fragmento de código de ejemplo:</p>
+<pre><code class="hljs language-text">&lt;severity_levels&gt;
+CRITICAL: permite ejecutar código, filtrar datos o corromperlos.
+  Ejemplo: query = f&quot;SELECT * FROM users WHERE id = {user_id}&quot;
+HIGH: error de lógica que produce un resultado incorrecto en un caso normal.
+  Ejemplo: if (items.length &gt; 0) return items[1];  // debería ser items[0]
+LOW: no cambia el comportamiento, pero dificulta el mantenimiento.
+  Ejemplo: función de 120 líneas sin dividir.
+&lt;/severity_levels&gt;
+</code></pre>
+<p>Las etiquetas XML del ejemplo no son decorativas. El curso las recomienda para <strong>separar instrucciones, datos y definiciones</strong> cuando el prompt incluye mucho contenido, con nombres descriptivos (<code>&lt;severity_levels&gt;</code> mejor que <code>&lt;data&gt;</code>).</p>
+<p><strong>Los falsos positivos destruyen la confianza.</strong> Un revisor automático que acierta en seguridad pero inunda los PR de avisos de estilo erróneos acaba ignorado <strong>entero</strong>: los desarrolladores dejan de leer también los hallazgos buenos. Por eso la guía propone una medida práctica: <strong>desactivar temporalmente las categorías con muchos falsos positivos</strong> para recuperar la confianza, y mientras tanto mejorar su prompt (con criterios y ejemplos) antes de volver a activarlas.</p>
+<p><strong>Lenguaje agresivo.</strong> Un matiz de la documentación actual: los modelos recientes siguen el <em>system prompt</em> con mucha fidelidad, y frases como «CRÍTICO: DEBES…» o «ante la duda, usa X» provocan que se active de más. Mejor una instrucción normal con su motivo.</p>
+<h3 id="que-busca-el-examen">Qué busca el examen</h3>
+<ul>
+<li>Ante falsos positivos, la respuesta correcta es <strong>criterios explícitos de qué reportar y qué no</strong>, no «pide más confianza» ni «sé conservador».</li>
+<li>Criterios de severidad <strong>con ejemplos de código concretos</strong> para que la clasificación sea consistente.</li>
+<li>Si una categoría genera mucho ruido: <strong>desactivarla temporalmente</strong> y mejorar su prompt, en lugar de mantenerla y perder la confianza en todo el sistema.</li>
+<li>Trampa: filtrar por una puntuación de confianza que el modelo se atribuye a sí mismo como solución principal de la precisión.</li>
+</ul>
+<h3 id="fuentes">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/prompt-engineering" target="_blank" rel="noopener">Prompt engineering</a> (proceso iterativo medido con evaluaciones)</li>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/being-clear-and-direct" target="_blank" rel="noopener">Being clear and direct</a></li>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/being-specific" target="_blank" rel="noopener">Being specific</a></li>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/structure-with-xml-tags" target="_blank" rel="noopener">Structure with XML tags</a></li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#be-clear-and-direct" target="_blank" rel="noopener">Prompting best practices › Be clear and direct</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#add-context-to-improve-performance" target="_blank" rel="noopener">Add context to improve performance</a></li>
+</ul>
+<hr>
+<h2 id="4-2-few-shot-prompting-para-mejorar-la-consistencia-y-la-calidad">4.2 Few-shot prompting para mejorar la consistencia y la calidad</h2>
+<a class="practice-chip" href="practica.html?task=4.2">✎ Practicar 4.2 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-1">La idea en una frase</h3>
+<p>Cuando las instrucciones detalladas no bastan para obtener una salida consistente, <strong>unos pocos ejemplos bien elegidos</strong> (2–4, centrados en los casos ambiguos) son la técnica más eficaz.</p>
+<h3 id="explicacion-1">Explicación</h3>
+<p><strong>Qué es.</strong> <em>Few-shot</em> (o <em>multishot</em>) es incluir en el prompt ejemplos de entrada con su salida correcta. El curso lo cita como una de las técnicas de ingeniería de prompts, junto a la claridad, la especificidad y las etiquetas XML. La documentación lo describe como «una de las formas más fiables de dirigir el formato, el tono y la estructura» de la salida.</p>
+<p><strong>Por qué funciona mejor que más instrucciones.</strong> Una regla en prosa admite varias lecturas; un ejemplo, no. Y, sobre todo, un buen ejemplo enseña <strong>el criterio</strong>, no solo el caso: si el ejemplo explica por qué se eligió una opción frente a otra plausible, Claude <strong>generaliza</strong> ese juicio a situaciones nuevas en lugar de limitarse a copiar los casos del prompt.</p>
+<p><strong>Para qué lo usa la guía:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Uso</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Formato consistente</strong></td>
+<td>Cada hallazgo con ubicación, problema, severidad y arreglo sugerido, siempre en el mismo orden</td>
+</tr>
+<tr>
+<td><strong>Casos ambiguos</strong></td>
+<td>Qué herramienta usar ante una petición que encaja en dos; si un hueco de cobertura en una rama cuenta como hallazgo</td>
+</tr>
+<tr>
+<td><strong>Reducir falsos positivos</strong></td>
+<td>Un ejemplo de patrón <strong>aceptable</strong> (no se reporta) junto a uno parecido que <strong>sí</strong> es un error</td>
+</tr>
+<tr>
+<td><strong>Extracción de documentos variados</strong></td>
+<td>Citas en línea frente a bibliografía final; método en una sección propia frente a detalles repartidos por el texto; medidas informales («un par de kilos»)</td>
+</tr>
+<tr>
+<td><strong>Campos vacíos o inventados</strong></td>
+<td>Ejemplos que muestran dónde encontrar el dato en formatos distintos, y cuándo devolver <code>null</code> porque no está</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Cómo escribirlos:</strong></p>
+<ul>
+<li><strong>Pocos y dirigidos</strong>: la guía habla de <strong>2 a 4</strong> ejemplos centrados en los escenarios ambiguos. (La documentación general recomienda 3 a 5; para el examen, quédate con 2–4 dirigidos a la ambigüedad.)</li>
+<li><strong>Relevantes</strong>: parecidos a los casos reales.</li>
+<li><strong>Diversos</strong>: si todos se parecen, Claude aprende un patrón que no querías (por ejemplo, que siempre hay exactamente tres hallazgos).</li>
+<li><strong>Delimitados</strong>: dentro de <code>&lt;example&gt;</code> (varios en <code>&lt;examples&gt;</code>), para que no se confundan con las instrucciones.</li>
+<li><strong>Con razonamiento</strong>: en los casos ambiguos, una línea que diga por qué se eligió esa salida y no la alternativa.</li>
+</ul>
+<pre><code class="hljs language-text">&lt;examples&gt;
+&lt;example&gt;
+&lt;input&gt;«Quiero cambiar la dirección de envío de mi pedido 4411»&lt;/input&gt;
+&lt;output&gt;Herramienta: lookup_order (no get_customer)
+Motivo: la petición se refiere a un pedido concreto con su número;
+get_customer solo hace falta si el cliente no da el número.&lt;/output&gt;
+&lt;/example&gt;
+...
+&lt;/examples&gt;
+</code></pre>
+<p><strong>Relación con otros dominios.</strong> En el Dominio 3 vimos la misma idea aplicada a Claude Code (2–3 ejemplos de entrada y salida cuando la prosa se interpreta de forma distinta cada vez; ver <a href="03-claude.html">Configuración y flujos de trabajo de Claude Code</a>, 3.5). Y en el Dominio 1, la pregunta 3 de la guía premia «criterios de escalado explícitos <strong>con ejemplos few-shot</strong>». Cuidado con no generalizar: en la pregunta 2, ante una mala elección de herramienta, la respuesta correcta es <strong>mejorar las descripciones de las herramientas</strong> (la causa raíz), no añadir few-shot.</p>
+<h3 id="que-busca-el-examen-1">Qué busca el examen</h3>
+<ul>
+<li>Instrucciones detalladas que siguen dando resultados inconsistentes → <strong>few-shot</strong>.</li>
+<li>Ejemplos dirigidos a los <strong>casos ambiguos</strong>, que muestran <strong>por qué</strong> se elige una opción frente a otra.</li>
+<li>En extracción: ejemplos con <strong>formatos de documento distintos</strong> para reducir campos vacíos y alucinaciones.</li>
+<li>Trampa: usar few-shot para tapar un problema cuya causa es otra (descripciones de herramientas pobres, secuencias que deben ser deterministas y requieren código).</li>
+</ul>
+<h3 id="fuentes-1">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/prompt-evaluation" target="_blank" rel="noopener">Prompt evaluation</a> (Prompt Engineering vs Prompt Evaluation)</li>
+<li>Building with the Claude API › Prompt engineering techniques › <a href="https://academy.claude.com/courses/building-with-the-claude-api/providing-examples" target="_blank" rel="noopener">Providing examples</a></li>
+<li>Introduction to subagents &gt; <a href="https://academy.claude.com/courses/introduction-to-subagents/creating-a-subagent" target="_blank" rel="noopener">Creating a subagent</a> (Making Claude use your subagent automatically: ejemplos concretos en la descripción para que Claude decida mejor)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#use-examples-effectively" target="_blank" rel="noopener">Prompting best practices › Use examples effectively</a> · <a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency#constrain-with-examples" target="_blank" rel="noopener">Increase output consistency › Constrain with examples</a> · <a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations" target="_blank" rel="noopener">Reduce hallucinations</a></li>
+</ul>
+<hr>
+<h2 id="4-3-forzar-salida-estructurada-con-tool-use-y-json-schema">4.3 Forzar salida estructurada con tool use y JSON Schema</h2>
+<a class="practice-chip" href="practica.html?task=4.3">✎ Practicar 4.3 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-2">La idea en una frase</h3>
+<p>Para obtener datos que tu código pueda procesar sin fallos de sintaxis, define una <strong>herramienta cuyo <code>input_schema</code> es el esquema que quieres</strong>, controla con <code>tool_choice</code> que Claude la llame, y lee el resultado del bloque <code>tool_use</code>; el esquema garantiza la forma, <strong>no</strong> que los valores sean correctos.</p>
+<h3 id="explicacion-2">Explicación</h3>
+<p><strong>De dónde venimos: prefill y secuencias de parada.</strong> El curso enseña primero una técnica sencilla para obtener JSON limpio: precargar el mensaje del asistente con <code>```json</code> y usar <code>```</code> como <code>stop_sequence</code>. Claude escribe solo el contenido y se detiene al intentar cerrar el bloque. Funciona, pero <strong>no garantiza nada</strong>: el JSON puede estar mal formado o no ajustarse a la estructura que esperas.</p>
+<blockquote>
+<p><strong>Matiz de actualidad.</strong> Desde los modelos Claude 4.6, el <em>prefill</em> del último turno del asistente <strong>ya no se admite</strong> (la API devuelve un error 400), y además es incompatible con el pensamiento extendido (tus apuntes lo avisan en 8.6.1) y con las <em>structured outputs</em>. Para el examen basta con saber que es una técnica débil frente a tool use.</p>
+</blockquote>
+<p><strong>Tool use como extractor.</strong> El truco es usar una herramienta que <strong>no ejecutas</strong>: solo te interesa su entrada. Claude «llama» a <code>extract_invoice</code> y los argumentos de esa llamada son tus datos, ya estructurados según el <code>input_schema</code>:</p>
+<pre><code class="hljs language-python">tools = [{
+    <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;extract_invoice&quot;</span>,
+    <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Registra los datos extraídos de una factura. Úsala siempre para devolver el resultado.&quot;</span>,
+    <span class="hljs-string">&quot;input_schema&quot;</span>: {
+        <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,
+        <span class="hljs-string">&quot;properties&quot;</span>: {
+            <span class="hljs-string">&quot;invoice_number&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>},
+            <span class="hljs-string">&quot;issue_date&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>, <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Formato ISO 8601 (AAAA-MM-DD)&quot;</span>},
+            <span class="hljs-string">&quot;vendor_vat_id&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: [<span class="hljs-string">&quot;string&quot;</span>, <span class="hljs-string">&quot;null&quot;</span>],
+                              <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;null si no aparece en el documento&quot;</span>},
+            <span class="hljs-string">&quot;category&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>,
+                         <span class="hljs-string">&quot;enum&quot;</span>: [<span class="hljs-string">&quot;servicios&quot;</span>, <span class="hljs-string">&quot;material&quot;</span>, <span class="hljs-string">&quot;viajes&quot;</span>, <span class="hljs-string">&quot;other&quot;</span>, <span class="hljs-string">&quot;unclear&quot;</span>]},
+            <span class="hljs-string">&quot;category_detail&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: [<span class="hljs-string">&quot;string&quot;</span>, <span class="hljs-string">&quot;null&quot;</span>],
+                                <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Obligatorio si category es other&quot;</span>},
+            <span class="hljs-string">&quot;line_items&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;array&quot;</span>, <span class="hljs-string">&quot;items&quot;</span>: {
+                <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,
+                <span class="hljs-string">&quot;properties&quot;</span>: {<span class="hljs-string">&quot;description&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>},
+                               <span class="hljs-string">&quot;amount&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;number&quot;</span>}},
+                <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;description&quot;</span>, <span class="hljs-string">&quot;amount&quot;</span>]}},
+            <span class="hljs-string">&quot;stated_total&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;number&quot;</span>},
+        },
+        <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;invoice_number&quot;</span>, <span class="hljs-string">&quot;issue_date&quot;</span>, <span class="hljs-string">&quot;vendor_vat_id&quot;</span>,
+                     <span class="hljs-string">&quot;category&quot;</span>, <span class="hljs-string">&quot;line_items&quot;</span>, <span class="hljs-string">&quot;stated_total&quot;</span>],
+    },
+}]
+
+response = client.messages.create(
+    model=MODEL, max_tokens=<span class="hljs-number">2048</span>, tools=tools,
+    tool_choice={<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;tool&quot;</span>, <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;extract_invoice&quot;</span>},
+    messages=[{<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">f&quot;&lt;invoice&gt;<span class="hljs-subst">{doc}</span>&lt;/invoice&gt;&quot;</span>}],
+)
+data = <span class="hljs-built_in">next</span>(b.<span class="hljs-built_in">input</span> <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> response.content <span class="hljs-keyword">if</span> b.<span class="hljs-built_in">type</span> == <span class="hljs-string">&quot;tool_use&quot;</span>)
+</code></pre>
+<p>Los apuntes del curso explican las tres partes de un esquema de herramienta (<code>name</code>, <code>description</code>, <code>input_schema</code>) y la importancia de una descripción de 3–4 frases por herramienta y por parámetro.</p>
+<p><strong><code>tool_choice</code>: quién decide si se llama a la herramienta.</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Valor</th>
+<th>Comportamiento</th>
+<th>Cuándo usarlo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{&quot;type&quot;: &quot;auto&quot;}</code> (por defecto)</td>
+<td>Claude decide: puede llamar a una herramienta <strong>o responder con texto</strong></td>
+<td>Agentes conversacionales; <strong>no garantiza</strong> salida estructurada</td>
+</tr>
+<tr>
+<td><code>{&quot;type&quot;: &quot;any&quot;}</code></td>
+<td>Claude <strong>debe</strong> llamar a una herramienta, pero elige cuál</td>
+<td>Hay varios esquemas de extracción (factura, contrato, recibo) y no sabes qué tipo de documento llega</td>
+</tr>
+<tr>
+<td><code>{&quot;type&quot;: &quot;tool&quot;, &quot;name&quot;: &quot;extract_metadata&quot;}</code></td>
+<td>Claude <strong>debe</strong> llamar a <strong>esa</strong> herramienta</td>
+<td>Un paso concreto tiene que ejecutarse sí o sí (por ejemplo, extraer metadatos antes de enriquecerlos)</td>
+</tr>
+<tr>
+<td><code>{&quot;type&quot;: &quot;none&quot;}</code></td>
+<td>Claude no puede usar herramientas</td>
+<td>Forzar una respuesta solo de texto</td>
+</tr>
+</tbody>
+</table></div>
+<p>Con <code>any</code> o <code>tool</code>, la API precarga la respuesta para forzar la llamada, así que Claude <strong>no escribe texto antes</strong> del bloque <code>tool_use</code>, aunque se lo pidas.</p>
+<blockquote>
+<p><strong>Matiz de actualidad.</strong> La documentación actual indica que <code>any</code> y <code>tool</code> <strong>no son compatibles con el pensamiento extendido manual</strong> (dan error) y que en los modelos más recientes (Opus 5.5, Sonnet 5.5, Fable 5.1) devuelven un 400; allí se recomienda <code>auto</code> con <em>strict tool use</em> o las <em>structured outputs</em>. <strong>Para el examen vale lo que dice la guía v1.0</strong>: <code>auto</code>/<code>any</code>/forzado, con los usos de la tabla.</p>
+</blockquote>
+<p><strong>Sintaxis frente a semántica.</strong> Tool use con esquema <strong>elimina los errores de sintaxis JSON</strong> (llaves sin cerrar, comas, tipos). Pero <strong>no</strong> impide errores de significado:</p>
+<ul>
+<li>las líneas de la factura no suman el total;</li>
+<li>la fecha de vencimiento está en el campo de emisión;</li>
+<li>un valor plausible pero falso.</li>
+</ul>
+<p>Eso se detecta con validación propia (sección 4.4). Las <em>structured outputs</em> actuales (<code>strict: true</code> en la herramienta, o <code>output_config.format</code> para la respuesta) refuerzan la garantía de forma mediante decodificación restringida, pero tampoco validan el contenido.</p>
+<p><strong>Diseño del esquema: no obligues a inventar.</strong> La decisión más importante:</p>
+<ul>
+<li><strong>Campos opcionales o nullables</strong> (<code>[&quot;string&quot;, &quot;null&quot;]</code>) para información que <strong>puede no estar</strong> en el documento. Si el campo es obligatorio y no admite <code>null</code>, el modelo tiene que rellenarlo con algo, y lo inventará. Indica en la descripción que debe devolver <code>null</code> cuando no aparezca.</li>
+<li><strong><code>enum</code> con <code>&quot;other&quot;</code> + campo de detalle</strong> para categorías que pueden crecer: no pierdes los casos que no previste y luego puedes analizarlos.</li>
+<li><strong><code>&quot;unclear&quot;</code></strong> en el <code>enum</code> para los casos genuinamente ambiguos, en vez de forzar una clasificación al azar.</li>
+</ul>
+<p><strong>Reglas de normalización en el prompt.</strong> El esquema dice <em>qué</em> tipo tiene cada campo, no <em>cómo</em> normalizar un origen desordenado. Acompáñalo de reglas: «fechas en ISO 8601», «importes en euros sin símbolo», «convierte &quot;1,5 k&quot; a 1500». Esquema estricto + reglas de formato = salida consistente.</p>
+<h3 id="que-busca-el-examen-2">Qué busca el examen</h3>
+<ul>
+<li>Salida estructurada fiable → <strong>tool use con JSON Schema</strong>, no «pide JSON en el prompt».</li>
+<li><code>auto</code> puede devolver texto; <code>any</code> garantiza una llamada cuando hay <strong>varios esquemas</strong> y el tipo de documento es desconocido; forzado (<code>{&quot;type&quot;: &quot;tool&quot;, &quot;name&quot;: ...}</code>) para <strong>asegurar un paso concreto</strong> antes de otros.</li>
+<li>El esquema elimina errores de <strong>sintaxis</strong>, no <strong>semánticos</strong>.</li>
+<li>Campos <strong>nullables</strong> para evitar valores inventados; <code>enum</code> con <code>&quot;other&quot;</code> + detalle y <code>&quot;unclear&quot;</code>.</li>
+<li>Trampa: hacer obligatorio un campo que a veces no está en el documento.</li>
+</ul>
+<h3 id="fuentes-2">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Accessing Claude with the API › <a href="https://academy.claude.com/courses/building-with-the-claude-api/structured-data" target="_blank" rel="noopener">Structured data</a> (prefill + <em>stop sequences</em>)</li>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/tool-schemas" target="_blank" rel="noopener">Tool schemas</a> (<code>name</code>, <code>description</code>, <code>input_schema</code>)</li>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/fine-grained-tool-calling" target="_blank" rel="noopener">Fine grained tool calling</a> (la API valida el JSON de las herramientas; con <em>fine-grained</em> esa validación se desactiva)</li>
+<li>Building with the Claude API › Features of Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/extended-thinking" target="_blank" rel="noopener">Extended thinking</a> (incompatible con prefill)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools#forcing-tool-use" target="_blank" rel="noopener">Define tools › Forcing tool use</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs#strict-tool-use" target="_blank" rel="noopener">Structured outputs › Strict tool use</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs#invalid-outputs" target="_blank" rel="noopener">Structured outputs › Invalid outputs</a></li>
+<li>Práctica: <a href="https://github.com/anthropics/courses/blob/master/tool_use/03_structured_outputs.ipynb" target="_blank" rel="noopener">Curso GitHub <em>Tool use</em> › 03 Structured outputs</a> · <a href="https://github.com/anthropics/courses/blob/master/tool_use/05_tool_choice.ipynb" target="_blank" rel="noopener">05 Tool choice</a></li>
+</ul>
+<hr>
+<h2 id="4-4-validacion-reintentos-y-bucles-de-feedback-en-la-extraccion">4.4 Validación, reintentos y bucles de feedback en la extracción</h2>
+<a class="practice-chip" href="practica.html?task=4.4">✎ Practicar 4.4 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-3">La idea en una frase</h3>
+<p>Valida la extracción con código y, si falla, <strong>reintenta enviando el documento, la extracción fallida y los errores concretos</strong>; pero reconoce cuándo reintentar es inútil porque <strong>el dato no está en el documento</strong>.</p>
+<h3 id="explicacion-3">Explicación</h3>
+<p><strong>El patrón evaluador-optimizador.</strong> El curso lo presenta en la parte de workflows: un <strong>productor</strong> genera una salida, un <strong>evaluador</strong> la comprueba con unos criterios y, si no la acepta, le devuelve feedback al productor, que lo intenta de nuevo. La validación de extracciones es exactamente eso, con un evaluador de <strong>código</strong> (el curso los distingue de los evaluadores con modelo y humanos: el código valida sintaxis y formato; el modelo, criterios difíciles de programar).</p>
+<p><strong>Reintento con feedback de error.</strong> Un reintento «a ciegas» (repetir la misma petición) suele dar el mismo error. El reintento eficaz incluye:</p>
+<ol>
+<li>el <strong>documento original</strong>;</li>
+<li>la <strong>extracción fallida</strong>;</li>
+<li>los <strong>errores de validación concretos</strong>.</li>
+</ol>
+<pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">extract_with_retry</span>(<span class="hljs-params">doc, max_retries=<span class="hljs-number">2</span></span>):
+    data = extract(doc)
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(max_retries):
+        errors = validate(data)          <span class="hljs-comment"># Pydantic, JSON Schema o reglas propias</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> errors:
+            <span class="hljs-keyword">return</span> data
+        data = extract(doc, feedback=<span class="hljs-string">f&quot;&quot;&quot;
+&lt;previous_extraction&gt;<span class="hljs-subst">{json.dumps(data)}</span>&lt;/previous_extraction&gt;
+&lt;validation_errors&gt;
+<span class="hljs-subst">{<span class="hljs-built_in">chr</span>(<span class="hljs-number">10</span>).join(errors)}</span>
+&lt;/validation_errors&gt;
+Corrige solo los campos con error, usando el documento.&quot;&quot;&quot;</span>)
+    <span class="hljs-keyword">return</span> route_to_human(doc, data, errors)
+</code></pre>
+<p>El curso usa la misma idea al gestionar errores de herramientas: el <code>tool_result</code> con <code>&quot;is_error&quot;: True</code> y el mensaje del error permite que Claude corrija su siguiente llamada.</p>
+<p><strong>Cuándo reintentar sirve y cuándo no:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>El reintento <strong>funciona</strong></th>
+<th>El reintento <strong>no funciona</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Formato incorrecto (fecha <code>12/03/24</code> en lugar de ISO)</td>
+<td>El dato <strong>no existe</strong> en el documento</td>
+</tr>
+<tr>
+<td>Error estructural (un importe en el campo equivocado)</td>
+<td>El dato está en <strong>otro documento</strong> que no se ha proporcionado (un anexo, un contrato marco)</td>
+</tr>
+<tr>
+<td>Un total mal sumado que el documento sí permite calcular</td>
+<td>El documento es ilegible o está cortado</td>
+</tr>
+</tbody>
+</table></div>
+<p>Si la información no está, reintentar solo consume tokens o, peor, empuja al modelo a inventarla. La respuesta correcta es devolver <code>null</code>, marcarlo y, si hace falta, enviarlo a revisión humana.</p>
+<p><strong>Diseñar el esquema para que se autocorrija.</strong> Algunos campos existen solo para validar:</p>
+<ul>
+<li><strong><code>calculated_total</code> junto a <code>stated_total</code></strong>: Claude suma las líneas y copia el total impreso; si no coinciden, lo sabes sin adivinar cuál de los dos está mal.</li>
+<li><strong><code>conflict_detected</code></strong> (booleano): el documento se contradice (dos fechas de vencimiento distintas); se señala en vez de elegir una en silencio.</li>
+</ul>
+<p><strong>Bucle de feedback en revisiones de código: <code>detected_pattern</code>.</strong> Cuando un desarrollador descarta un hallazgo, ¿qué lo provocó? Si cada hallazgo incluye un campo <code>detected_pattern</code> (por ejemplo, <code>&quot;unchecked_null_return&quot;</code>), puedes agregar los descartes por patrón y ver qué construcciones generan más falsos positivos. Así sabes qué criterios mejorar o qué categoría desactivar (4.1) con datos, no por intuición.</p>
+<h3 id="que-busca-el-examen-3">Qué busca el examen</h3>
+<ul>
+<li>Reintento = <strong>documento + extracción fallida + errores concretos</strong>, no repetir la petición.</li>
+<li>Saber distinguir errores <strong>resolubles</strong> (formato, estructura) de <strong>irresolubles</strong> (información ausente o en un documento externo).</li>
+<li><code>calculated_total</code> frente a <code>stated_total</code> y <code>conflict_detected</code> como validación incorporada al esquema.</li>
+<li><code>detected_pattern</code> para analizar sistemáticamente los falsos positivos.</li>
+<li>Errores de <strong>sintaxis</strong> los elimina el esquema; los <strong>semánticos</strong> necesitan esta validación.</li>
+</ul>
+<h3 id="fuentes-3">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/agents-and-workflows" target="_blank" rel="noopener">Agents and workflows</a> (patrón <em>Evaluator-Optimizer</em>)</li>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/model-based-grading" target="_blank" rel="noopener">Model based grading</a></li>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/code-based-grading" target="_blank" rel="noopener">Code based grading</a></li>
+<li>Building with the Claude API › Tool use with Claude › <a href="https://academy.claude.com/courses/building-with-the-claude-api/implementing-multiple-turns" target="_blank" rel="noopener">Implementing multiple turns</a> (<code>is_error</code>)</li>
+<li>Building with the Claude API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/chaining-workflows" target="_blank" rel="noopener">Chaining workflows</a> (paso de revisión con instrucciones concretas)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls#handling-errors-with-is-error" target="_blank" rel="noopener">Handle tool calls › Handling errors with <code>is_error</code></a> · <a href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations#basic-hallucination-minimization-strategies" target="_blank" rel="noopener">Reduce hallucinations › Basic strategies</a></li>
+<li>Práctica: <a href="https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/evaluator_optimizer.ipynb" target="_blank" rel="noopener">Cookbook › evaluator_optimizer</a></li>
+</ul>
+<hr>
+<h2 id="4-5-estrategias-eficientes-de-procesamiento-por-lotes">4.5 Estrategias eficientes de procesamiento por lotes</h2>
+<a class="practice-chip" href="practica.html?task=4.5">✎ Practicar 4.5 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-4">La idea en una frase</h3>
+<p>La <strong>Message Batches API</strong> cuesta la mitad pero puede tardar hasta 24 horas sin garantía de latencia: úsala para trabajo <strong>que nadie espera</strong> (informes nocturnos, auditorías semanales) y nunca para flujos <strong>bloqueantes</strong> (comprobaciones antes del <em>merge</em>).</p>
+<h3 id="explicacion-4">Explicación</h3>
+<p><em>Tus apuntes no cubren esta API; esta sección sale de la documentación oficial.</em></p>
+<p><strong>Qué ofrece:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Característica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coste</td>
+<td><strong>50 %</strong> del precio estándar</td>
+</tr>
+<tr>
+<td>Tiempo de proceso</td>
+<td>La mayoría termina en menos de 1 hora, pero el límite es <strong>24 horas</strong>; lo que no termine, caduca</td>
+</tr>
+<tr>
+<td>Garantía de latencia</td>
+<td><strong>Ninguna</strong></td>
+</tr>
+<tr>
+<td>Tamaño</td>
+<td>Hasta 100.000 peticiones o 256 MB por lote</td>
+</tr>
+<tr>
+<td>Resultados</td>
+<td>Disponibles 29 días; pueden llegar <strong>en cualquier orden</strong></td>
+</tr>
+<tr>
+<td>Correlación</td>
+<td>Campo <strong><code>custom_id</code></strong> en cada petición</td>
+</tr>
+<tr>
+<td>Tipos de resultado</td>
+<td><code>succeeded</code>, <code>errored</code>, <code>canceled</code>, <code>expired</code> (solo se cobra el primero)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Cuándo sí y cuándo no.</strong> La pregunta 11 de la guía es el ejemplo de manual. Hay dos flujos: una comprobación <strong>pre-merge</strong> que bloquea a los desarrolladores y un <strong>informe nocturno</strong> de deuda técnica. La respuesta correcta es lotes solo para el informe. Que los lotes «suelan» terminar en una hora no sirve para un flujo bloqueante, porque no está garantizado.</p>
+<p><strong>Sin herramientas propias a mitad de petición.</strong> Cada petición del lote se procesa de principio a fin sin ti. Si Claude pide una herramienta tuya (<code>tool_use</code>), la petición termina ahí: no puedes ejecutar la herramienta y devolver el resultado dentro del mismo lote. Para un flujo agéntico con varias vueltas de herramientas, tendrías que enviar otra petición con el historial. (Las herramientas de servidor, como la búsqueda web, sí se ejecutan dentro, porque las ejecuta Anthropic.) Para el examen: <strong>el lote no sirve para tool calling multiturno dentro de una petición</strong>.</p>
+<p><strong><code>custom_id</code>: correlacionar y reenviar.</strong> Como los resultados no llegan en orden, cada petición lleva un identificador propio (<code>&quot;invoice-2026-0412&quot;</code>). Con él:</p>
+<ul>
+<li>unes cada resultado con su documento;</li>
+<li>identificas las que fallaron y <strong>reenvías solo esas</strong>, con la modificación adecuada (por ejemplo, <strong>dividir en fragmentos</strong> un documento que superó el límite de contexto).</li>
+</ul>
+<p><strong>Calcular la frecuencia de envío según el SLA.</strong> Si prometes resultados en 30 horas y un lote puede tardar 24, el tiempo máximo es la espera hasta el siguiente envío más el procesamiento. Con envíos <strong>cada 4 horas</strong>, el peor caso es 4 + 24 = 28 horas, dentro del SLA. Con envíos cada 6 horas, ya serían 30, sin margen.</p>
+<p><strong>Refinar antes de lanzar.</strong> Un error en el prompt multiplicado por 10.000 documentos sale caro, aunque sea a mitad de precio. Prueba y ajusta el prompt sobre una <strong>muestra</strong> (el ciclo de evaluación del curso) antes de lanzar el lote grande, para que la primera pasada acierte el máximo posible y reenvíes poco. La documentación añade: prueba primero la forma de una petición con la API normal, porque los errores de validación de un lote solo aparecen al terminar.</p>
+<pre><code class="hljs language-python">batch = client.messages.batches.create(requests=[
+    {<span class="hljs-string">&quot;custom_id&quot;</span>: <span class="hljs-string">f&quot;doc-<span class="hljs-subst">{d.<span class="hljs-built_in">id</span>}</span>&quot;</span>,
+     <span class="hljs-string">&quot;params&quot;</span>: {<span class="hljs-string">&quot;model&quot;</span>: MODEL, <span class="hljs-string">&quot;max_tokens&quot;</span>: <span class="hljs-number">2048</span>, <span class="hljs-string">&quot;tools&quot;</span>: tools,
+                <span class="hljs-string">&quot;tool_choice&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;tool&quot;</span>, <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;extract_invoice&quot;</span>},
+                <span class="hljs-string">&quot;messages&quot;</span>: [{<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: d.text}]}}
+    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> docs
+])
+<span class="hljs-comment"># ... cuando termine:</span>
+<span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> client.messages.batches.results(batch.<span class="hljs-built_in">id</span>):
+    <span class="hljs-keyword">if</span> r.result.<span class="hljs-built_in">type</span> != <span class="hljs-string">&quot;succeeded&quot;</span>:
+        retry_ids.add(r.custom_id)
+</code></pre>
+<h3 id="que-busca-el-examen-4">Qué busca el examen</h3>
+<ul>
+<li><strong>Bloqueante → API síncrona; tolerante a la latencia → lotes.</strong> Nunca lotes para pre-merge.</li>
+<li>50 % de ahorro, hasta 24 h, <strong>sin SLA</strong>.</li>
+<li>Sin tool calling multiturno dentro de una petición.</li>
+<li><code>custom_id</code> para correlacionar y para <strong>reenviar solo los fallidos</strong>, con cambios (fragmentar documentos demasiado grandes).</li>
+<li>Cálculo de la frecuencia de envío a partir del SLA.</li>
+<li>Refinar el prompt con una muestra antes del volumen grande.</li>
+<li>Trampas: «los resultados no se pueden correlacionar» (falso, <code>custom_id</code>); «lotes con <em>fallback</em> a tiempo real» (complejidad innecesaria).</li>
+</ul>
+<h3 id="fuentes-4">Fuentes</h3>
+<ul>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/a-typical-eval-workflow" target="_blank" rel="noopener">A typical eval workflow</a> (refinar el prompt sobre un conjunto de prueba)</li>
+<li>Docs: <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing" target="_blank" rel="noopener">Batch processing</a> (<a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#how-the-message-batches-api-works" target="_blank" rel="noopener">How it works</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#retrieving-batch-results" target="_blank" rel="noopener">Retrieving batch results</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#best-practices-for-effective-batching" target="_blank" rel="noopener">Best practices</a>)</li>
+<li>Práctica: <a href="https://github.com/anthropics/claude-cookbooks/blob/main/misc/batch_processing.ipynb" target="_blank" rel="noopener">Cookbook › batch_processing</a></li>
+</ul>
+<hr>
+<h2 id="4-6-arquitecturas-de-revision-con-varias-instancias-y-varias-pasadas">4.6 Arquitecturas de revisión con varias instancias y varias pasadas</h2>
+<a class="practice-chip" href="practica.html?task=4.6">✎ Practicar 4.6 · 8 preguntas</a>
+<h3 id="la-idea-en-una-frase-5">La idea en una frase</h3>
+<p>Un modelo revisa mal lo que acaba de generar en la misma sesión; usa una <strong>instancia independiente</strong> sin ese contexto y, en revisiones grandes, <strong>divide</strong> en pasadas por archivo más una pasada de integración.</p>
+<h3 id="explicacion-5">Explicación</h3>
+<p><strong>Por qué la autorrevisión falla.</strong> La sesión que generó el código conserva el razonamiento que lo justificó, así que tiende a confirmarlo. El curso <em>Claude Code 101</em> lo dice así: «la misma sesión que escribió los cambios y los explicó <strong>no es el mejor juez</strong> para evaluar su calidad». Su recomendación: revisar tú el diff y luego pedir a Claude que lo revise <strong>desde un contexto limpio</strong>. Ni pedirle «revisa con ojo crítico» en la misma sesión ni el pensamiento extendido sustituyen a una instancia que no ha visto ese razonamiento.</p>
+<p><strong>La instancia independiente.</strong> Puede ser una sesión nueva, una llamada a la API sin el historial o un <strong>subagente revisor</strong>. El curso de subagentes lo explica: el revisor «aplica sus criterios de revisión especializados <strong>sin conocer la historia</strong> de cómo se ha escrito el código», y su <em>system prompt</em> puede llevar los estándares del equipo para que las revisiones sean coherentes. El mismo curso propone un formato de salida estructurado (resumen, problemas críticos, importantes, menores, recomendaciones, estado de aprobación), que además le da al revisor un punto claro de finalización.</p>
+<p><strong>Varias pasadas contra la dilución de la atención.</strong> La pregunta 12 de la guía describe el síntoma: un PR de 14 archivos revisado de una vez da comentarios profundos en unos archivos y superficiales en otros, se le escapan errores obvios y se contradice (marca un patrón en un archivo y lo aprueba en otro). La solución:</p>
+<ol>
+<li><strong>Pasadas locales</strong>, una por archivo: profundidad uniforme para los problemas locales.</li>
+<li><strong>Pasada de integración</strong>: solo flujos de datos y contratos <strong>entre</strong> archivos (una función cuyo tipo de retorno cambió y sus llamadas en otros módulos).</li>
+</ol>
+<p>Es el encadenamiento de prompts del curso aplicado a la revisión: cada paso con un foco, en vez de un prompt gigante que intenta todo a la vez.</p>
+<p>Las alternativas incorrectas de esa pregunta enseñan tanto como la correcta:</p>
+<ul>
+<li>«Un modelo con más contexto» no arregla la calidad de la atención.</li>
+<li>«Obligar a los desarrolladores a partir los PR» traslada el problema en lugar de arreglar el sistema.</li>
+<li>«Tres pasadas y solo reportar lo que salga en dos» <strong>suprime</strong> errores reales que solo se detectan a veces.</li>
+</ul>
+<p><strong>Confianza por hallazgo para enrutar.</strong> En una pasada de verificación, el modelo puede <strong>declarar su confianza</strong> junto a cada hallazgo. No sirve como filtro de precisión (ver 4.1), pero sí para <strong>enrutar</strong>: los de baja confianza van a revisión humana y los de alta se publican directamente. El curso usa una idea parecida en la evaluación con modelos: pedir puntos fuertes, débiles y razonamiento junto a la nota, porque sin ese contexto el evaluador tiende a notas intermedias.</p>
+<h3 id="que-busca-el-examen-5">Qué busca el examen</h3>
+<ul>
+<li>Revisión del código generado → <strong>instancia independiente</strong> sin el contexto del generador, no autorrevisión ni pensamiento extendido.</li>
+<li>Revisión grande e inconsistente → <strong>pasadas por archivo + pasada de integración</strong>.</li>
+<li>Confianza autodeclarada por hallazgo para <strong>enrutar</strong> la revisión (humano o automático).</li>
+<li>Trampas: más contexto, PR más pequeños como única solución, consenso entre varias ejecuciones.</li>
+</ul>
+<h3 id="fuentes-5">Fuentes</h3>
+<ul>
+<li>Claude Code 101 › Daily workflows › <a href="https://academy.claude.com/courses/claude-code-101/code-review" target="_blank" rel="noopener">Code Review</a> (la sesión que escribió el cambio no es buen juez; revisar desde un contexto limpio)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/using-subagents-effectively" target="_blank" rel="noopener">Using subagents effectively</a> (Revisiones de código)</li>
+<li>Introduction to subagents › <a href="https://academy.claude.com/courses/introduction-to-subagents/designing-effective-subagents" target="_blank" rel="noopener">Designing effective subagents</a> (Defining an Output Format)</li>
+<li>Claude Code in action › Verify and share › <a href="https://academy.claude.com/courses/claude-code-in-action/trust-it-verifying-unsupervised-runs" target="_blank" rel="noopener">Trust it: Verifying unsupervised runs</a> (<code>/code-review</code> y empezar por el diff)</li>
+<li>Building with the Claude API › Agents and workflows › <a href="https://academy.claude.com/courses/building-with-the-claude-api/chaining-workflows" target="_blank" rel="noopener">Chaining workflows</a></li>
+<li>Building with the Claude API › Prompt evaluation › <a href="https://academy.claude.com/courses/building-with-the-claude-api/model-based-grading" target="_blank" rel="noopener">Model based grading</a></li>
+<li>Docs: <a href="https://code.claude.com/docs/en/sub-agents#code-reviewer" target="_blank" rel="noopener">Sub-agents › Code reviewer</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#chain-complex-prompts" target="_blank" rel="noopener">Prompting best practices › Chain complex prompts</a></li>
+</ul>
+<hr>
+<h2 id="chuleta-de-decisiones">Chuleta de decisiones</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Si el enunciado dice...</th>
+<th>Piensa en...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Demasiados falsos positivos</td>
+<td>Criterios explícitos de qué reportar y qué no, no «sé conservador»</td>
+</tr>
+<tr>
+<td>Severidad clasificada de forma inconsistente</td>
+<td>Criterios por nivel con ejemplos de código</td>
+</tr>
+<tr>
+<td>Una categoría hace que se ignore todo el revisor</td>
+<td>Desactivarla temporalmente y mejorar su prompt</td>
+</tr>
+<tr>
+<td>Instrucciones detalladas, salida aún inconsistente</td>
+<td>Few-shot (2–4 ejemplos)</td>
+</tr>
+<tr>
+<td>Casos ambiguos</td>
+<td>Ejemplos con el razonamiento de por qué esa opción</td>
+</tr>
+<tr>
+<td>Extracción con campos vacíos en documentos variados</td>
+<td>Few-shot con formatos de documento distintos</td>
+</tr>
+<tr>
+<td>Mala elección de herramienta</td>
+<td>Mejorar descripciones de herramientas (antes que few-shot)</td>
+</tr>
+<tr>
+<td>JSON con errores de sintaxis</td>
+<td>Tool use con JSON Schema</td>
+</tr>
+<tr>
+<td>Claude a veces responde texto en vez de llamar a la herramienta</td>
+<td><code>tool_choice: &quot;any&quot;</code> (o forzado)</td>
+</tr>
+<tr>
+<td>Varios esquemas, tipo de documento desconocido</td>
+<td><code>tool_choice: &quot;any&quot;</code></td>
+</tr>
+<tr>
+<td>Un paso concreto debe ejecutarse primero</td>
+<td><code>tool_choice: {&quot;type&quot;: &quot;tool&quot;, &quot;name&quot;: ...}</code></td>
+</tr>
+<tr>
+<td>Valores inventados en campos que no aparecen</td>
+<td>Campos nullables / opcionales</td>
+</tr>
+<tr>
+<td>Categorías que pueden crecer</td>
+<td><code>enum</code> con <code>&quot;other&quot;</code> + detalle; <code>&quot;unclear&quot;</code> para ambiguos</td>
+</tr>
+<tr>
+<td>Formatos de origen inconsistentes</td>
+<td>Reglas de normalización en el prompt + esquema</td>
+</tr>
+<tr>
+<td>Las líneas no suman el total</td>
+<td>Error semántico: <code>calculated_total</code> vs <code>stated_total</code></td>
+</tr>
+<tr>
+<td>Reintento que no mejora</td>
+<td>Reenviar documento + extracción fallida + errores concretos</td>
+</tr>
+<tr>
+<td>El dato está en un anexo no proporcionado</td>
+<td>El reintento no sirve: <code>null</code> y revisión humana</td>
+</tr>
+<tr>
+<td>Analizar por qué se descartan hallazgos</td>
+<td>Campo <code>detected_pattern</code></td>
+</tr>
+<tr>
+<td>Pre-merge bloqueante</td>
+<td>API síncrona</td>
+</tr>
+<tr>
+<td>Informe nocturno o auditoría semanal</td>
+<td>Message Batches API (−50 %)</td>
+</tr>
+<tr>
+<td>Resultados de un lote desordenados</td>
+<td><code>custom_id</code></td>
+</tr>
+<tr>
+<td>Documento de un lote que superó el contexto</td>
+<td>Reenviar solo ese, fragmentado</td>
+</tr>
+<tr>
+<td>SLA de 30 h con lotes de hasta 24 h</td>
+<td>Envíos cada ≤ 6 h; la guía usa 4 h para tener margen</td>
+</tr>
+<tr>
+<td>Revisión complaciente del propio código</td>
+<td>Instancia independiente</td>
+</tr>
+<tr>
+<td>PR grande con revisión irregular y contradictoria</td>
+<td>Pasadas por archivo + pasada de integración</td>
+</tr>
+<tr>
+<td>Decidir qué hallazgos ve un humano</td>
+<td>Confianza autodeclarada por hallazgo para enrutar</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="preguntas-de-autoevaluacion">Preguntas de autoevaluación</h2>
+<ol>
+<li>Tu revisor automático marca muchos comentarios «inexactos» que en realidad están bien, y el equipo empieza a ignorar también los avisos de seguridad. Has añadido «reporta solo hallazgos de alta confianza» y no ha cambiado nada. ¿Qué haces?</li>
+<li>Extraes datos de contratos, facturas y recibos que llegan mezclados, cada tipo con su herramienta de extracción. A veces Claude responde con un resumen en texto. ¿Qué <code>tool_choice</code> usas?</li>
+<li>Tu esquema tiene <code>vendor_vat_id</code> como <code>string</code> obligatorio. En los recibos sin NIF aparece un NIF verosímil pero falso. ¿Qué cambias?</li>
+<li>La validación detecta que la suma de las líneas no coincide con el total. ¿Qué incluyes en el reintento? ¿Y si el total correcto solo está en un anexo que no tienes?</li>
+<li>Tienes que procesar 50.000 documentos con un SLA de 30 horas. ¿Qué API usas y cada cuánto envías lotes?</li>
+<li>En un lote de 1.000 documentos fallan 12 porque superan la ventana de contexto. ¿Qué haces?</li>
+<li>Generas un módulo con Claude y en la misma conversación le pides que lo revise. No encuentra nada, pero en producción aparecen dos errores. ¿Por qué y cómo lo cambias?</li>
+</ol>
+<details>
+<summary>Soluciones</summary>
+<ol>
+<li>Sustituir la instrucción vaga por criterios explícitos («marca un comentario solo si lo que describe contradice lo que hace el código») con ejemplos de lo que sí y lo que no se reporta. Mientras lo mejoras, desactiva temporalmente esa categoría para recuperar la confianza en las demás.</li>
+<li><code>tool_choice: {&quot;type&quot;: &quot;any&quot;}</code>: obliga a llamar a una herramienta, pero deja que Claude elija la que corresponde al tipo de documento.</li>
+<li>Hacerlo nullable (<code>[&quot;string&quot;, &quot;null&quot;]</code>), indicar en la descripción que debe ser <code>null</code> si no aparece y, si hace falta, añadir ejemplos few-shot de recibos sin NIF.</li>
+<li>El documento original, la extracción fallida y el error concreto («la suma de line_items es 1.240 y stated_total es 1.420»). Si el dato correcto solo está en un anexo no proporcionado, el reintento no sirve: marca el conflicto y envíalo a revisión humana.</li>
+<li>Message Batches API, porque no es bloqueante y cuesta la mitad. Envía lotes como mucho cada 6 horas; la guía usa 4 horas (4 + 24 = 28 h) para tener margen. Antes, ajusta el prompt con una muestra.</li>
+<li>Identificar los 12 por su <code>custom_id</code> y reenviar solo esos, divididos en fragmentos.</li>
+<li>La sesión conserva el razonamiento con el que generó el código y tiende a confirmarlo. Revisa con una instancia independiente (sesión nueva, llamada sin historial o subagente revisor) y, si el cambio es grande, por archivos más una pasada de integración.</li>
+</ol>
+</details>
+
+<nav class="pager"><a class="prev" href="03-claude.html"><small>← Anterior</small>Configuración y flujos de trabajo de Claude Code</a><a class="next" href="05-context.html"><small>Siguiente →</small>Gestión del contexto y fiabilidad</a></nav>
+    </main>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

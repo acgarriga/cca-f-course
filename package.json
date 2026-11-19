@@ -1,0 +1,19 @@
+{
+  "name": "ccar-f-study",
+  "private": true,
+  "description": "Web de estudio y simulador de examen CCAR-F generados desde los apuntes en Markdown",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node web/build.mjs",
+    "validate": "node web/validate.mjs",
+    "extract:exam1": "node web/extract-exam1.mjs"
+  },
+  "dependencies": {
+    "highlight.js": "^11.12.0",
+    "markdown-it": "^15.0.3",
+    "mermaid": "^11.17.2"
+  }
+}

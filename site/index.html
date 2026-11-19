@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Preparación para Claude Certified Architect – Foundations (CCAR-F) · CCAR-F</title>
+<script>
+  // Antes de pintar, para que no parpadee el tema. Misma clave que el examen 1.
+  try { document.documentElement.setAttribute("data-theme", localStorage.getItem("examccarf-theme") || "light"); } catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div id="progress"></div>
+<button class="backdrop" id="backdrop" aria-label="Cerrar menú"></button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <div class="logo">A</div>
+      <div>
+        <h1>Guía CCAR-F</h1>
+        <p>Claude Certified Architect – Foundations</p>
+      </div>
+    </a>
+    <div class="nav-label">Apuntes</div>
+    <nav>
+      <a class="lesson-btn nav-item active" href="index.html"><span class="code">★</span><span class="txt">Inicio</span></a>
+      <a class="lesson-btn nav-item" href="00-index.html"><span class="code">≡</span><span class="txt">Índice de recursos</span></a>
+      <a class="lesson-btn nav-item" href="01-agentic-architecture.html"><span class="code">D1</span><span class="txt">Arquitectura agéntica y orquestación</span></a>
+      <a class="lesson-btn nav-item" href="02-mcp-tools.html"><span class="code">D2</span><span class="txt">Diseño de herramientas e integración con MCP</span></a>
+      <a class="lesson-btn nav-item" href="03-claude.html"><span class="code">D3</span><span class="txt">Configuración y flujos de trabajo de Claude Code</span></a>
+      <a class="lesson-btn nav-item" href="04-prompt-structured-output.html"><span class="code">D4</span><span class="txt">Ingeniería de prompts y salida estructurada</span></a>
+      <a class="lesson-btn nav-item" href="05-context.html"><span class="code">D5</span><span class="txt">Gestión del contexto y fiabilidad</span></a>
+    </nav>
+    <div class="nav-label">Práctica</div>
+    <nav>
+      <a class="lesson-btn nav-item" href="simulacros.html"><span class="code">⏱</span><span class="txt">Simulacros de examen</span></a>
+      <a class="lesson-btn nav-item" href="practica.html"><span class="code">✎</span><span class="txt">Practicar por dominio o task</span></a>
+    </nav>
+    <div class="side-foot">
+      <p>Generado desde los .md el 14 de noviembre de 2026</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" title="Menú">☰</button>
+      <span class="title">Preparación para Claude Certified Architect – Foundations (CCAR-F)</span>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema claro/oscuro">🌙</button>
+      <button class="icon-btn" onclick="window.print()" title="Imprimir / PDF">⎙</button>
+    </div>
+
+    <main class="content prose">
+<h1 id="preparacion-para-claude-certified-architect-foundations-ccar-f">Preparación para Claude Certified Architect – Foundations (CCAR-F)</h1>
+<p>Los mejores recursos para preparar la <strong>Claude Certified Architect – Foundations (CCAR-F)</strong> están en la <strong>Anthropic Partner Academy</strong>: empieza por la guía oficial del examen, después haz los cursos gratuitos y practica con código real. La guía oficial es la fuente autoritativa del temario e incluye preguntas de ejemplo. [2]</p>
+<h2 id="recursos-oficiales-prioritarios">Recursos oficiales prioritarios</h2>
+<ol>
+<li><strong>Guía del examen (Exam Guide)</strong> — en la página de la certificación dentro de <a href="https://anthropic-partners.skilljar.com/page/faq-certifications" target="_blank" rel="noopener">Anthropic Partner Academy</a>. Define dominios, <em>task statements</em> y estilo de preguntas; léela antes que cualquier otro material. [2]</li>
+<li><strong>Cursos de preparación gratuitos</strong> — Anthropic Partner Academy ofrece formación a tu ritmo; para Foundations destacan:
+<ul>
+<li><em>Claude Code in Action</em></li>
+<li><em>Introduction to Model Context Protocol</em></li>
+<li><em>Building with the Claude API</em></li>
+<li><em>Introduction to Agent Skills</em> [5]</li>
+</ul>
+</li>
+<li><strong>Claude Cookbooks</strong> — repositorio oficial de ejemplos ejecutables sobre tool use, RAG, agentes y MCP: <a href="https://github.com/anthropics/claude-cookbooks" target="_blank" rel="noopener">github.com/anthropics/claude-cookbooks</a>. Úsalo para convertir conceptos en práctica real. [7]</li>
+<li><strong>Documentación oficial</strong> — consulta especialmente Agent SDK, MCP, tool use y Claude Code: <a href="https://docs.anthropic.com/" target="_blank" rel="noopener">docs.anthropic.com</a>. El examen evalúa decisiones de arquitectura, no solo definiciones. [10]</li>
+<li><strong>Programa oficial de certificación y registro</strong> — <a href="https://www.pearsonvue.com/us/en/anthropic.html" target="_blank" rel="noopener">Pearson VUE – Anthropic</a>. [1]</li>
+</ol>
+<h2 id="complementos-comunitarios-utiles">Complementos comunitarios útiles</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Recurso</th>
+<th>Para qué sirve</th>
+<th>Enlace</th>
+<th>Caución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ravn Claude Certified Architect</strong></td>
+<td>Guía en español, examen de práctica y <em>cheatsheets</em>; incluye lista de verificación antes de reservar. [4]</td>
+<td><a href="https://github.com/ravnhq/claude-certified-architect" target="_blank" rel="noopener">github.com/ravnhq/claude-certified-architect</a></td>
+<td>No oficial; verifica contra la guía vigente.</td>
+</tr>
+<tr>
+<td><strong>hamzafarooq/claude-certified-architect</strong></td>
+<td>Examen simulado de 64 preguntas, hojas por dominio y análisis de errores. [6]</td>
+<td><a href="https://github.com/hamzafarooq/claude-certified-architect" target="_blank" rel="noopener">github.com/hamzafarooq/claude-certified-architect</a></td>
+<td>Material comunitario, no preguntas reales.</td>
+</tr>
+<tr>
+<td><strong>julie-elkins/claude-architect-lab</strong></td>
+<td>Curso práctico con 29 lecciones alineadas a los <em>task statements</em> publicados. [3]</td>
+<td><a href="https://github.com/julie-elkins/claude-architect-lab" target="_blank" rel="noopener">github.com/julie-elkins/claude-architect-lab</a></td>
+<td>Independiente de Anthropic.</td>
+</tr>
+<tr>
+<td><strong>ujjwalbsoni/claude-architect-foundations-study-guide</strong></td>
+<td>Plan de 4 semanas, laboratorios Python/MCP y 50 preguntas por escenario. [8]</td>
+<td><a href="https://github.com/ujjwalbsoni/claude-architect-foundations-study-guide" target="_blank" rel="noopener">github.com/ujjwalbsoni/claude-architect-foundations-study-guide</a></td>
+<td>Útil como repaso, no como fuente de verdad.</td>
+</tr>
+<tr>
+<td><strong>haytamAroui/Claude-Certified-Architect</strong></td>
+<td>Guía gratuita, 6 cursos, 120 preguntas de práctica y 5 dominios. [9]</td>
+<td><a href="https://github.com/haytamAroui/Claude-Certified-Architect" target="_blank" rel="noopener">github.com/haytamAroui/Claude-Certified-Architect</a></td>
+<td>Material comunitario; contrasta con la documentación oficial.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="plan-recomendado">Plan recomendado</h2>
+<ol>
+<li>Descarga y estudia la <strong>guía oficial</strong>; identifica los cinco dominios y sus pesos. [2]</li>
+<li>Completa los cuatro cursos oficiales más alineados: API, Claude Code, MCP y Agent Skills. [5]</li>
+<li>Construye un mini-proyecto con Claude API + MCP + Claude Code, usando los <a href="https://github.com/anthropics/claude-cookbooks" target="_blank" rel="noopener">Claude Cookbooks</a> como referencia. [7]</li>
+<li>Haz un simulacro comunitario, revisa cada fallo y vuelve a la documentación oficial. [6]</li>
+<li>Antes de reservar, usa el examen de práctica oficial como indicador: una referencia común es superar cómodamente 900/1000. [5]</li>
+</ol>
+<h2 id="aviso-importante">Aviso importante</h2>
+<p>Anthropic actualizará el contenido de varios exámenes el <strong>7 de diciembre de 2026</strong>; las guías actualizadas estarán disponibles el <strong>17 de noviembre de 2026</strong>. Si vas a presentarte en diciembre o después, prepara con la guía renovada. [1]</p>
+
+<nav class="pager"><span></span><a class="next" href="00-index.html"><small>Siguiente →</small>Índice de recursos</a></nav>
+    </main>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+{
+  "_note": "Dominios, pesos y task statements de la guía oficial v1.0. title_es sale de 00-index.md; notes es el fichero de apuntes del dominio.",
+  "domains": [
+    {
+      "id": "d1",
+      "code": "D1",
+      "title": "Agentic Architecture & Orchestration",
+      "title_es": "Arquitectura agéntica y orquestación",
+      "weight": 27,
+      "notes": "01-agentic-architecture.md",
+      "tasks": [
+        {
+          "id": "1.1",
+          "title": "Agentic loops",
+          "title_es": "Diseñar e implementar bucles agénticos"
+        },
+        {
+          "id": "1.2",
+          "title": "Coordinator-subagent patterns",
+          "title_es": "Orquestar sistemas multiagente mediante patrones de coordinator-subagent"
+        },
+        {
+          "id": "1.3",
+          "title": "Subagent invocation & context passing",
+          "title_es": "Invocación de subagentes, paso de contexto y spawning"
+        },
+        {
+          "id": "1.4",
+          "title": "Multi-step workflows & enforcement",
+          "title_es": "Flujos multipaso con enforcement y handoff"
+        },
+        {
+          "id": "1.5",
+          "title": "Agent SDK hooks",
+          "title_es": "Hooks del Agent SDK para interceptar llamadas y normalizar datos"
+        },
+        {
+          "id": "1.6",
+          "title": "Task decomposition strategies",
+          "title_es": "Estrategias de descomposición de tareas"
+        },
+        {
+          "id": "1.7",
+          "title": "Session state & resumption",
+          "title_es": "Estado de sesión, reanudación y forking"
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "code": "D2",
+      "title": "Tool Design & MCP Integration",
+      "title_es": "Diseño de herramientas e integración con MCP",
+      "weight": 18,
+      "notes": "02-mcp-tools.md",
+      "tasks": [
+        {
+          "id": "2.1",
+          "title": "Tool interface design",
+          "title_es": "Interfaces de herramientas con descripciones y límites claros"
+        },
+        {
+          "id": "2.2",
+          "title": "Structured error responses",
+          "title_es": "Respuestas de error estructuradas en herramientas MCP"
+        },
+        {
+          "id": "2.3",
+          "title": "Tool distribution & tool_choice",
+          "title_es": "Distribuir herramientas entre agentes y configurar tool_choice"
+        },
+        {
+          "id": "2.4",
+          "title": "MCP server integration",
+          "title_es": "Integrar servidores MCP en Claude Code y en agentes"
+        },
+        {
+          "id": "2.5",
+          "title": "Built-in tools",
+          "title_es": "Uso de herramientas integradas (Read, Write, Edit, Bash, Grep, Glob)"
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "code": "D3",
+      "title": "Claude Code Configuration & Workflows",
+      "title_es": "Configuración y flujos de trabajo de Claude Code",
+      "weight": 20,
+      "notes": "03-claude.md",
+      "tasks": [
+        {
+          "id": "3.1",
+          "title": "CLAUDE.md hierarchy & scoping",
+          "title_es": "CLAUDE.md: jerarquía, alcance y organización modular"
+        },
+        {
+          "id": "3.2",
+          "title": "Custom slash commands & skills",
+          "title_es": "Slash commands y skills personalizados"
+        },
+        {
+          "id": "3.3",
+          "title": "Path-specific rules",
+          "title_es": "Reglas por ruta para cargar convenciones de forma condicional"
+        },
+        {
+          "id": "3.4",
+          "title": "Plan mode vs direct execution",
+          "title_es": "Plan mode frente a ejecución directa"
+        },
+        {
+          "id": "3.5",
+          "title": "Iterative refinement",
+          "title_es": "Refinamiento iterativo"
+        },
+        {
+          "id": "3.6",
+          "title": "Claude Code in CI/CD",
+          "title_es": "Claude Code en CI/CD"
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "code": "D4",
+      "title": "Prompt Engineering & Structured Output",
+      "title_es": "Ingeniería de prompts y salida estructurada",
+      "weight": 20,
+      "notes": "04-prompt-structured-output.md",
+      "tasks": [
+        {
+          "id": "4.1",
+          "title": "Explicit criteria for precision",
+          "title_es": "Criterios explícitos para mejorar precisión y reducir falsos positivos"
+        },
+        {
+          "id": "4.2",
+          "title": "Few-shot prompting",
+          "title_es": "Few-shot prompting para consistencia y calidad"
+        },
+        {
+          "id": "4.3",
+          "title": "Structured output via tool use",
+          "title_es": "Salida estructurada con tool use y JSON Schema"
+        },
+        {
+          "id": "4.4",
+          "title": "Validation, retry & feedback loops",
+          "title_es": "Validación, reintentos y bucles de feedback en extracción"
+        },
+        {
+          "id": "4.5",
+          "title": "Batch processing strategies",
+          "title_es": "Procesamiento por lotes (Message Batches API)"
+        },
+        {
+          "id": "4.6",
+          "title": "Multi-instance & multi-pass review",
+          "title_es": "Arquitecturas de revisión multiinstancia y multipasada"
+        }
+      ]
+    },
+    {
+      "id": "d5",
+      "code": "D5",
+      "title": "Context Management & Reliability",
+      "title_es": "Gestión del contexto y fiabilidad",
+      "weight": 15,
+      "notes": "05-context.md",
+      "tasks": [
+        {
+          "id": "5.1",
+          "title": "Conversation context preservation",
+          "title_es": "Preservar información crítica en interacciones largas"
+        },
+        {
+          "id": "5.2",
+          "title": "Escalation & ambiguity resolution",
+          "title_es": "Escalado y resolución de ambigüedad"
+        },
+        {
+          "id": "5.3",
+          "title": "Error propagation across agents",
+          "title_es": "Propagación de errores en sistemas multiagente"
+        },
+        {
+          "id": "5.4",
+          "title": "Context in large codebase exploration",
+          "title_es": "Contexto en la exploración de bases de código grandes"
+        },
+        {
+          "id": "5.5",
+          "title": "Human review & confidence calibration",
+          "title_es": "Flujos de revisión humana y calibración de confianza"
+        },
+        {
+          "id": "5.6",
+          "title": "Provenance & multi-source synthesis",
+          "title_es": "Procedencia de la información e incertidumbre en síntesis multifuente"
+        }
+      ]
+    }
+  ]
+}
